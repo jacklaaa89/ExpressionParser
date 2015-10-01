@@ -416,7 +416,7 @@ public class Expression {
         addOperator(new Operator("%")
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
-                (Evaluator<Type>) (Arithmetic left, Type right) -> {
+                (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
                     return left.remainder(right);
                 }   
             )
@@ -427,7 +427,7 @@ public class Expression {
         addOperator(new Operator("+")
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
-                (Evaluator<Type>) (Arithmetic left, Type right) -> {
+                (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
                     return left.plus(right);
                 }   
             )
@@ -438,7 +438,7 @@ public class Expression {
         addOperator(new Operator("*")
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
-                (Evaluator<Type>) (Arithmetic left, Type right) -> {
+                (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
                     return left.multiply(right);
                 }   
             )
@@ -449,7 +449,7 @@ public class Expression {
         addOperator(new Operator("-")
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
-                (Evaluator<Type>) (Arithmetic left, Type right) -> {
+                (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
                     return left.minus(right);
                 }   
             )
@@ -460,7 +460,7 @@ public class Expression {
         addOperator(new Operator("^")
             .addEvaluator(
                 Operator.EXPRESSION_SCALAR, 
-                (Evaluator<Scalar>) (Arithmetic lleft, Type rright) -> {
+                (Evaluator<Scalar>) (Arithmetic lleft, Arithmetic rright) -> {
                     BigDecimal left = (BigDecimal) lleft;
                     BigDecimal right = (BigDecimal) rright;
 
@@ -479,7 +479,7 @@ public class Expression {
                 }   
             )
             .addEvaluator(Operator.EXPRESSION_MATRIX,
-                (Evaluator<Matrix>) (Arithmetic left, Type right) -> {
+                (Evaluator<Matrix>) (Arithmetic left, Arithmetic right) -> {
                     Matrix m = (Matrix) left;
                     return m.power(((Scalar)right).intValueExact());
                 }
@@ -489,7 +489,7 @@ public class Expression {
         addOperator(new Operator("||")
             .addEvaluator(
                 Operator.EXPRESSION_SCALAR, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     boolean bl = !left.equals(Scalar.ZERO);
                     boolean br = !right.equals(Scalar.ZERO);
                     return bl || br ? Scalar.ONE : Scalar.ZERO;
@@ -497,7 +497,7 @@ public class Expression {
             )
             .addEvaluator(
                 Operator.EXPRESSION_VECTOR, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     boolean bl = !left.equals(Vector.zeroes(((Vector)left).size()));
                     boolean br = !right.equals(Vector.zeroes(((Vector)left).size()));
                     return bl || br ? Scalar.ONE : Scalar.ZERO;
@@ -505,7 +505,7 @@ public class Expression {
             )
             .addEvaluator(
                 Operator.EXPRESSION_MATRIX, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     Matrix ml = (Matrix) left;
                     Matrix mr = (Matrix) right;
                     boolean bl = !left.equals(Matrix.zeroes(ml.getM(), ml.getN()));
@@ -515,7 +515,7 @@ public class Expression {
             )
             .addEvaluator(
                 Operator.EXPRESSION_MATRIX_SCALAR, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     Matrix ml = (Matrix) left;
                     boolean bl = !left.equals(Matrix.zeroes(ml.getM(), ml.getN()));
                     boolean br = !right.equals(Scalar.ZERO);
@@ -524,7 +524,7 @@ public class Expression {
             )
             .addEvaluator(
                 Operator.EXPRESSION_VECTOR_SCALAR, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     Vector ml = (Vector) left;
                     boolean bl = !left.equals(Vector.zeroes(ml.size()));
                     boolean br = !right.equals(Scalar.ZERO);
@@ -533,7 +533,7 @@ public class Expression {
             )
             .addEvaluator(
                 Operator.EXPRESSION_MATRIX_VECTOR, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     Matrix ml = (Matrix) left;
                     Vector mr = (Vector) right;
                     boolean bl = !left.equals(Matrix.zeroes(ml.getM(), ml.getN()));
@@ -543,7 +543,7 @@ public class Expression {
             )
             .addEvaluator(
                 Operator.EXPRESSION_VECTOR_MATRIX, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     return (Scalar) operators.get("||")
                             .getEvaluator(Operator.EXPRESSION_MATRIX_VECTOR)
                             .eval(left, right);
@@ -554,7 +554,7 @@ public class Expression {
         addOperator(new Operator("&&")
             .addEvaluator(
                 Operator.EXPRESSION_SCALAR, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     boolean bl = !left.equals(Scalar.ZERO);
                     boolean br = !right.equals(Scalar.ZERO);
                     return bl && br ? Scalar.ONE : Scalar.ZERO;
@@ -562,7 +562,7 @@ public class Expression {
             )
             .addEvaluator(
                 Operator.EXPRESSION_VECTOR, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     boolean bl = !left.equals(Vector.zeroes(((Vector)left).size()));
                     boolean br = !right.equals(Vector.zeroes(((Vector)left).size()));
                     return bl && br ? Scalar.ONE : Scalar.ZERO;
@@ -570,7 +570,7 @@ public class Expression {
             )
             .addEvaluator(
                 Operator.EXPRESSION_MATRIX, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     Matrix ml = (Matrix) left;
                     Matrix mr = (Matrix) right;
                     boolean bl = !left.equals(Matrix.zeroes(ml.getM(), ml.getN()));
@@ -580,7 +580,7 @@ public class Expression {
             )
             .addEvaluator(
                 Operator.EXPRESSION_MATRIX_SCALAR, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     Matrix ml = (Matrix) left;
                     boolean bl = !left.equals(Matrix.zeroes(ml.getM(), ml.getN()));
                     boolean br = !right.equals(Scalar.ZERO);
@@ -589,7 +589,7 @@ public class Expression {
             )
             .addEvaluator(
                 Operator.EXPRESSION_VECTOR_SCALAR, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     Vector ml = (Vector) left;
                     boolean bl = !left.equals(Vector.zeroes(ml.size()));
                     boolean br = !right.equals(Scalar.ZERO);
@@ -598,7 +598,7 @@ public class Expression {
             )
             .addEvaluator(
                 Operator.EXPRESSION_MATRIX_VECTOR, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     Matrix ml = (Matrix) left;
                     Vector mr = (Vector) right;
                     boolean bl = !left.equals(Matrix.zeroes(ml.getM(), ml.getN()));
@@ -608,7 +608,7 @@ public class Expression {
             )
             .addEvaluator(
                 Operator.EXPRESSION_VECTOR_MATRIX, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     return (Scalar) operators.get("&&")
                             .getEvaluator(Operator.EXPRESSION_MATRIX_VECTOR)
                             .eval(left, right);
@@ -617,14 +617,14 @@ public class Expression {
         );
         
         //define a default evaluator which just returns zero (FALSE)
-        Evaluator<Scalar> def = (Arithmetic left, Type right) -> {
+        Evaluator<Scalar> def = (Arithmetic left, Arithmetic right) -> {
             return Scalar.ZERO;
         };
         
         addOperator(new Operator("<")
             .addEvaluator(
                 Operator.EXPRESSION_SYMMETRIC, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     return left.compareTo(right) == -1 ? Scalar.ONE : Scalar.ZERO;
                 }   
             )
@@ -634,7 +634,7 @@ public class Expression {
         addOperator(new Operator(">")
             .addEvaluator(
                 Operator.EXPRESSION_SYMMETRIC, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     return left.compareTo(right) == 1 ? Scalar.ONE : Scalar.ZERO;
                 }   
             )
@@ -644,7 +644,7 @@ public class Expression {
         addOperator(new Operator(">=")
             .addEvaluator(
                 Operator.EXPRESSION_SYMMETRIC, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     return left.compareTo(right) >= 1 ? Scalar.ONE : Scalar.ZERO;
                 }   
             )
@@ -654,7 +654,7 @@ public class Expression {
         addOperator(new Operator("<=")
             .addEvaluator(
                 Operator.EXPRESSION_SYMMETRIC, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     return left.compareTo(right) <= 1 ? Scalar.ONE : Scalar.ZERO;
                 }   
             )
@@ -664,7 +664,7 @@ public class Expression {
         addOperator(new Operator("==")
             .addEvaluator(
                 Operator.EXPRESSION_SYMMETRIC, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     return left.equals(right) ? Scalar.ONE : Scalar.ZERO;
                 }   
             )
@@ -674,7 +674,7 @@ public class Expression {
         addOperator(new Operator("!=")
             .addEvaluator(
                 Operator.EXPRESSION_SYMMETRIC, 
-                (Evaluator<Scalar>) (Arithmetic left, Type right) -> {
+                (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     return !left.equals(right) ? Scalar.ONE : Scalar.ZERO;
                 }   
             )

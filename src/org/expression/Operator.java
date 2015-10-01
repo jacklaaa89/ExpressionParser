@@ -24,7 +24,7 @@ public class Operator {
     /**
      * The default evaluator if one is not set for a particular context.
      */
-    private Evaluator defaultEvaluator = (Evaluator) (Arithmetic left, Type right) -> {
+    private Evaluator defaultEvaluator = (Evaluator) (Arithmetic left, Arithmetic right) -> {
         String l = left.getClass().getSimpleName();
         String r = right.getClass().getSimpleName();
         throw new ArithmeticException("unsupported operation for ("+l+" "+sign+" "+r+").");
@@ -259,7 +259,7 @@ public class Operator {
         if(left.isArray() && right.isArray()) {
             if(this.evaluators.containsKey(EXPRESSION_VECTOR)) {
                 Evaluator e = this.evaluators.get(EXPRESSION_VECTOR);
-                v = e.eval((Arithmetic)left.getValue(), (Type)right.getValue());
+                v = e.eval((Arithmetic)left.getValue(), (Arithmetic)right.getValue());
             }
         }
         
@@ -267,7 +267,7 @@ public class Operator {
         if(left.isMatrix() && right.isMatrix()) {
             if(this.evaluators.containsKey(EXPRESSION_MATRIX)) {
                 Evaluator e = this.evaluators.get(EXPRESSION_MATRIX);
-                v = e.eval((Arithmetic)left.getValue(), (Type)right.getValue());
+                v = e.eval((Arithmetic)left.getValue(), (Arithmetic)right.getValue());
             }
         }
         
@@ -275,7 +275,7 @@ public class Operator {
         if(left.isScalar() && right.isScalar()) {
             if(this.evaluators.containsKey(EXPRESSION_SCALAR)) {
                 Evaluator e = this.evaluators.get(EXPRESSION_SCALAR);
-                v = e.eval((Arithmetic)left.getValue(), (Type)right.getValue());
+                v = e.eval((Arithmetic)left.getValue(), (Arithmetic)right.getValue());
             }
         }
         
@@ -283,7 +283,7 @@ public class Operator {
         if(left.isMatrix() && right.isArray()) {
             if(this.evaluators.containsKey(EXPRESSION_MATRIX_VECTOR)) {
                 Evaluator e = this.evaluators.get(EXPRESSION_MATRIX_VECTOR);
-                v = e.eval((Arithmetic)left.getValue(), (Type)right.getValue());
+                v = e.eval((Arithmetic)left.getValue(), (Arithmetic)right.getValue());
             }
         }
         
@@ -291,13 +291,13 @@ public class Operator {
         if(right.isMatrix() && left.isArray()) {
             if(this.evaluators.containsKey(EXPRESSION_VECTOR_MATRIX)) {
                 Evaluator e = this.evaluators.get(EXPRESSION_VECTOR_MATRIX);
-                v = e.eval((Arithmetic)left.getValue(), (Type)right.getValue());
+                v = e.eval((Arithmetic)left.getValue(), (Arithmetic)right.getValue());
             }
         }
         
         //if the left or right is a vector and the opposite is an scalar.
         if((left.isArray() && right.isScalar()) || (right.isArray() && left.isScalar())) {
-            Scalar n = (left.isArray()) ? (Scalar) right.getValue() : (Scalar) left.getValue();
+            Arithmetic n = (left.isArray()) ? (Arithmetic) right.getValue() : (Arithmetic) left.getValue();
             Arithmetic ve = (left.isArray()) ? (Arithmetic) left.getValue() : (Arithmetic) right.getValue();
             if(this.evaluators.containsKey(EXPRESSION_VECTOR_SCALAR)) {
                 Evaluator e = this.evaluators.get(EXPRESSION_VECTOR_SCALAR);
@@ -307,7 +307,7 @@ public class Operator {
         
         //if the left or right is a matrix and the opposite is an scalar.
         if((left.isMatrix() && right.isScalar()) || (right.isMatrix() && left.isScalar())) {
-            Type n = (left.isMatrix()) ? (Type) right.getValue() : (Type) left.getValue();
+            Arithmetic n = (left.isMatrix()) ? (Arithmetic) right.getValue() : (Arithmetic) left.getValue();
             Arithmetic ve = (left.isMatrix()) ? (Arithmetic) left.getValue() : (Arithmetic) right.getValue();
             if(this.evaluators.containsKey(EXPRESSION_MATRIX_SCALAR)) {
                 Evaluator e = this.evaluators.get(EXPRESSION_MATRIX_SCALAR);
@@ -317,7 +317,7 @@ public class Operator {
         
         //if we could not define the context, call the default evaluator.
         if(v == null) {
-           v = this.defaultEvaluator.eval((Arithmetic)left.getValue(), right.getValue());
+           v = this.defaultEvaluator.eval((Arithmetic)left.getValue(), (Arithmetic) right.getValue());
         }
         
         return new Context(v);
