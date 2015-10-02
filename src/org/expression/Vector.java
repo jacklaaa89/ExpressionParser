@@ -471,10 +471,15 @@ public class Vector extends ArrayList<Scalar>
         Vector A = this;
         Vector C = new Vector(A.size());
         for(int i = 0; i < this.size(); i++) {
-            Scalar item = handler.handle(A.get(i));
+            Scalar item = handler.handle(A.get(i), mc);
             C.set(i, item);
         }
         return C;
+    }
+
+    @Override
+    public Type apply(Functions handle) {
+        return this.apply(handle.get());
     }
     
 }

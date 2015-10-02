@@ -762,11 +762,16 @@ public class Matrix implements Arithmetic {
         Matrix B = Matrix.from(A, mc);
         for(int i = 0; i < A.M; i++) {
             for(int j = 0; j < A.N; j++) {
-                Scalar s = handler.handle(A.get(i, j));
+                Scalar s = handler.handle(A.get(i, j), mc);
                 B.add(i, j, s);
             }
         }
         return B;
+    }
+
+    @Override
+    public Type apply(Functions handle) {
+        return this.apply(handle.get());
     }
     
 }

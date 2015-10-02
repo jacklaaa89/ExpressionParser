@@ -85,17 +85,7 @@ public class Expression {
         this.mc = MathContext.DECIMAL32;
         
         //add the core functions.
-        addFunction(new Function("log", 1) {
-                @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(Math.log(o1.doubleValue()));
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
+        addFunction("log", Functions.LOG);
         
         addFunction(new Function("random", 0){
             @Override
@@ -136,137 +126,17 @@ public class Expression {
             }
         );
         
-        addFunction(new Function("sin", 1){
-            @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(Math.sin(Math.toRadians(o1.doubleValue())), mc);
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
-        
-        addFunction(new Function("cos", 1){
-            @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(Math.cos(Math.toRadians(o1.doubleValue())), mc);
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
-        
-        addFunction(new Function("tan", 1){
-            @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(Math.tan(Math.toRadians(o1.doubleValue())), mc);
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
-        
-        addFunction(new Function("asin", 1){
-            @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(Math.asin(Math.toDegrees(o1.doubleValue())), mc);
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
-        
-        addFunction(new Function("atan", 1){
-            @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(Math.atan(Math.toDegrees(o1.doubleValue())), mc);
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
-        
-        addFunction(new Function("acos", 1){
-            @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(Math.acos(Math.toDegrees(o1.doubleValue())), mc);
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
-        
-        addFunction(new Function("sinh", 1){
-            @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(Math.sinh(o1.doubleValue()), mc);
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
-        
-        addFunction(new Function("cosh", 1){
-            @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(Math.cosh(o1.doubleValue()), mc);
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
-        
-        addFunction(new Function("tanh", 1){
-            @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(Math.tanh(o1.doubleValue()), mc);
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
-        
-        addFunction(new Function("rad", 1){
-            @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(Math.toRadians(o1.doubleValue()), mc);
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
-        
-        addFunction(new Function("deg", 1){
-            @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(Math.toDegrees(o1.doubleValue()), mc);
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
+        addFunction("sin", Functions.SIN);
+        addFunction("cos", Functions.COS);
+        addFunction("tan", Functions.TAN);
+        addFunction("asin", Functions.ASIN);
+        addFunction("atan", Functions.ATAN);
+        addFunction("acos", Functions.ACOS);
+        addFunction("sinh", Functions.SINH);
+        addFunction("cosh", Functions.COSH);
+        addFunction("tanh", Functions.TANH);
+        addFunction("rad", Functions.RAD);
+        addFunction("deg", Functions.DEG);
         
         addFunction(new Function("max", 1){
             @Override
@@ -286,29 +156,8 @@ public class Expression {
             }
         );
         
-        addFunction(new Function("abs", 1){
-            @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(o1.abs(mc).doubleValue(), mc);
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
-        
-        addFunction(new Function("log10", 1){
-            @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(Math.log10(o1.doubleValue()), mc);
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
+        addFunction("abs", Functions.ABS);
+        addFunction("log10", Functions.LOG10);
         
         addFunction(new Function("round", 2){
             @Override
@@ -321,8 +170,7 @@ public class Expression {
                     }
                     
                     int precision = ((Scalar)p).intValueExact();
-                    
-                    Handler hndlr = (Handler) (Scalar o1) -> {
+                    Handler hndlr = (Handler) (Scalar o1, MathContext mc) -> {
                         return new Scalar(o1.setScale(precision, mc.getRoundingMode()).doubleValue(), mc);
                     };
                     return r.apply(hndlr);
@@ -330,17 +178,7 @@ public class Expression {
             }
         );
         
-        addFunction(new Function("floor", 1){
-            @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(o1.setScale(0, RoundingMode.FLOOR).doubleValue(), mc);
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
+        addFunction("floor", Functions.FLOOR);
         
         addFunction(new Function("sum", 1) {
             @Override
@@ -350,17 +188,7 @@ public class Expression {
             }
         });
         
-        addFunction(new Function("ceiling", 1){
-            @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    Handler hndlr = (Handler) (Scalar o1) -> {
-                        return new Scalar(o1.setScale(0, RoundingMode.CEILING).doubleValue(), mc);
-                    };
-                    return r.apply(hndlr);
-                }
-            }
-        );
+        addFunction("ceiling", Functions.CEILING);
         
         addFunction(new Function("transpose", 1){
             @Override
@@ -717,6 +545,17 @@ public class Expression {
         }
         this.mc = new MathContext(precision, mode);
         return this;
+    }
+    
+    public final Expression addFunction(String name, Functions function) {
+        Function f = new Function(name, 1) {
+            @Override
+            public Type eval(List<Type> args) {
+                Type r = args.get(0);
+                return r.apply(function);
+            }
+        };
+        return this.addFunction(f);
     }
     
     /**

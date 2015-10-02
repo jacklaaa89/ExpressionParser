@@ -7,4 +7,5 @@ package org.expression;
  */
 public interface Type<T extends Type> {
     public T apply(Handler handler);
+    public T apply(Functions function);
 }
