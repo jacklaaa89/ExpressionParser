@@ -22,7 +22,7 @@ import java.util.Objects;
  * @author Jack Timblin
  */
 public class Vector extends ArrayList<Scalar>
-        implements Comparable<Type>, Arithmetic {
+        implements Arithmetic, Structure<Vector> {
     
     /**
      * the maximum amount of elements this Vector can have.
@@ -480,6 +480,27 @@ public class Vector extends ArrayList<Scalar>
     @Override
     public Type apply(Functions handle) {
         return this.apply(handle.get());
+    }
+
+    @Override
+    public Vector slice(Coordinate start, Coordinate end) {
+        //sanity checking.
+        //check that the start is not larger than the end.
+        if(start.compareTo(end) == 1) throw new ArithmeticException("start cannot be larger than the end.");
+        
+        if(start.equals(Coordinate.COORDINATE_START)) start.x = 0;
+        if(end.equals(Coordinate.COORDINATE_END)) end.x = (this.size() - 1);
+        
+        //if the dimensions fit in the existing vector.
+        if(start.x < 0 || end.x > this.size()) {
+            throw new ArithmeticException("coordinates do not fit in the current data structure");
+        }
+        int size = (end.x - start.x) + 1;
+        Vector v = new Vector(size);
+        for(int i = 0; i < v.size(); i++) {
+            v.set(i, this.get(start.x + i));
+        }
+        return v;
     }
     
 }

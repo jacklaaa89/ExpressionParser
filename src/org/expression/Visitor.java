@@ -59,7 +59,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Context right = this.visit(ctx.right);
        
        if(!this.operators.containsKey(ctx.op.getText())) {
-           return new Context(Scalar.ZERO);
+           throw new ArithmeticException("undefined operator '"+ctx.op.getText()+"' found");
        }
        
        return this.operators.get(ctx.op.getText()).evaluate(left, right);
@@ -71,7 +71,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Context right = this.visit(ctx.right);
        
        if(!this.operators.containsKey(ctx.op.getText())) {
-           return new Context(Scalar.ZERO);
+           throw new ArithmeticException("undefined operator '"+ctx.op.getText()+"' found");
        }
        
        return this.operators.get(ctx.op.getText()).evaluate(left, right);
@@ -144,7 +144,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        } catch (NumberFormatException e) {
            //get the variable.   
            if(!this.variables.containsKey(ctx.getText())) {
-               return Scalar.ZERO;
+               throw new ArithmeticException("variable '"+ctx.getText()+"' is not defined.");
            }
            Type v = this.variables.get(ctx.getText());
            return v;
@@ -158,7 +158,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        String name = ctx.funcName().getText().toUpperCase(Locale.ROOT);
        
        if(!this.functions.containsKey(name)) {
-           return new Context(Scalar.ZERO);
+           throw new ArithmeticException("undefined function '"+name+"' called.");
        }
        
        Function f = this.functions.get(name);
@@ -180,7 +180,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         }
         
         if(args.size() < f.getAmountOfExpectedParameters()) {
-            throw new RuntimeException("Invalid Amount of parameters");
+            throw new RuntimeException("invalid amount of parameters");
         }
        
        return new Context(f.eval(args));

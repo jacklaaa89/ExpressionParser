@@ -14,7 +14,7 @@ import java.util.Map;
  * A representation of a Matrix.
  * @author Jack Timblin
  */
-public class Matrix implements Arithmetic {
+public class Matrix implements Arithmetic, Structure<Matrix> {
     
     /**
      * The internal data structure for the matrix.
@@ -772,6 +772,29 @@ public class Matrix implements Arithmetic {
     @Override
     public Type apply(Functions handle) {
         return this.apply(handle.get());
+    }
+
+    @Override
+    public Matrix slice(Coordinate start, Coordinate end) {
+        if(end.x - start.x < 0 || end.y - start.y < 0) {
+            throw new ArithmeticException("invalid dimensions");
+        }
+        
+        if(start.equals(Coordinate.COORDINATE_START)) {
+            start.x = 0; start.y = 0;
+        }
+        
+        if(end.equals(Coordinate.COORDINATE_END)) {
+            end.x = this.M; end.y = this.N;
+        }
+        
+        Matrix m = Matrix.zeroes(end.x - start.x, end.y - start.y, mc);
+        for(int i = start.x; i < end.x; i++) {
+            for(int j = start.y; j < end.y; j++) {
+                m.add(i - start.x, j - start.y, this.get(i, j));
+            }
+        }
+        return m;
     }
     
 }

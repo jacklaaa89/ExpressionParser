@@ -212,6 +212,26 @@ public class Expression {
             }
         });
         
+        addFunction(new Function("slice", 3) {
+            @Override
+            public Type eval(List<Type> args) {
+                Type r = args.get(0);
+                Type s = args.get(1);
+                Type e = args.get(2);
+                Coordinate start; Coordinate end;
+                if(s instanceof Scalar && e instanceof Scalar && r instanceof Vector) {
+                    start = new Coordinate((Scalar)s);
+                    end = new Coordinate((Scalar)e);
+                } else if(s instanceof Vector && e instanceof Vector && r instanceof Matrix) {
+                    start = new Coordinate((Vector)s); 
+                    end = new Coordinate((Vector)e);
+                } else {
+                    throw new ArithmeticException("invalid parameter types");
+                }
+                return ((Structure)r).slice(start, end);
+            }
+        });
+        
         addFunction(new Function("sqrt", 1){
                 @Override
                 public Type eval(List<Type> args) {
