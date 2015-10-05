@@ -6,6 +6,23 @@ package org.expression;
  * @param <T> the type of Object to return.
  */
 public interface Type<T extends Type> {
+    /**
+     * Applies a handler to each element in this type.
+     * @param handler the handler to apply.
+     * @return the data structure after the handler has been applied to each element.
+     */
     public T apply(Handler handler);
+    
+    /**
+     * Applies a handler to each element in this type from a pre-defined handler.
+     * @param function the handler to apply.
+     * @return the data structure after the handler has been applied to each element.
+     */
     public T apply(Functions function);
+    
+    /**
+     * Strips trailing zeroes from a variable (or all of the variables in the structure.)
+     * @return the variable with all of the trailing zeroes removed.
+     */
+    public T strip();
 }

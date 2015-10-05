@@ -132,4 +132,9 @@ public class Scalar extends BigDecimal implements Arithmetic  {
         return new Scalar(this.abs(mc).doubleValue(), mc);
     }
     
+    @Override
+    public Scalar strip() {
+        return new Scalar(this.stripTrailingZeros().doubleValue(), mc);
+    }
+    
 }

@@ -305,7 +305,7 @@ public class Expression {
             }
         );
         
-        addOperator(new Operator(">>")
+        addOperator(new Operator("<<")
             .addEvaluator(
                 new int[] {
                     Operator.EXPRESSION_SCALAR,
@@ -318,7 +318,7 @@ public class Expression {
             )
         );
         
-        addOperator(new Operator("<<")
+        addOperator(new Operator(">>")
             .addEvaluator(
                 new int[] {
                     Operator.EXPRESSION_SCALAR,
@@ -400,6 +400,15 @@ public class Expression {
                 (Evaluator<Matrix>) (Arithmetic left, Arithmetic right) -> {
                     Matrix m = (Matrix) left;
                     return m.power(((Scalar)right).intValueExact());
+                }
+            )
+        );
+        
+        addOperator(new Operator("/")
+            .addEvaluator(
+                Operator.EXPRESSION_ALL,
+                (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
+                    return left.divide(right);
                 }
             )
         );
@@ -736,7 +745,9 @@ public class Expression {
         parser.addErrorListener(handler);
         ParseTree tree = parser.expr();
         Visitor ve = new Visitor(functions, operators, variables, mc);
-        return ve.visit(tree);
+        Context c = ve.visit(tree);
+        c.setValue(((Arithmetic)c.getValue()).strip());
+        return c;
     }
 
     

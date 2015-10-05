@@ -13,7 +13,7 @@ public class Context<T extends Type> {
     /**
      * The evaluated result from this context.
      */
-    private final T value;
+    private T value;
     
     /**
      * Initializes a context, providing it with a result from this evaluation.
@@ -45,6 +45,10 @@ public class Context<T extends Type> {
      */
     public boolean isScalar() {
         return (value instanceof Scalar);
+    }
+    
+    public void setValue(T value) {
+        this.value = value;
     }
     
     /**
