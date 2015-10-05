@@ -564,4 +564,12 @@ public class Vector extends ArrayList<Scalar>
         return this.apply(h);
     }
     
+    @Override
+    public Type neg() {
+        Handler h = (Scalar o1, MathContext mc1) -> {
+            return (Scalar) o1.neg();
+        };
+        return this.apply(h);
+    }
+    
 }

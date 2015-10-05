@@ -6,19 +6,20 @@ package org.expression;
  * i.e (1 + 1) - 3 would have two contexts, one for the (1 + 1) and one
  * for the 2 - 3 (the evaluated form of the previous context is on the left.)
  * @author Jack Timblin
+ * @param <T>
  */
-public class Context {
+public class Context<T extends Type> {
     
     /**
      * The evaluated result from this context.
      */
-    private final Type value;
+    private final T value;
     
     /**
      * Initializes a context, providing it with a result from this evaluation.
      * @param value the value from a single context in the expression.
      */
-    public Context(Type value) {
+    public Context(T value) {
         this.value = value;
     }
     
@@ -50,7 +51,7 @@ public class Context {
      * Retrieve the evaluated value from this context.
      * @return the evaluated result.
      */
-    public Type getValue() {
+    public T getValue() {
         return value;
     }
     

@@ -604,6 +604,10 @@ public class Expression {
         setPrecision(14); setRoundingMode(RoundingMode.HALF_EVEN);
         
     }
+
+    public Expression() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
     /**
      * Sets the precision to use.

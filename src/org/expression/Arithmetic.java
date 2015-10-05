@@ -15,6 +15,12 @@ public interface Arithmetic<T extends Type> extends Type<T> {
     public Type multiply(Type data);
     
     /**
+     * Negates a value (or all values in a structure)
+     * @return the value after all values have been negated.
+     */
+    public Type neg();
+    
+    /**
      * Divide A/B to give C.
      * @param data the data to divide each corresponding element with.
      * @return the computed data structure.

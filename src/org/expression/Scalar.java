@@ -116,5 +116,10 @@ public class Scalar extends BigDecimal implements Arithmetic  {
     public Type bitwiseRight(Scalar value) {
         return new Scalar(this.movePointRight(value.intValueExact()).doubleValue(), mc);
     }
+
+    @Override
+    public Type neg() {
+        return new Scalar(this.negate().doubleValue(), mc);
+    }
     
 }

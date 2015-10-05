@@ -874,7 +874,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     public Type bitwiseLeft(Scalar value) {
         final int n = value.intValueExact();
         Handler h = (Scalar o1, MathContext mc1) -> {
-            return new Scalar(o1.movePointLeft(n).doubleValue(), mc1);
+            return (Scalar) o1.bitwiseLeft(value);
         };
         return this.apply(h);
     }
@@ -883,7 +883,15 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     public Type bitwiseRight(Scalar value) {
         final int n = value.intValueExact();
         Handler h = (Scalar o1, MathContext mc1) -> {
-            return new Scalar(o1.movePointRight(n).doubleValue(), mc1);
+            return (Scalar) o1.bitwiseRight(value);
+        };
+        return this.apply(h);
+    }
+
+    @Override
+    public Type neg() {
+        Handler h = (Scalar o1, MathContext mc1) -> {
+            return (Scalar) o1.neg();
         };
         return this.apply(h);
     }

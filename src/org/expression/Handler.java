@@ -13,6 +13,7 @@ public interface Handler {
      * This function returns a new element to place in a Vector/Matrix
      * after providing the previously allocated element.
      * @param o1 the element previously stored at point i(j) in a Vector/Matrix.
+     * @param mc
      * @return The new element after carrying out some computation.
      */
     public Scalar handle(Scalar o1, MathContext mc);
