@@ -69,6 +69,10 @@ public class Expression {
      */
     public static final Scalar FALSE = Scalar.ZERO;
     
+    public Expression() {
+        this(null);
+    }
+    
     /**
      * Initializes a new Expression and adds all of the core operators, variables and functions.
      * @param expression The expression to parse.
@@ -604,10 +608,6 @@ public class Expression {
         setPrecision(14); setRoundingMode(RoundingMode.HALF_EVEN);
         
     }
-
-    public Expression() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
     
     /**
      * Sets the precision to use.
@@ -720,6 +720,11 @@ public class Expression {
      * @throws RuntimeException if an error is reported by the error handler, i.e a syntax error etc.
      */
     public Context eval() throws RuntimeException {
+        
+        if(this.expression == null || this.expression.isEmpty()) {
+            throw new IllegalArgumentException("no valid expression was defined");
+        }
+        
         ANTLRInputStream stream = new ANTLRInputStream(this.expression);
         ExpressionLexer lexer = new ExpressionLexer(stream);
         ErrorHandler handler = new ErrorHandler();
