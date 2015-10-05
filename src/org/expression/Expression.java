@@ -31,7 +31,7 @@ public class Expression {
     /**
      * The expression to parse.
      */
-    private final String expression;
+    private String expression;
     
     /**
      * A collection of the operators available.
@@ -695,6 +695,11 @@ public class Expression {
      */
     public final Expression addVariable(String variableName, double value) {
         this.addVariable(variableName, new Scalar(value, mc));
+        return this;
+    }
+    
+    public final Expression setExpression(String expression) {
+        this.expression = expression;
         return this;
     }
     
