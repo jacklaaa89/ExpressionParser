@@ -219,7 +219,7 @@ public enum Functions {
         @Override
         public Handler get() {
             return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(o1.plus(mc).doubleValue(), mc);
+                return new Scalar(o1.abs(mc).doubleValue(), mc);
             };
         }
     };

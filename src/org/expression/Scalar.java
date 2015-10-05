@@ -121,5 +121,15 @@ public class Scalar extends BigDecimal implements Arithmetic  {
     public Arithmetic neg() {
         return new Scalar(this.negate().doubleValue(), mc);
     }
+
+    @Override
+    public Arithmetic pos() {
+        return new Scalar(this.abs(mc).doubleValue(), mc);
+    }
+
+    @Override
+    public Arithmetic absolute() {
+        return new Scalar(this.abs(mc).doubleValue(), mc);
+    }
     
 }

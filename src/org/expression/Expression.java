@@ -392,7 +392,7 @@ public class Expression {
                     return new Scalar(result.doubleValue(), mc);
                 }   
             )
-            .addEvaluator(Operator.EXPRESSION_MATRIX,
+            .addEvaluator(Operator.EXPRESSION_MATRIX_SCALAR,
                 (Evaluator<Matrix>) (Arithmetic left, Arithmetic right) -> {
                     Matrix m = (Matrix) left;
                     return m.power(((Scalar)right).intValueExact());

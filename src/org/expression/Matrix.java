@@ -895,5 +895,21 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
         };
         return this.apply(h);
     }
+
+    @Override
+    public Arithmetic pos() {
+        Handler h = (Scalar o1, MathContext mc1) -> {
+            return (Scalar) o1.pos();
+        };
+        return this.apply(h);
+    }
+
+    @Override
+    public Arithmetic absolute() {
+        Handler h = (Scalar o1, MathContext mc1) -> {
+            return (Scalar) o1.absolute();
+        };
+        return this.apply(h);
+    }
     
 }

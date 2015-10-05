@@ -21,6 +21,18 @@ public interface Arithmetic<T extends Type> extends Type<T> {
     public Arithmetic neg();
     
     /**
+     * Makes a value (or all values in a structure) positive.
+     * @return the value after all of the values have been made positive.
+     */
+    public Arithmetic pos();
+    
+    /**
+     * Returns the absolute value for this value.
+     * @return the absolute value for this value.
+     */
+    public Arithmetic absolute();
+    
+    /**
      * Divide A/B to give C.
      * @param data the data to divide each corresponding element with.
      * @return the computed data structure.
