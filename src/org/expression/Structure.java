@@ -3,6 +3,7 @@ package org.expression;
 /**
  *
  * @author jacktimblin
+ * @param <T>
  */
 public interface Structure<T extends Type> {
     /**
@@ -12,4 +13,8 @@ public interface Structure<T extends Type> {
      * @return the segment from the data structure.
      */
     public T slice(Coordinate start, Coordinate end);
+    public T addColumn(int index, Type value);
+    public T addColumn(Type value);
+    public T addRow(int index, Type type);
+    public T addRow(Type type);
 }

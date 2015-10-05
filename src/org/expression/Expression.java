@@ -212,6 +212,46 @@ public class Expression {
             }
         });
         
+        addFunction(new Function("row", 2) {
+            @Override
+            public Type eval(List<Type> args) {
+                //adds a new row to a structure.
+                //can only be called on matrices.
+                Type m = args.get(0); //the matrix.
+                Type n = args.get(1); //the new row to add, is a vector.
+                if(m instanceof Matrix && n instanceof Vector) {
+                    Matrix ma = (Matrix) m;
+                    Vector va = (Vector) n;
+                    Scalar i  = (args.size() > 2 && args.get(2) instanceof Scalar) 
+                            ? ((Scalar)args.get(2))
+                            : new Scalar(ma.getM());
+                    return ma.addRow(i.intValueExact(), va);
+                }
+                throw new ArithmeticException("invalid parameter types.");
+            }
+        });
+        
+        addFunction(new Function("column", 2){
+            @Override
+            public Type eval(List<Type> args) {
+                Type r = args.get(0);
+                Type a = args.get(1);
+                Scalar index = (args.size() > 2 && args.get(2) instanceof Scalar)
+                        ? (Scalar) args.get(2)
+                        : null;
+                if(index == null) {
+                    if(r instanceof Matrix && a instanceof Vector) {
+                        index = new Scalar(((Matrix)r).getN());
+                    } else if(r instanceof Vector && a instanceof Scalar) {
+                        index = new Scalar(((Vector)r).size());
+                    } else {
+                        throw new ArithmeticException("invalid parameter types");
+                    }
+                }
+                return ((Structure)r).addColumn(index.intValueExact(), a);
+            }
+        });
+        
         addFunction(new Function("slice", 3) {
             @Override
             public Type eval(List<Type> args) {
@@ -259,6 +299,32 @@ public class Expression {
                     return new Scalar(ix, mc.getPrecision());
                 }
             }
+        );
+        
+        addOperator(new Operator(">>")
+            .addEvaluator(
+                new int[] {
+                    Operator.EXPRESSION_SCALAR,
+                    Operator.EXPRESSION_VECTOR_SCALAR,
+                    Operator.EXPRESSION_MATRIX_SCALAR
+                },
+                (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
+                    return left.bitwiseLeft((Scalar)right);
+                }
+            )
+        );
+        
+        addOperator(new Operator("<<")
+            .addEvaluator(
+                new int[] {
+                    Operator.EXPRESSION_SCALAR,
+                    Operator.EXPRESSION_VECTOR_SCALAR,
+                    Operator.EXPRESSION_MATRIX_SCALAR
+                },
+                (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
+                    return left.bitwiseRight((Scalar)right);
+                }
+            )
         );
         
         addOperator(new Operator("%")

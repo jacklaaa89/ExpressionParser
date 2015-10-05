@@ -34,10 +34,18 @@ public class Coordinate implements Comparable<Coordinate> {
         this.y = 0;
     }
     
+    /**
+     * Initializes a Coordinate from a single Scalar value.
+     * @param x the scalar value.
+     */
     public Coordinate(Scalar x) {
         this(x.intValueExact());
     } 
     
+    /**
+     * Initializes a Coordinate from a Vector or Scalars.
+     * @param xy the vector to use.
+     */
     public Coordinate(Vector xy) {
         this();
         if(xy.size() < 1) {

@@ -56,6 +56,20 @@ public class Vector extends ArrayList<Scalar>
         this(capacity, MathContext.DECIMAL32);
     }
     
+    public Vector(Scalar[] data) {
+        this(data.length);
+        for(int i = 0; i < data.length; i++) {
+            this.set(i, data[i]);
+        }
+    }
+    
+    public Vector(double[] data) {
+        this(data.length);
+        for(int i = 0; i < data.length; i++) {
+            this.set(i, new Scalar(data[i]));
+        }
+    }
+    
     /**
      * returns the maximum capacity of this Vector.
      * @return the maximum capacity of this vector.
@@ -501,6 +515,53 @@ public class Vector extends ArrayList<Scalar>
             v.set(i, this.get(start.x + i));
         }
         return v;
+    }
+
+    @Override
+    public Vector addColumn(int index, Type value) {
+        if(index < 0 || index > this.size()) throw new ArrayIndexOutOfBoundsException("invalid index");
+        if(!(value instanceof Scalar)) throw new IllegalArgumentException("can only add scalars to vectors");
+        Scalar[] sn = this.toArray(new Scalar[]{});
+        Scalar[] dn = new Scalar[sn.length + 1];
+        System.arraycopy(sn, index, dn, index + 1, sn.length - index);
+        dn[index] = (Scalar) value;
+        for(int i = 0; i < index; i++) {
+            dn[i] = sn[i];
+        }
+        return new Vector(dn);
+    }
+    
+     @Override
+    public Vector addColumn(Type value) {
+        return this.addColumn(this.size(), value);
+    }
+
+    @Override
+    public Vector addRow(int index, Type type) {
+        throw new ArithmeticException("Vectors are only one row.");
+    }
+
+    @Override
+    public Vector addRow(Type type) {
+        throw new ArithmeticException("Vectors are only one row.");
+    }
+
+    @Override
+    public Type bitwiseLeft(Scalar value) {
+        final int n = value.intValueExact();
+        Handler h = (Scalar o1, MathContext mc1) -> {
+            return new Scalar(o1.movePointLeft(n).doubleValue(), mc1);
+        };
+        return this.apply(h);
+    }
+
+    @Override
+    public Type bitwiseRight(Scalar value) {
+        final int n = value.intValueExact();
+        Handler h = (Scalar o1, MathContext mc1) -> {
+            return new Scalar(o1.movePointRight(n).doubleValue(), mc1);
+        };
+        return this.apply(h);
     }
     
 }

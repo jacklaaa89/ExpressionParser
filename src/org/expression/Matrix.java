@@ -22,12 +22,12 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     private final Scalar[][] _matrix;
     
     /**
-     * the column size of this matrix
+     * the row size of this matrix
      */
     private final int M;
     
     /**
-     * the row size in this matrix
+     * the column size in this matrix
      */
     private final int N;
     
@@ -366,6 +366,22 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
         return C;
     }
     
+    public Matrix(double[][] data, MathContext mc) {
+         M = data.length;
+        N = data[0].length;
+        this._matrix = new Scalar[M][N];
+        for(int i = 0; i < M; i++) {
+            for(int j = 0; j < N; j++) {
+                this._matrix[i][j] = new Scalar(data[i][j]);
+            }
+        }
+        this.mc = mc;
+    }
+    
+    public Matrix(double[][] data) {
+        this(data, MathContext.DECIMAL32);
+    }
+    
     /**
      * Attempts to minus B from this i.e A - B = C
      * @param B the matrix to subtract from this.
@@ -536,8 +552,9 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("[");
+        builder.append("\n");
         for(int i = 0; i < this.M; i++) {
+            builder.append("[");
             for(int j = 0; j < this.N; j++) {
                 builder.append(this.get(i,j));
                 if(j != this.N - 1) {
@@ -545,7 +562,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
                 }
             }
             if(i != this.M - 1) {
-                builder.append("; ");
+                builder.append("]\n");
             }
         }
         builder.append("]");
@@ -795,6 +812,80 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
             }
         }
         return m;
+    }
+
+    @Override
+    public Matrix addColumn(int index, Type value) {
+        if(!(value instanceof Vector)) throw new IllegalArgumentException("columns in a matrix can only be a vector.");
+        if(index < 0 || index > N) throw new ArrayIndexOutOfBoundsException("invalid index defined.");
+        Matrix m = Matrix.zeroes(M, N + 1);
+        Vector v = (Vector) value;
+        if(v.size() != M) throw new ArithmeticException("vectors dimensions do not match that of the matrix");
+        for(int i = 0; i < this.M; i++) {
+            for(int j = 0; j < index; j++) {
+                m.add(i, j, this.get(i, j));
+            }
+        }
+        for(int i = 0; i < v.size(); i++) {
+            m.add(i, index, v.get(i));
+        }
+        for(int i = 0; i < this.M; i++) {
+            for(int j = index + 1; j < m.N; j++) {
+                m.add(i, j, this.get(i, j - 1));
+            }
+        }
+        return m;
+    }
+
+    @Override
+    public Matrix addColumn(Type value) {
+        return this.addColumn(this.N, value);
+    }
+
+    @Override
+    public Matrix addRow(int index, Type type) {
+        if(!(type instanceof Vector)) throw new IllegalArgumentException("columns in a matrix can only be a vector.");
+        if(index < 0 || index > M) throw new ArrayIndexOutOfBoundsException("invalid index defined.");
+        Vector v = (Vector) type;
+        if(v.size() != N) throw new ArithmeticException("vectors dimensions do not match that of the matrix.");
+        Matrix m = Matrix.zeroes(M + 1, N, mc);
+        for(int i = 0; i < index; i++) {
+            for(int j = 0; j < this.N; j++) {
+                m.add(i, j, this.get(i, j));
+            }
+        }
+        for(int i = 0; i < this.N; i++) {
+            m.add(index, i, v.get(i));
+        }
+        for(int i = index + 1; i < m.M; i++) {
+            for(int j = 0; j < this.N; j++) {
+                m.add(i, j, this.get(i - 1, j));
+            }
+        }
+        return m;
+    }
+
+    @Override
+    public Matrix addRow(Type type) {
+        return this.addRow(this.M, type);
+    }
+    
+    @Override
+    public Type bitwiseLeft(Scalar value) {
+        final int n = value.intValueExact();
+        Handler h = (Scalar o1, MathContext mc1) -> {
+            return new Scalar(o1.movePointLeft(n).doubleValue(), mc1);
+        };
+        return this.apply(h);
+    }
+
+    @Override
+    public Type bitwiseRight(Scalar value) {
+        final int n = value.intValueExact();
+        Handler h = (Scalar o1, MathContext mc1) -> {
+            return new Scalar(o1.movePointRight(n).doubleValue(), mc1);
+        };
+        return this.apply(h);
     }
     
 }

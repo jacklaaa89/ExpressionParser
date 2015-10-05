@@ -61,6 +61,20 @@ public interface Arithmetic<T extends Type> extends Type<T> {
     public Scalar sum();
     
     /**
+     * Performs a bitwise left using a scalar value.
+     * @param value the scalar value i.e 1.2 >> 2 = 0.012
+     * @return the completed bitwise left operation value.
+     */
+    public Type bitwiseLeft(Scalar value);
+    
+    /**
+     * Performs a bitwise right using a scalar value.
+     * @param value the scalar value i.e 1.2 << 2 = 120
+     * @return the completed bitwise right operation value.
+     */
+    public Type bitwiseRight(Scalar value);
+    
+    /**
      * Determines if an object is the same capacity as this.
      * @param object the object to compare with.
      * @return TRUE if the capacity is the same, FALSE otherwise.
