@@ -12,41 +12,41 @@ public interface Arithmetic<T extends Type> extends Type<T> {
      * @param data the data to multiply this data structure with.
      * @return the computed data structure.
      */
-    public Type multiply(Type data);
+    public Arithmetic multiply(Type data);
     
     /**
      * Negates a value (or all values in a structure)
      * @return the value after all values have been negated.
      */
-    public Type neg();
+    public Arithmetic neg();
     
     /**
      * Divide A/B to give C.
      * @param data the data to divide each corresponding element with.
      * @return the computed data structure.
      */
-    public Type divide(Type data);
+    public Arithmetic divide(Type data);
     
     /**
      * Add A+B to give C.
      * @param data the data to add to A to get C.
      * @return the computed data structure.
      */
-    public Type plus(Type data);
+    public Arithmetic plus(Type data);
     
     /**
      * Subtract A-B to give C.
      * @param data the data to subtract from A to get C.
      * @return the computed data structure.
      */
-    public Type minus(Type data);
+    public Arithmetic minus(Type data);
     
     /**
      * Perform A%B to give C (the remainder operator).
      * @param data the data to compute with A to get C.
      * @return the computed data structure.
      */
-    public Type remainder(Type data);
+    public Arithmetic remainder(Type data);
     
     /**
      * Calculate the smallest value.
@@ -71,14 +71,14 @@ public interface Arithmetic<T extends Type> extends Type<T> {
      * @param value the scalar value i.e 1.2 >> 2 = 0.012
      * @return the completed bitwise left operation value.
      */
-    public Type bitwiseLeft(Scalar value);
+    public Arithmetic bitwiseLeft(Scalar value);
     
     /**
      * Performs a bitwise right using a scalar value.
      * @param value the scalar value i.e 1.2 << 2 = 120
      * @return the completed bitwise right operation value.
      */
-    public Type bitwiseRight(Scalar value);
+    public Arithmetic bitwiseRight(Scalar value);
     
     /**
      * Determines if an object is the same capacity as this.

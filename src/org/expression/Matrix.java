@@ -350,7 +350,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
      * @return the computed matrix from A + B.
      */
     @Override
-    public Type plus(Type B) {
+    public Arithmetic plus(Type B) {
         if(B instanceof Scalar) return this.plus((Scalar)B);
         Matrix b = (Matrix) B;
         Matrix A = this;
@@ -388,7 +388,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
      * @return the computed matrix from A - B.
      */
     @Override
-    public Type minus(Type B) {
+    public Arithmetic minus(Type B) {
         if(B instanceof Scalar) return this.minus((Scalar)B);
         Matrix A = this;
         Matrix b = (Matrix) B;
@@ -410,7 +410,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
      * @return the solution to AB = C
      */
     @Override
-    public Type multiply(Type B) {
+    public Arithmetic multiply(Type B) {
         if(B instanceof Scalar) return this.multiply((Scalar)B);
         if(B instanceof Vector) return this.multiply((Vector)B);
         Matrix A = this;
@@ -438,7 +438,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
      * @param B the vector to multiply this matrix by.
      * @return the result of the computation.
      */
-    public Type multiply(Vector B) {
+    public Arithmetic multiply(Vector B) {
         Matrix m = new Matrix(this.M, B.size(), mc);
         for(int i = 0; i < B.size(); i++) {
             m.add(0, i, B.get(i));
@@ -587,7 +587,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     }
 
     @Override
-    public Type divide(Type data) {
+    public Arithmetic divide(Type data) {
         if(data instanceof Scalar) return this.divide((Scalar)data);
         throw new ArithmeticException("matrix division is unsupported");
     }
@@ -615,7 +615,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
      * @param scalar the scalar value b.
      * @return the result of A + B = C.
      */
-    public Type plus(Scalar scalar) {
+    public Arithmetic plus(Scalar scalar) {
         Matrix B = Matrix.scalar(this.N, scalar, mc);
         return this.plus(B);
     }
@@ -625,7 +625,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
      * @param scalar the scalar value b.
      * @return the result of A - B = C.
      */
-    public Type minus(Scalar scalar) {
+    public Arithmetic minus(Scalar scalar) {
         Matrix B = Matrix.scalar(this.N, scalar, mc);
         return this.minus(B);
     }
@@ -727,7 +727,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     }
 
     @Override
-    public Type remainder(Type data) {
+    public Arithmetic remainder(Type data) {
         if(data instanceof Scalar) return this.remainder((Scalar)data);
         Matrix A = this;
         Matrix B = (Matrix) data;
@@ -871,7 +871,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     }
     
     @Override
-    public Type bitwiseLeft(Scalar value) {
+    public Arithmetic bitwiseLeft(Scalar value) {
         final int n = value.intValueExact();
         Handler h = (Scalar o1, MathContext mc1) -> {
             return (Scalar) o1.bitwiseLeft(value);
@@ -880,7 +880,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     }
 
     @Override
-    public Type bitwiseRight(Scalar value) {
+    public Arithmetic bitwiseRight(Scalar value) {
         final int n = value.intValueExact();
         Handler h = (Scalar o1, MathContext mc1) -> {
             return (Scalar) o1.bitwiseRight(value);
@@ -889,7 +889,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     }
 
     @Override
-    public Type neg() {
+    public Arithmetic neg() {
         Handler h = (Scalar o1, MathContext mc1) -> {
             return (Scalar) o1.neg();
         };

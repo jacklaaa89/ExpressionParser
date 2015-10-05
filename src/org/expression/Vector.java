@@ -229,7 +229,7 @@ public class Vector extends ArrayList<Scalar>
      * @throws ArithmeticException if the vectors lengths are not the same.
      */
     @Override
-    public Type plus(Type B) throws ArithmeticException {
+    public Arithmetic plus(Type B) throws ArithmeticException {
         if(B instanceof Scalar) return this.plus((Scalar)B);
         Vector A = this;
         Vector b = (Vector) B;
@@ -291,7 +291,7 @@ public class Vector extends ArrayList<Scalar>
      * is attempted.
      */
     @Override
-    public Type divide(Type B) throws ArithmeticException {
+    public Arithmetic divide(Type B) throws ArithmeticException {
         if(B instanceof Scalar) return this.divide((Scalar)B);
         Vector A = this;
         Vector b = (Vector) B;
@@ -327,7 +327,7 @@ public class Vector extends ArrayList<Scalar>
     }
     
     @Override
-    public Type minus(Type B) {
+    public Arithmetic minus(Type B) {
         if(B instanceof Scalar) return this.minus((Scalar)B);
         Vector A = this;
         Vector b = (Vector) B;
@@ -371,7 +371,7 @@ public class Vector extends ArrayList<Scalar>
     }
     
     @Override
-    public Type multiply(Type B) {
+    public Arithmetic multiply(Type B) {
         if(B instanceof Scalar) return this.multiply((Scalar)B);
         Vector A = this;
         Vector b = (Vector) B;
@@ -466,7 +466,7 @@ public class Vector extends ArrayList<Scalar>
     }
 
     @Override
-    public Type remainder(Type data) {
+    public Arithmetic remainder(Type data) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
@@ -547,7 +547,7 @@ public class Vector extends ArrayList<Scalar>
     }
 
     @Override
-    public Type bitwiseLeft(Scalar value) {
+    public Arithmetic bitwiseLeft(Scalar value) {
         final int n = value.intValueExact();
         Handler h = (Scalar o1, MathContext mc1) -> {
             return new Scalar(o1.movePointLeft(n).doubleValue(), mc1);
@@ -556,7 +556,7 @@ public class Vector extends ArrayList<Scalar>
     }
 
     @Override
-    public Type bitwiseRight(Scalar value) {
+    public Arithmetic bitwiseRight(Scalar value) {
         final int n = value.intValueExact();
         Handler h = (Scalar o1, MathContext mc1) -> {
             return new Scalar(o1.movePointRight(n).doubleValue(), mc1);
@@ -565,7 +565,7 @@ public class Vector extends ArrayList<Scalar>
     }
     
     @Override
-    public Type neg() {
+    public Arithmetic neg() {
         Handler h = (Scalar o1, MathContext mc1) -> {
             return (Scalar) o1.neg();
         };

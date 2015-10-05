@@ -44,31 +44,31 @@ public class Scalar extends BigDecimal implements Arithmetic  {
     }
 
     @Override
-    public Type multiply(Type data) {
+    public Arithmetic multiply(Type data) {
         BigDecimal d = this.multiply((BigDecimal)data, mc);
         return new Scalar(d.doubleValue());
     }
 
     @Override
-    public Type divide(Type data) {
+    public Arithmetic divide(Type data) {
         BigDecimal d = this.divide((BigDecimal)data, mc);
         return new Scalar(d.doubleValue(), mc);
     }
 
     @Override
-    public Type plus(Type data) {
+    public Arithmetic plus(Type data) {
         BigDecimal d = this.add((BigDecimal)data, mc);
         return new Scalar(d.doubleValue(), mc);
     }
 
     @Override
-    public Type minus(Type data) {
+    public Arithmetic minus(Type data) {
         BigDecimal d = this.subtract((BigDecimal)data, mc);
         return new Scalar(d.doubleValue(), mc);
     }
 
     @Override
-    public Type remainder(Type data) {
+    public Arithmetic remainder(Type data) {
         BigDecimal d = this.remainder((BigDecimal)data, mc);
         return new Scalar(d.doubleValue(), mc);
     }
@@ -108,17 +108,17 @@ public class Scalar extends BigDecimal implements Arithmetic  {
     }
 
     @Override
-    public Type bitwiseLeft(Scalar value) {
+    public Arithmetic bitwiseLeft(Scalar value) {
         return new Scalar(this.movePointLeft(value.intValueExact()).doubleValue(), mc);
     }
 
     @Override
-    public Type bitwiseRight(Scalar value) {
+    public Arithmetic bitwiseRight(Scalar value) {
         return new Scalar(this.movePointRight(value.intValueExact()).doubleValue(), mc);
     }
 
     @Override
-    public Type neg() {
+    public Arithmetic neg() {
         return new Scalar(this.negate().doubleValue(), mc);
     }
     
