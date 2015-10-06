@@ -93,4 +93,31 @@ When creating a new operator you can define 1 or all of the operation types base
 - EXPRESSION_VECTORS - This matches all operations where a Vector is at the left of the expression.
 - EXPRESSION_SYMMETRIC - This matches operations where the type of the left and right sides are the same.
 
-So, for example, to add a new operator which overrides the default implementation of the '+' (plus) operation we can 
+##### Implementation
+
+So, for example, to add a new operator which overrides the default implementation of the '+' (plus) operation we can do:
+
+````java
+Expression e = new Expression();
+
+e.addOperator(
+	new Operator("+")
+	.addEvaluator(
+		Operator.EXPRESSION_SCALAR,
+		new Evaluator() {
+			@Override
+			public Type eval(Arithmetic left, Arithmetic right) {
+				//only take absolute values (sign is disregarded.)
+				//the Arithmetic interface provides access to a lot of pre-defined arithmetic methods.
+				return left.absolute().plus(right.absolute());
+			}
+		}
+	)
+);
+
+//Our '+' operator now only supports Scalar - Scalar expressions.
+e.setExpression("-2 + 2");
+Context result = e.eval();
+
+System.out.println(result); //prints 4
+````
