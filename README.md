@@ -39,7 +39,7 @@ The core operations that are included are as follows: (Also be aware that these 
 - Division '/'
 - Multiplication '*'
 - Addition '+'
-- Subtration '-'
+- Subtraction '-'
 - Modulo '%'
 - Bitwise '>>' & '<<'
 - Dot '.'
@@ -58,3 +58,27 @@ As stated above, the ExpressionParser also supports logical operators, which are
 #### Adding/Overriding an Operator
 
 In addition to using the core operations, you can also add or override any exisiting operator the ExpressionParser uses.
+
+When implementing an operator, you need to provide it with the symbol which the parser will use to match the operation and also the operation types that will take place, dependant on the left and right types that are provided in the operation.
+
+##### Operation Types
+
+There are different operation types which can occur in each operation. For example, even though `2 + 2` and `[1,2,3,4] + [1,2,3,4]` use the same operator '+', they will be evaluated differently based on the left and right types that are provided.
+
+The operation types that can occur are:
+
+- EXPRESSION_SCALAR - A Scalar - Scalar operation 
+- EXPRESSION_VECTOR - A Vector - Vector operation
+- EXPRESSION_MATRIX - A Matrix - Matrix operation
+- EXPRESSION_VECTOR_SCALAR - A Vector - Scalar operation
+- EXPRESSION_MATRIX_SCALAR - A Matrix - Scalar operation
+- EXPRESSION_MATRIX_VECTOR - A Matrix - Vector operation
+- EXPRESSION_VECTOR_MATRIX - A Vector - Matrix operation
+
+When creating a new operator you can define 1 or all of the operation types based on what your operator will support. There are also some other expression types defined in the `Operator` class to make your life easier in defining operations. These are:
+
+- EXPRESSION_ALL - This matches all types of operation stated above.
+- EXPRESSION_MATRICES - This matches all operation where a Matrix is at the left of the operation.
+- EXPRESSION_VECTORS - This matches all operations where a Vector is at the left of the operation.
+- EXPRESSION_SYMMETRIC - This matches operations where the type of the left and right are the same.
+
