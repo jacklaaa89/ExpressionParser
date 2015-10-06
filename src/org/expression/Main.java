@@ -12,7 +12,7 @@ package org.expression;
 public class Main {
     public static void main(String[] args) {
         Matrix m = new Matrix(new double[][]{{1,2,3},{4,5,6}});
-        Matrix n = (Matrix) m.bitwiseLeft(Scalar.ONE);
-        System.out.println(n);
+        Scalar s = m.sum();
+        System.out.println(s);
     }
 }

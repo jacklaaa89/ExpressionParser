@@ -644,22 +644,6 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         }
         return min;
     }
-    
-    /**
-     * Converts this Matrix into a list of Vectors.
-     * @return this matrix as a list of Vectors.
-     */
-    public List<Vector> toList() {
-        List<Vector> e = new ArrayList<>();
-        for(int i = 0; i < this.M; i++) {
-            Vector v = new Vector(this.N);
-            for(int j = 0; j < this.N; j++) {
-                v.set(j, this.get(i, j));
-            }
-            e.add(v);
-        }
-        return e;
-    }
 
     @Override
     public Scalar max() {
@@ -696,8 +680,8 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         if(this.equals(o)) return 0;
         
         HashMap<Integer, Integer> in = new HashMap<>();
-        List<Vector> t = this.toList();
-        List<Vector> ot = o.toList();
+        List<Vector> t = this;
+        List<Vector> ot = o;
         for(int j = 0; j < t.size(); j++) {
             Vector et = t.get(j);
             Vector oe = ot.get(j);
@@ -764,10 +748,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
     public Scalar sum() {
         Scalar t = Scalar.ZERO;
         for(int i = 0; i < this.M; i++) {
-            for(int j = 0; j < this.N; j++) {
-                BigDecimal d = t.add(this.get(i, j), mc);
-                t = new Scalar(d.doubleValue(), mc);
-            }
+            t = (Scalar) t.plus(this.get(i).sum());
         }
         return t;
     }
@@ -783,11 +764,6 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
             }
         }
         return B;
-    }
-
-    @Override
-    public Matrix apply(Functions handle) {
-        return this.apply(handle.get());
     }
 
     @Override
@@ -858,39 +834,6 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         }
         return m;
     }
-    
-    @Override
-    public Arithmetic bitwiseLeft(Scalar value) {
-        final int n = value.intValueExact();
-        Handler h = (Scalar o1, MathContext mc1) -> {
-            return (Scalar) o1.bitwiseLeft(value);
-        };
-        return this.apply(h);
-    }
-
-    @Override
-    public Arithmetic bitwiseRight(Scalar value) {
-        final int n = value.intValueExact();
-        Handler h = (Scalar o1, MathContext mc1) -> {
-            return (Scalar) o1.bitwiseRight(value);
-        };
-        return this.apply(h);
-    }
-
-    @Override
-    public Arithmetic neg() {
-        return this.apply(Functions.NEGATE);
-    }
-    
-    @Override
-    public Arithmetic pos() {
-        return this.apply(Functions.PLUS);
-    }
-
-    @Override
-    public Arithmetic absolute() {
-        return this.apply(Functions.ABS);
-    }
 
     @Override
     public int getRowSize() {
@@ -902,6 +845,12 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         return N;
     }
     
+    /**
+     * Attempts to apply a handler to all of the elements in row {@code m}.
+     * @param m the row to apply the handler to.
+     * @param handler the handler to apply.
+     * @return the newly created data structure.
+     */
     public Matrix applyToRow(int m, Handler handler) {
         if(m < 0 || m >= M) {
             throw new ArithmeticException("invalid row index.");
@@ -918,10 +867,22 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         return B;
     }
     
+    /**
+     * Attempts to apply a handler to all of the elements in row {@code m}.
+     * @param m the row to apply the handler to.
+     * @param handler the handler to apply.
+     * @return the newly created data structure.
+     */
     public Matrix applyToRow(int m, Functions handler) {
         return this.applyToRow(m, handler.get());
     }
     
+    /**
+     * Attempts to apply a handler to all of the elements in column {@code n}.
+     * @param n the column to apply the handler to.
+     * @param handler the handler to apply.
+     * @return the newly created data structure.
+     */
     public Matrix applyToColumn(int n, Handler handler) {
         if(n < 0 || n >= N) {
             throw new ArithmeticException("invalid column index.");
@@ -936,6 +897,12 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         return B;
     }
     
+    /**
+     * Attempts to apply a handler to all of the elements in column {@code n}.
+     * @param n the column to apply the handler to.
+     * @param handler the handler to apply.
+     * @return the newly created data structure.
+     */
     public Matrix applyToColumn(int n, Functions handler) {
         return this.applyToColumn(n, handler.get());
     }
