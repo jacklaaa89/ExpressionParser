@@ -3,7 +3,6 @@ package org.expression;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -14,12 +13,7 @@ import java.util.Map;
  * A representation of a Matrix.
  * @author Jack Timblin
  */
-public class Matrix implements Arithmetic, Structure<Matrix> {
-    
-    /**
-     * The internal data structure for the matrix.
-     */
-    private final Scalar[][] _matrix;
+public class Matrix extends BaseStructure<Vector, Matrix> {
     
     /**
      * the row size of this matrix
@@ -43,15 +37,14 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
      * @param mc A MathContext to use in computation.
      */
     public Matrix(int m, int n, MathContext mc) {
-        this._matrix = new Scalar[m][n];
-        for(int i = 0; i < m; i++) {
-            for(int j = 0; j < n; j++) {
-                this._matrix[i][j] = new Scalar(0d);
-            }
-        }
+        super(m); //set the row capacity.
         this.M = m;
         this.N = n;
         this.mc = mc;
+        for(int i = 0; i < m; i++) {
+            Vector v = Vector.zeroes(n, mc);
+            this.add(v);
+        }
     }
     
     /**
@@ -70,6 +63,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
      * @param mc a MathContext to use in computation.
      */
     public Matrix(List<Vector> columns, MathContext mc) {
+        super(columns.size());
         int i = 0; boolean first = true;
         if(columns.isEmpty()) {
             throw new ArithmeticException("need at least one column");
@@ -78,7 +72,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
         int size = columns.get(0).size();
         this.M = columns.size();
         this.N = size;
-        this._matrix = new Scalar[M][N];
+        this.mc = mc;
         for(int j = 0; j < columns.size(); j++) {
             Vector e = columns.get(j);
             if(!first) {
@@ -86,11 +80,8 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
             }
             i = e.size();
             first = false;
-            for(int k = 0; k < e.size(); k++) {
-                this._matrix[j][k] = e.get(k);
-            }
+            this.add(e);
         }
-        this.mc = mc;
     }
     
     /**
@@ -117,15 +108,20 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
      * @param mc the MathContext to use in computation.
      */
     public Matrix(Scalar[][] data, MathContext mc) {
+        super(data.length);
+        if(data.length == 0) {
+            throw new ArithmeticException("invalid amount of rows");
+        }
         M = data.length;
         N = data[0].length;
-        this._matrix = new Scalar[M][N];
-        for(int i = 0; i < M; i++) {
-            for(int j = 0; j < N; j++) {
-                this._matrix[i][j] = data[i][j];
-            }
-        }
         this.mc = mc;
+        for(int i = 0; i < M; i++) {
+            Vector v = Vector.zeroes(N);
+            for(int j = 0; j < N; j++) {
+                v.set(j, data[i][j]);
+            }
+            this.add(v);
+        }
     }
     
     /**
@@ -148,20 +144,6 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     public static Matrix from(Matrix A) {
         return Matrix.zeroes(A.M, A.N, MathContext.DECIMAL32);
     }
-    
-    /**
-     * Initializes a new Matrix from another Matrix (i.e clone)
-     * @param A the Matrix to clone from.
-     * @param mc the MathContext to use in computation.
-     */
-    private Matrix(Matrix A, MathContext mc) { this(A._matrix, mc); }
-    
-    /**
-     * Initializes a new Matrix from another Matrix (i.e clone),
-     * using a DECIMAL32 MathContext.
-     * @param A the Matrix to clone from.
-     */
-    private Matrix(Matrix A) { this(A, MathContext.DECIMAL32); }
     
     /**
      * generates a M-by-N matrix with random values between 0 and 1.
@@ -313,7 +295,8 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     public Scalar get(int m, int n) {
         if((m >= 0 && m < this.M) && 
                 (n >= 0 && n < this.N)) {
-            return this._matrix[m][n];
+            Vector v = this.get(m);
+            return v.get(n);
         } else {
             throw new ArrayIndexOutOfBoundsException(m+":"+n+" index out of bounds.");
         }
@@ -339,9 +322,50 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
      * @param j the index for row j
      */
     public void swap(int i, int j) {
-        Scalar[] temp = this.getColumn(i);
-        this._matrix[i] = this.getColumn(j);
-        this._matrix[j] = temp;
+        Vector temp = this.get(i);
+        this.set(i, this.get(j));
+        this.set(j, temp);
+    }
+    
+    /**
+     * Adds an item to the end of the Vector, up to 
+     * the Vectors maximum capacity.
+     * @param item the item to add to the Vector.
+     * @return true if the item was added, false otherwise.
+     */
+    @Override
+    public final boolean add(Vector item) {
+        if(this.size() < M) {
+            return super.add(item);
+        }
+        return false;
+    }
+    
+    /**
+     * Attempts to add an item at a specific index.
+     * @param index the index to add the item.
+     * @param item the item to add.
+     */
+    @Override
+    public final void add(int index, Vector item) {
+        if(this.size() >= M) {
+            return;
+        }
+        super.add(index, item);
+    }
+    
+    /**
+     * Attempts to set an item at a particular index.
+     * @param index the index to set the item
+     * @param item the item to set
+     * @return the previously set item.
+     */
+    @Override
+    public Vector set(int index, Vector item) {
+        if(index < M) {
+            return super.set(index, item);
+        }
+        return null;
     }
     
     /**
@@ -367,15 +391,17 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     }
     
     public Matrix(double[][] data, MathContext mc) {
-         M = data.length;
+        super(data.length);
+        M = data.length;
         N = data[0].length;
-        this._matrix = new Scalar[M][N];
-        for(int i = 0; i < M; i++) {
-            for(int j = 0; j < N; j++) {
-                this._matrix[i][j] = new Scalar(data[i][j]);
-            }
-        }
         this.mc = mc;
+        for(int i = 0; i < M; i++) {
+            Vector v = Vector.zeroes(N);
+            for(int j = 0; j < N; j++) {
+                v.set(j, new Scalar(data[i][j]));
+            }
+            this.add(v);
+        }
     }
     
     public Matrix(double[][] data) {
@@ -447,8 +473,8 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
         //create a new matrix from the first entry in row.
         Matrix m1 = new Matrix(B.size(), 1, mc);
         for(int i = 0; i < m.M; i++) {
-            Scalar[] c = this.getColumn(i);
-            m1.add(i, 0, c[0]);
+            Vector c = this.get(i);
+            m1.add(i, 0, c.get(0));
         }
         return this.multiply((Type)m1);
     }
@@ -506,35 +532,6 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     }
     
     /**
-     * gets the column size of this matrix (M)
-     * @return the column size.
-     */
-    public int getM() {
-        return M;
-    }
-    
-    /**
-     * gets the row size of this matrix (N)
-     * @return the row size
-     */
-    public int getN() {
-        return N;
-    }
-    
-    /**
-     * retrieve a column of this matrix at a given column index.
-     * @param m the column index to retrieve.
-     * @return the column vector at column m in this matrix.
-     */
-    public Scalar[] getColumn(int m) {
-        if((m >= 0 && m < this.M)) {
-            return this._matrix[m];
-        } else {
-            throw new ArrayIndexOutOfBoundsException(m + "column index out of bounds.");
-        }
-    }
-    
-    /**
      * Adds a value at a given position in this matrix.
      * @param m the column position.
      * @param n the row position index.
@@ -543,7 +540,9 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     public void add(int m, int n, Scalar value) {
         if((m >= 0 && m < this.M) && 
                 (n >= 0 && n < this.N)) {
-            this._matrix[m][n] = value;
+            Vector v = this.get(m);
+            v.set(n, value);
+            this.set(m, v);
         } else {
             throw new ArrayIndexOutOfBoundsException(m+":"+n+" index out of bounds.");
         }
@@ -634,7 +633,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     public Scalar min() {
         Scalar min = null;
         for(int i = 0; i < this.M; i++) {
-            Scalar colMin = Collections.min(Arrays.asList(this.getColumn(i)));
+            Scalar colMin = Collections.min(this.get(i));
             if(min == null && i == 0) {
                 min = colMin;
                 continue;
@@ -666,7 +665,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     public Scalar max() {
         Scalar max = null;
         for(int i = 0; i < this.M; i++) {
-            Scalar colMax = Collections.max(Arrays.asList(this.getColumn(i)));
+            Scalar colMax = Collections.max(this.get(i));
             if(max == null && i == 0) {
                 max = colMax;
                 continue;
@@ -787,7 +786,7 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     }
 
     @Override
-    public Type apply(Functions handle) {
+    public Matrix apply(Functions handle) {
         return this.apply(handle.get());
     }
 
@@ -838,11 +837,6 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
     }
 
     @Override
-    public Matrix addColumn(Type value) {
-        return this.addColumn(this.N, value);
-    }
-
-    @Override
     public Matrix addRow(int index, Type type) {
         if(!(type instanceof Vector)) throw new IllegalArgumentException("columns in a matrix can only be a vector.");
         if(index < 0 || index > M) throw new ArrayIndexOutOfBoundsException("invalid index defined.");
@@ -863,11 +857,6 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
             }
         }
         return m;
-    }
-
-    @Override
-    public Matrix addRow(Type type) {
-        return this.addRow(this.M, type);
     }
     
     @Override
@@ -890,34 +879,65 @@ public class Matrix implements Arithmetic, Structure<Matrix> {
 
     @Override
     public Arithmetic neg() {
-        Handler h = (Scalar o1, MathContext mc1) -> {
-            return (Scalar) o1.neg();
-        };
-        return this.apply(h);
+        return this.apply(Functions.NEGATE);
     }
-
+    
     @Override
     public Arithmetic pos() {
-        Handler h = (Scalar o1, MathContext mc1) -> {
-            return (Scalar) o1.pos();
-        };
-        return this.apply(h);
+        return this.apply(Functions.PLUS);
     }
 
     @Override
     public Arithmetic absolute() {
-        Handler h = (Scalar o1, MathContext mc1) -> {
-            return (Scalar) o1.absolute();
-        };
-        return this.apply(h);
+        return this.apply(Functions.ABS);
+    }
+
+    @Override
+    public int getRowSize() {
+        return M;
+    }
+
+    @Override
+    public int getColumnSize() {
+        return N;
     }
     
-    @Override
-    public Arithmetic strip() {
-        Handler h = (Scalar o1, MathContext mc1) -> {
-            return (Scalar) o1.strip();
-        };
-        return this.apply(h);
+    public Matrix applyToRow(int m, Handler handler) {
+        if(m < 0 || m >= M) {
+            throw new ArithmeticException("invalid row index.");
+        }
+        Matrix A = this;
+        Matrix B = Matrix.from(A, mc);
+        for(int i = 0; i < M; i++) {
+           Vector v = this.get(i);
+           if(i == m) {
+               v = v.apply(handler);
+           }
+           B.set(i, v);
+        }
+        return B;
+    }
+    
+    public Matrix applyToRow(int m, Functions handler) {
+        return this.applyToRow(m, handler.get());
+    }
+    
+    public Matrix applyToColumn(int n, Handler handler) {
+        if(n < 0 || n >= N) {
+            throw new ArithmeticException("invalid column index.");
+        }
+        Matrix A = this;
+        Matrix B = Matrix.from(A, mc);
+        for(int i = 0; i < M; i++) {
+            Vector v = A.get(i);
+            v.set(n, handler.handle(v.get(n), mc));
+            B.set(i, v);
+        }
+        return B;
+    }
+    
+    public Matrix applyToColumn(int n, Functions handler) {
+        return this.applyToColumn(n, handler.get());
     }
     
 }

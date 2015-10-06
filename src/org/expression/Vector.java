@@ -2,7 +2,6 @@ package org.expression;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,8 +20,7 @@ import java.util.Objects;
  * used on Vectors. i.e A == B or A >= B.
  * @author Jack Timblin
  */
-public class Vector extends ArrayList<Scalar>
-        implements Arithmetic, Structure<Vector> {
+public class Vector extends BaseStructure<Scalar, Vector> {
     
     /**
      * the maximum amount of elements this Vector can have.
@@ -492,11 +490,6 @@ public class Vector extends ArrayList<Scalar>
     }
 
     @Override
-    public Type apply(Functions handle) {
-        return this.apply(handle.get());
-    }
-
-    @Override
     public Vector slice(Coordinate start, Coordinate end) {
         //sanity checking.
         //check that the start is not larger than the end.
@@ -530,11 +523,6 @@ public class Vector extends ArrayList<Scalar>
         }
         return new Vector(dn);
     }
-    
-     @Override
-    public Vector addColumn(Type value) {
-        return this.addColumn(this.size(), value);
-    }
 
     @Override
     public Vector addRow(int index, Type type) {
@@ -542,58 +530,13 @@ public class Vector extends ArrayList<Scalar>
     }
 
     @Override
-    public Vector addRow(Type type) {
-        throw new ArithmeticException("Vectors are only one row.");
+    public int getRowSize() {
+        return 1; //vectors are always one row.
     }
 
     @Override
-    public Arithmetic bitwiseLeft(Scalar value) {
-        final int n = value.intValueExact();
-        Handler h = (Scalar o1, MathContext mc1) -> {
-            return new Scalar(o1.movePointLeft(n).doubleValue(), mc1);
-        };
-        return this.apply(h);
-    }
-
-    @Override
-    public Arithmetic bitwiseRight(Scalar value) {
-        final int n = value.intValueExact();
-        Handler h = (Scalar o1, MathContext mc1) -> {
-            return new Scalar(o1.movePointRight(n).doubleValue(), mc1);
-        };
-        return this.apply(h);
-    }
-    
-    @Override
-    public Arithmetic neg() {
-        Handler h = (Scalar o1, MathContext mc1) -> {
-            return (Scalar) o1.neg();
-        };
-        return this.apply(h);
-    }
-    
-    @Override
-    public Arithmetic pos() {
-        Handler h = (Scalar o1, MathContext mc1) -> {
-            return (Scalar) o1.pos();
-        };
-        return this.apply(h);
-    }
-
-    @Override
-    public Arithmetic absolute() {
-        Handler h = (Scalar o1, MathContext mc1) -> {
-            return (Scalar) o1.absolute();
-        };
-        return this.apply(h);
-    }
-    
-    @Override
-    public Arithmetic strip() {
-        Handler h = (Scalar o1, MathContext mc1) -> {
-            return (Scalar) o1.strip();
-        };
-        return this.apply(h);
+    public int getColumnSize() {
+        return this.size();
     }
     
 }

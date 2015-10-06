@@ -25,6 +25,10 @@ public class Scalar extends BigDecimal implements Arithmetic  {
         this.mc = MathContext.DECIMAL32;
     }
     
+    public Scalar(String value) {
+        this(Double.parseDouble(value));
+    }
+    
     public Scalar(double val, MathContext mc) {
         super(val, mc);
         this.mc = mc;
@@ -130,11 +134,6 @@ public class Scalar extends BigDecimal implements Arithmetic  {
     @Override
     public Arithmetic absolute() {
         return new Scalar(this.abs(mc).doubleValue(), mc);
-    }
-    
-    @Override
-    public Scalar strip() {
-        return new Scalar(this.stripTrailingZeros().doubleValue(), mc);
     }
     
 }

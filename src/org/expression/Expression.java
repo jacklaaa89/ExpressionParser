@@ -228,7 +228,7 @@ public class Expression {
                     Vector va = (Vector) n;
                     Scalar i  = (args.size() > 2 && args.get(2) instanceof Scalar) 
                             ? ((Scalar)args.get(2))
-                            : new Scalar(ma.getM());
+                            : new Scalar(ma.getRowSize());
                     return ma.addRow(i.intValueExact(), va);
                 }
                 throw new ArithmeticException("invalid parameter types.");
@@ -245,7 +245,7 @@ public class Expression {
                         : null;
                 if(index == null) {
                     if(r instanceof Matrix && a instanceof Vector) {
-                        index = new Scalar(((Matrix)r).getN());
+                        index = new Scalar(((Matrix)r).getColumnSize());
                     } else if(r instanceof Vector && a instanceof Scalar) {
                         index = new Scalar(((Vector)r).size());
                     } else {
@@ -435,8 +435,8 @@ public class Expression {
                 (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     Matrix ml = (Matrix) left;
                     Matrix mr = (Matrix) right;
-                    boolean bl = !left.equals(Matrix.zeroes(ml.getM(), ml.getN()));
-                    boolean br = !right.equals(Matrix.zeroes(mr.getM(), mr.getN()));
+                    boolean bl = !left.equals(Matrix.zeroes(ml.getRowSize(), ml.getColumnSize()));
+                    boolean br = !right.equals(Matrix.zeroes(mr.getRowSize(), mr.getColumnSize()));
                     return bl || br ? Scalar.ONE : Scalar.ZERO;
                 }   
             )
@@ -444,7 +444,7 @@ public class Expression {
                 Operator.EXPRESSION_MATRIX_SCALAR, 
                 (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     Matrix ml = (Matrix) left;
-                    boolean bl = !left.equals(Matrix.zeroes(ml.getM(), ml.getN()));
+                    boolean bl = !left.equals(Matrix.zeroes(ml.getRowSize(), ml.getColumnSize()));
                     boolean br = !right.equals(Scalar.ZERO);
                     return bl || br ? Scalar.ONE : Scalar.ZERO;
                 }   
@@ -463,7 +463,7 @@ public class Expression {
                 (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     Matrix ml = (Matrix) left;
                     Vector mr = (Vector) right;
-                    boolean bl = !left.equals(Matrix.zeroes(ml.getM(), ml.getN()));
+                    boolean bl = !left.equals(Matrix.zeroes(ml.getRowSize(), ml.getColumnSize()));
                     boolean br = !right.equals(Vector.zeroes(mr.size()));
                     return bl || br ? Scalar.ONE : Scalar.ZERO;
                 }   
@@ -500,8 +500,8 @@ public class Expression {
                 (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     Matrix ml = (Matrix) left;
                     Matrix mr = (Matrix) right;
-                    boolean bl = !left.equals(Matrix.zeroes(ml.getM(), ml.getN()));
-                    boolean br = !right.equals(Matrix.zeroes(mr.getM(), mr.getN()));
+                    boolean bl = !left.equals(Matrix.zeroes(ml.getRowSize(), ml.getColumnSize()));
+                    boolean br = !right.equals(Matrix.zeroes(mr.getRowSize(), mr.getColumnSize()));
                     return bl && br ? Scalar.ONE : Scalar.ZERO;
                 }   
             )
@@ -509,7 +509,7 @@ public class Expression {
                 Operator.EXPRESSION_MATRIX_SCALAR, 
                 (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     Matrix ml = (Matrix) left;
-                    boolean bl = !left.equals(Matrix.zeroes(ml.getM(), ml.getN()));
+                    boolean bl = !left.equals(Matrix.zeroes(ml.getRowSize(), ml.getColumnSize()));
                     boolean br = !right.equals(Scalar.ZERO);
                     return bl && br ? Scalar.ONE : Scalar.ZERO;
                 }   
@@ -528,7 +528,7 @@ public class Expression {
                 (Evaluator<Scalar>) (Arithmetic left, Arithmetic right) -> {
                     Matrix ml = (Matrix) left;
                     Vector mr = (Vector) right;
-                    boolean bl = !left.equals(Matrix.zeroes(ml.getM(), ml.getN()));
+                    boolean bl = !left.equals(Matrix.zeroes(ml.getRowSize(), ml.getColumnSize()));
                     boolean br = !right.equals(Vector.zeroes(mr.size()));
                     return bl && br ? Scalar.ONE : Scalar.ZERO;
                 }   
@@ -746,7 +746,6 @@ public class Expression {
         ParseTree tree = parser.expr();
         Visitor ve = new Visitor(functions, operators, variables, mc);
         Context c = ve.visit(tree);
-        c.setValue(((Arithmetic)c.getValue()).strip());
         return c;
     }
 
