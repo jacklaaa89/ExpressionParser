@@ -34,6 +34,7 @@ i.e  `([1,2,3,4] + 3) == (3 + [1,2,3,4]) = 1`
 ### Operations
 
 The core operations that are included are as follows: (Also be aware that these are in the order that the operator takes precedence in the operation.)
+
 - Exponents (Powers) '^'
 - Division '/'
 - Multiplication '*'
@@ -44,6 +45,7 @@ The core operations that are included are as follows: (Also be aware that these 
 - Dot '.'
 
 As stated above, the ExpressionParser also supports logical operators, which are:
+
 - Equals '=='
 - Not Equals '!='
 - Greater Than '>'
