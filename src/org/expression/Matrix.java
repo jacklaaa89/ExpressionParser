@@ -125,6 +125,34 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
     }
     
     /**
+     * Initializes a Matrix from a 2D array of double values.
+     * @param data the 2D array of double values.
+     * @param mc the MathContext to use in the computation.
+     */
+    public Matrix(double[][] data, MathContext mc) {
+        super(data.length);
+        M = data.length;
+        N = data[0].length;
+        this.mc = mc;
+        for(int i = 0; i < M; i++) {
+            Vector v = Vector.zeroes(N);
+            for(int j = 0; j < N; j++) {
+                v.set(j, new Scalar(data[i][j]));
+            }
+            this.add(v);
+        }
+    }
+    
+    /**
+     * Initializes a Matrix from a 2D array of double values, 
+     * using a DECIMAL32 MathContext.
+     * @param data the 2D array of double values.
+     */
+    public Matrix(double[][] data) {
+        this(data, MathContext.DECIMAL32);
+    }
+    
+    /**
      * Initializes an Matrix with zero values with the same
      * dimensions as Matrix A.
      * @param A the matrix to provide a zero value Matrix from.
@@ -388,24 +416,6 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
             }
         }
         return C;
-    }
-    
-    public Matrix(double[][] data, MathContext mc) {
-        super(data.length);
-        M = data.length;
-        N = data[0].length;
-        this.mc = mc;
-        for(int i = 0; i < M; i++) {
-            Vector v = Vector.zeroes(N);
-            for(int j = 0; j < N; j++) {
-                v.set(j, new Scalar(data[i][j]));
-            }
-            this.add(v);
-        }
-    }
-    
-    public Matrix(double[][] data) {
-        this(data, MathContext.DECIMAL32);
     }
     
     /**
