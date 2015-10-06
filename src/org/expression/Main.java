@@ -11,8 +11,8 @@ package org.expression;
  */
 public class Main {
     public static void main(String[] args) {
-        Matrix m = new Matrix(new double[][]{{1,2,3},{4,5,6}});
-        Scalar s = m.sum();
-        System.out.println(s);
+       Expression e = new Expression("[1, 2+2]");
+       Context<Vector> r = e.eval();
+       System.out.println(r);
     }
 }

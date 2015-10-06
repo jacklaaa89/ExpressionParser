@@ -158,6 +158,43 @@ public class Operator {
         this.defaultEvaluator = defaultEvaluator;
     }
     
+    public Operator removeEvaluator(int expression) {
+        switch(expression) {
+            case EXPRESSION_MATRICES:
+            case EXPRESSION_VECTORS:
+            case EXPRESSION_ALL:
+            case EXPRESSION_SYMMETRIC:
+                int[] v = (expression == EXPRESSION_ALL)
+                        ? ALL
+                        : ((expression == EXPRESSION_MATRICES)
+                          ? MATRICES
+                          : ((expression == EXPRESSION_VECTORS)
+                            ? VECTORS
+                            : SYMMETRIC
+                          )
+                        );
+                for(int i = 0; i < v.length; i++) {
+                    if(this.evaluators.containsKey(v[i])) {
+                        this.evaluators.remove(v[i]);
+                    }
+                }
+                break;
+            default:
+                if(this.evaluators.containsKey(expression)) {
+                    this.evaluators.remove(expression);
+                }
+                break;
+        }
+        return this;
+    }
+    
+    public Operator removeEvaluator(int[] expression) {
+        for(int i = 0; i < expression.length; i++) {
+            this.removeEvaluator(expression[i]);
+        }
+        return this;
+    }
+    
     /**
      * Adds a new evaluator for this operation.
      * @param expression the type of expression this evaluator is for.
@@ -187,7 +224,6 @@ public class Operator {
                 this.evaluators.put(expression, e);
                 break;
         }
-        this.evaluators.put(expression, e);
         return this;
     }
     
@@ -259,6 +295,7 @@ public class Operator {
         if(left.isArray() && right.isArray()) {
             if(this.evaluators.containsKey(EXPRESSION_VECTOR)) {
                 Evaluator e = this.evaluators.get(EXPRESSION_VECTOR);
+                System.out.println(e);
                 v = e.eval((Arithmetic)left.getValue(), (Arithmetic)right.getValue());
             }
         }

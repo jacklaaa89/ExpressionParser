@@ -4,8 +4,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -339,7 +343,7 @@ public class Expression {
                 }   
             )
             //not valid for vector operations.
-            .addEvaluator(Operator.EXPRESSION_VECTORS, null)
+            .removeEvaluator(Operator.EXPRESSION_VECTORS)
         );
         
         addOperator(new Operator("+")
@@ -350,7 +354,7 @@ public class Expression {
                 }   
             )
             //not valid for vector to matrix operations.
-            .addEvaluator(Operator.EXPRESSION_VECTOR_MATRIX, null)
+            .removeEvaluator(Operator.EXPRESSION_VECTOR_MATRIX)
         );
         
         addOperator(new Operator("*")
@@ -361,7 +365,7 @@ public class Expression {
                 }   
             )
             //not valid for vector to matrix operations.
-            .addEvaluator(Operator.EXPRESSION_VECTOR_MATRIX, null)
+            .removeEvaluator(Operator.EXPRESSION_VECTOR_MATRIX)
         );
         
         addOperator(new Operator("-")
@@ -372,7 +376,7 @@ public class Expression {
                 }   
             )
             //not valid for vector to matrix operations.
-            .addEvaluator(Operator.EXPRESSION_VECTOR_MATRIX, null)
+            .removeEvaluator(Operator.EXPRESSION_VECTOR_MATRIX)
         );
         
         addOperator(new Operator("^")
@@ -744,8 +748,14 @@ public class Expression {
         parser.removeErrorListeners();
         parser.addErrorListener(handler);
         ParseTree tree = parser.expr();
+        
         Visitor ve = new Visitor(functions, operators, variables, mc);
         Context c = ve.visit(tree);
+        
+        if(c == null || c.getValue() == null) {
+            throw new RuntimeException("a unexpected error occured.");
+        }
+        
         return c;
     }
 
