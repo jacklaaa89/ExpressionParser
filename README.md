@@ -5,6 +5,17 @@ ExpressionParser
 
 ExpressionParser parses and evaluates mathematical and boolean expressions. It utilizes a lexer and parser generated using the Antlr parser generator.
 
+##### Simple Usage
+
+In its simplest terms, all you have to do is provide the `Expression` class which an expression to evaluate and then call `eval()` to obtain the result. For example:
+
+````java
+Expression e = new Expression("[1,2,3] + [4,5,6]");
+Context result = e.eval();
+
+System.out.println(result); //prints [5, 7, 9]
+````
+
 ### Types
 
 ExpressionParser has support for Scalars, Vectors & Matrices and operations can be changed based on the type of variables that are being operated on. Vector & Matrix values can be defined as Scalar values, variables or expressions which evaluate to a Scalar value.
@@ -78,7 +89,8 @@ The operation types that can occur are:
 When creating a new operator you can define 1 or all of the operation types based on what your operator will support. There are also some other expression types defined in the `Operator` class to make your life easier in defining operations. These are:
 
 - EXPRESSION_ALL - This matches all types of operation stated above.
-- EXPRESSION_MATRICES - This matches all operation where a Matrix is at the left of the operation.
-- EXPRESSION_VECTORS - This matches all operations where a Vector is at the left of the operation.
-- EXPRESSION_SYMMETRIC - This matches operations where the type of the left and right are the same.
+- EXPRESSION_MATRICES - This matches all operations where a Matrix is at the left of the expression.
+- EXPRESSION_VECTORS - This matches all operations where a Vector is at the left of the expression.
+- EXPRESSION_SYMMETRIC - This matches operations where the type of the left and right sides are the same.
 
+So, for example, to add a new operator which overrides the default implementation of the '+' (plus) operation we can 
