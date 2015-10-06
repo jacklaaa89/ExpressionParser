@@ -103,6 +103,7 @@ Expression e = new Expression();
 e.addOperator(
 	new Operator("+")
 	.addEvaluator(
+		//Can provide an int[] of expression types or EXPRESSION_ALL, MATRICES, VECTORS or SYMMETRIC.
 		Operator.EXPRESSION_SCALAR,
 		new Evaluator() {
 			@Override
