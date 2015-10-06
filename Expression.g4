@@ -40,7 +40,7 @@ funcParams
 	;
 
 array
-	: LBRACE (atom) (COMMA (atom))* RBRACE
+	: LBRACE (expr) (COMMA (expr))* RBRACE
 	;
 
 column
@@ -48,7 +48,7 @@ column
 	;
 
 arrayInner
-	: (atom) (COMMA (atom))*
+	: (expr) (COMMA (expr))*
 	;
 
 matrix

@@ -11,7 +11,7 @@ package org.expression;
  */
 public class Main {
     public static void main(String[] args) {
-       Expression e = new Expression("[1, 2+2]");
+       Expression e = new Expression("[1, 2^3]");
        Context<Vector> r = e.eval();
        System.out.println(r);
     }

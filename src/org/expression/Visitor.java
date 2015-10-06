@@ -91,37 +91,49 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        boolean isMatrix = (ctx.matrix() != null); 
        Context r;
        
+       //arrays and matrices can have values evaluated from expr.
        if(isArray) {
            ArrayContext atx = ctx.array();
-           List<AtomContext> l =  atx.atom();
-           Vector re = new Vector(l.size(), mc);
+           List<ExprContext> l = atx.expr();
+           Vector v = new Vector(l.size(), mc);
            for(int i = 0; i < l.size(); i++) {
-               AtomContext c = l.get(i);
-               re.set(i, (Scalar)this.visit(c).getValue()); //an array cannot be multi-dimentional.
+               ExprContext re = l.get(i);
+               Context c = this.visit(re);
+               if(!c.isScalar()) {
+                   throw new RuntimeException("vectors can only accept scalar values.");
+               }
+               v.set(i, (Scalar)c.getValue());
            }
-           r = new Context(re);
-       } else if(isMatrix) {
+           r = new Context(v);
+       } else if (isMatrix) {
            MatrixContext mtx = ctx.matrix();
            //if we have more than one column.
            List<ColumnContext> l = mtx.column();
            ArrayInnerContext end = mtx.arrayInner(); //always has.
            List<Vector> li = new ArrayList<>();
            if(!l.isEmpty()) {
-               for(ColumnContext c : l) {
-                   List<AtomContext> ac = c.arrayInner().atom(); //again always must exist.
-                   Vector re = new Vector(ac.size(), mc);
+               for(ColumnContext ct : l) {
+                   List<ExprContext> ac = ct.arrayInner().expr();
+                   Vector v = new Vector(ac.size(), mc);
                    for(int i = 0; i < ac.size(); i++) {
-                       AtomContext acz = ac.get(i);
-                       re.set(i, (Scalar)this.visit(acz).getValue());
+                       ExprContext ec = ac.get(i);
+                       Context ecc = this.visit(ec);
+                       if(!ecc.isScalar()) {
+                           throw new RuntimeException("matrices can only accept scalar values.");
+                       }
+                       v.set(i, (Scalar) ecc.getValue());
                    }
-                   li.add(re);
+                   li.add(v);
                }
            }
-           
-           Vector ire = new Vector(end.atom().size(), mc);
-           for(int i = 0; i < end.atom().size(); i++) {
-               AtomContext acx = end.atom().get(i);
-               Scalar d = (Scalar)this.visit(acx).getValue();
+           Vector ire = new Vector(end.expr().size(), mc);
+           for(int i = 0; i < end.expr().size(); i++) {
+               ExprContext acx = end.expr().get(i);
+               Context acxc = this.visit(acx);
+               if(!acxc.isScalar()) {
+                   throw new RuntimeException("matrices can only accept scalar values.");
+               }
+               Scalar d = (Scalar) acxc.getValue();
                ire.set(i, d);
            }
            li.add(ire);
@@ -129,12 +141,10 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            Matrix m = new Matrix(li, mc);
            r = new Context(m);
        } else {
-           Type d = this.parseValue(ctx);
-           r = new Context(d);
+            Type d = this.parseValue(ctx);
+            r = new Context(d);
        }
-       
        return r;
-       
    }
    
    private Type parseValue(ParserRuleContext ctx) {

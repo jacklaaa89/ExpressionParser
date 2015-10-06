@@ -795,11 +795,11 @@ public class ExpressionParser extends Parser {
 	public static class ArrayContext extends ParserRuleContext {
 		public TerminalNode LBRACE() { return getToken(ExpressionParser.LBRACE, 0); }
 		public TerminalNode RBRACE() { return getToken(ExpressionParser.RBRACE, 0); }
-		public List<AtomContext> atom() {
-			return getRuleContexts(AtomContext.class);
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
 		}
-		public AtomContext atom(int i) {
-			return getRuleContext(AtomContext.class,i);
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
 		}
 		public List<TerminalNode> COMMA() { return getTokens(ExpressionParser.COMMA); }
 		public TerminalNode COMMA(int i) {
@@ -835,7 +835,7 @@ public class ExpressionParser extends Parser {
 			match(LBRACE);
 			{
 			setState(99);
-			atom();
+			expr(0);
 			}
 			setState(104);
 			_errHandler.sync(this);
@@ -847,7 +847,7 @@ public class ExpressionParser extends Parser {
 				match(COMMA);
 				{
 				setState(101);
-				atom();
+				expr(0);
 				}
 				}
 				}
@@ -918,11 +918,11 @@ public class ExpressionParser extends Parser {
 	}
 
 	public static class ArrayInnerContext extends ParserRuleContext {
-		public List<AtomContext> atom() {
-			return getRuleContexts(AtomContext.class);
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
 		}
-		public AtomContext atom(int i) {
-			return getRuleContext(AtomContext.class,i);
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
 		}
 		public List<TerminalNode> COMMA() { return getTokens(ExpressionParser.COMMA); }
 		public TerminalNode COMMA(int i) {
@@ -956,7 +956,7 @@ public class ExpressionParser extends Parser {
 			{
 			{
 			setState(112);
-			atom();
+			expr(0);
 			}
 			setState(117);
 			_errHandler.sync(this);
@@ -968,7 +968,7 @@ public class ExpressionParser extends Parser {
 				match(COMMA);
 				{
 				setState(114);
-				atom();
+				expr(0);
 				}
 				}
 				}
@@ -1285,9 +1285,9 @@ public class ExpressionParser extends Parser {
 		"\2RT\5\6\4\2SQ\3\2\2\2ST\3\2\2\2T\t\3\2\2\2UV\5\26\f\2VX\7\n\2\2WY\5\f"+
 		"\7\2XW\3\2\2\2XY\3\2\2\2YZ\3\2\2\2Z[\7\13\2\2[\13\3\2\2\2\\a\5\2\2\2]"+
 		"^\7\21\2\2^`\5\2\2\2_]\3\2\2\2`c\3\2\2\2a_\3\2\2\2ab\3\2\2\2b\r\3\2\2"+
-		"\2ca\3\2\2\2de\7\3\2\2ej\5\4\3\2fg\7\21\2\2gi\5\4\3\2hf\3\2\2\2il\3\2"+
+		"\2ca\3\2\2\2de\7\3\2\2ej\5\2\2\2fg\7\21\2\2gi\5\2\2\2hf\3\2\2\2il\3\2"+
 		"\2\2jh\3\2\2\2jk\3\2\2\2km\3\2\2\2lj\3\2\2\2mn\7\4\2\2n\17\3\2\2\2op\5"+
-		"\22\n\2pq\7\r\2\2q\21\3\2\2\2rw\5\4\3\2st\7\21\2\2tv\5\4\3\2us\3\2\2\2"+
+		"\22\n\2pq\7\r\2\2q\21\3\2\2\2rw\5\2\2\2st\7\21\2\2tv\5\2\2\2us\3\2\2\2"+
 		"vy\3\2\2\2wu\3\2\2\2wx\3\2\2\2x\23\3\2\2\2yw\3\2\2\2z\u0085\7\3\2\2{\177"+
 		"\5\20\t\2|~\5\20\t\2}|\3\2\2\2~\u0081\3\2\2\2\177}\3\2\2\2\177\u0080\3"+
 		"\2\2\2\u0080\u0082\3\2\2\2\u0081\177\3\2\2\2\u0082\u0083\5\22\n\2\u0083"+
