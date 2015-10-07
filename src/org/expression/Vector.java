@@ -110,7 +110,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
      * @return the previously set item.
      */
     @Override
-    public Scalar set(int index, Scalar item) {
+    public final Scalar set(int index, Scalar item) {
         if(index < limit) {
             return super.set(index, item);
         }
