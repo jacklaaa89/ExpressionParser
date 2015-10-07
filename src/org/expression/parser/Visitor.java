@@ -1,4 +1,4 @@
-package org.expression;
+package org.expression.parser;
 
 import org.expression.computation.Function;
 import org.expression.computation.Operator;
@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.expression.Context;
+import org.expression.Scalar;
+import org.expression.Type;
 import org.expression.parser.ExpressionBaseVisitor;
 import org.expression.parser.ExpressionParser.BoolExprContext;
 import org.expression.parser.ExpressionParser.ExprContext;
