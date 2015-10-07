@@ -92,6 +92,7 @@ When creating a new operator you can define 1 or all of the operation types base
 - EXPRESSION_MATRICES - This matches all operations where a Matrix is at the left of the expression.
 - EXPRESSION_VECTORS - This matches all operations where a Vector is at the left of the expression.
 - EXPRESSION_SYMMETRIC - This matches operations where the type of the left and right sides are the same.
+- EXPRESSION_SCALARS - This matches operations where a Scalar is at the left of the expression.
 
 ##### Implementation
 
