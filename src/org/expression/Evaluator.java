@@ -7,11 +7,11 @@ package org.expression;
  */
 public interface Evaluator<R extends Type> {
     /**
-     * Evaluates a particular operation expression. <br/><br/>
+     * Evaluates a particular operation expression. <br><br>
      * In the case that we have a Vector/Matrix in an expression with a Scalar value
      * The Scalar value is always defined as the right value (as the position of the scalar 
      * in an expression with a Vector/Matrix does not change the result). In the case of two Scalar 
-     * values, the positions they we defined in the original expression is maintained.<br/><br/>
+     * values, the positions they we defined in the original expression is maintained.<br><br>
      * As Scalar, Vector and Matrix all implement Arithmetic and Type, both the left and right sides 
      * can be cast into a more concrete class if the type of the class can accurately be known.
      * @param left The left half of the expression, this is supplied as an Arithmetic

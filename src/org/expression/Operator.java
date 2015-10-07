@@ -68,42 +68,42 @@ public class Operator {
     public final static int EXPRESSION_VECTOR_MATRIX = 6;
     
     /**
-     * Matches all viable expressions. <br/><br/>i.e:
-     * <br/>
-     * {@link Operator#EXPRESSION_VECTOR_MATRIX} <br/>
-     * {@link Operator#EXPRESSION_MATRIX_VECTOR} <br/>
-     * {@link Operator#EXPRESSION_VECTOR} <br/>
-     * {@link Operator#EXPRESSION_MATRIX} <br/>
-     * {@link Operator#EXPRESSION_SCALAR} <br/>
-     * {@link Operator#EXPRESSION_VECTOR_SCALAR} <br/>
-     * {@link Operator#EXPRESSION_MATRIX_SCALAR} <br/>
+     * Matches all viable expressions. <br><br>i.e:
+     * <br>
+     * {@link Operator#EXPRESSION_VECTOR_MATRIX} <br>
+     * {@link Operator#EXPRESSION_MATRIX_VECTOR} <br>
+     * {@link Operator#EXPRESSION_VECTOR} <br>
+     * {@link Operator#EXPRESSION_MATRIX} <br>
+     * {@link Operator#EXPRESSION_SCALAR} <br>
+     * {@link Operator#EXPRESSION_VECTOR_SCALAR} <br>
+     * {@link Operator#EXPRESSION_MATRIX_SCALAR} <br>
      */
     public final static int EXPRESSION_ALL = 10;
     
     /**
-     * Matches all expressions where a matrix is to the left of the expression. <br/><br/>i.e:
-     * <br/>
-     * {@link Operator#EXPRESSION_MATRIX_VECTOR} <br/>
-     * {@link Operator#EXPRESSION_MATRIX} <br/>
-     * {@link Operator#EXPRESSION_MATRIX_SCALAR} <br/>
+     * Matches all expressions where a matrix is to the left of the expression. <br><br>i.e:
+     * <br>
+     * {@link Operator#EXPRESSION_MATRIX_VECTOR} <br>
+     * {@link Operator#EXPRESSION_MATRIX} <br>
+     * {@link Operator#EXPRESSION_MATRIX_SCALAR} <br>
      */
     public final static int EXPRESSION_MATRICES = 7;
     
     /**
-     * Matches all expressions where a vector is to the left of the expression. <br/><br/>i.e:
-     * <br/>
-     * {@link Operator#EXPRESSION_VECTOR_MATRIX} <br/>
-     * {@link Operator#EXPRESSION_VECTOR} <br/>
-     * {@link Operator#EXPRESSION_VECTOR_SCALAR} <br/>
+     * Matches all expressions where a vector is to the left of the expression. <br><br>i.e:
+     * <br>
+     * {@link Operator#EXPRESSION_VECTOR_MATRIX} <br>
+     * {@link Operator#EXPRESSION_VECTOR} <br>
+     * {@link Operator#EXPRESSION_VECTOR_SCALAR} <br>
      */
     public final static int EXPRESSION_VECTORS = 8;
     
     /**
-     * Matches all expressions where the left and right are the same type. <br/><br/>i.e:
-     * <br/>
-     * {@link Operator#EXPRESSION_VECTOR} <br/>
-     * {@link Operator#EXPRESSION_MATRIX} <br/>
-     * {@link Operator#EXPRESSION_SCALAR} <br/>
+     * Matches all expressions where the left and right are the same type. <br><br>i.e:
+     * <br>
+     * {@link Operator#EXPRESSION_VECTOR} <br>
+     * {@link Operator#EXPRESSION_MATRIX} <br>
+     * {@link Operator#EXPRESSION_SCALAR} <br>
      */
     public final static int EXPRESSION_SYMMETRIC = 9;
     
