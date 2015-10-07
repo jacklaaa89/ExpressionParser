@@ -26,7 +26,7 @@ Scalar values are any real number or an expression or variable which can be eval
 
 #### Vectors
 
-Vectors are defined using braces where the values are delimited using a comma.
+Vectors are defined using braces where the values are delimited using a comma. Values can be defined from either expressions, variables, functions and real numbers. ('e' can used for exponential notation i.e 45e2 == 4500)
 
 eg. `[1,2,3,(2 + 2)]` would obviously be evaluated as a Vector with the values 1,2,3,4.
 
@@ -36,9 +36,29 @@ Matrices share a similar syntax to Vectors which the only difference being a sem
 
 eg. `[1,2,3; 4,5,6; 7,8,9]` would be evaluated as a 3 x 3 matrix.
 
-#### Matrix & Vector Operations
+#### Matrix & Vector 
 
 Operations performed on Matrices and Vectors require that the dimensions of the left and right sizes of the operation agree.
+
+### Variables
+
+Variables can be referenced in expressions and then added to the `Expression` class before evaluating the result. Variables can be of any `Type` (i.e a Scalar, Vector or Matrix) and be referenced by number of letters which are not used by any other keyword or function definition.
+
+for example:
+
+````java
+Expression e = new Expression();
+
+Vector x = new Vector(new double[]{ 1,2,3 });
+Scalar y = new Scalar(10d);
+
+e.addVariable("x", x).addVariable("y", y);
+
+e.setExpression("x * y");
+Context result = e.eval();
+
+System.out.println(result); //prints [10, 20, 30]
+````
 
 ### Operations
 
