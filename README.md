@@ -215,7 +215,7 @@ e.addFunction(new Function("zeros", 0/* minimum args required is none. */){
 			}
 			return Vector.zeroes(m); //generates a new Vector with zero values.
 		} catch (ClassCastException e) {
-			throw new InvalidArgumentException("invalid parameter types.");
+			throw new IllegalArgumentException("invalid parameter types.");
 		}
 	}
 });

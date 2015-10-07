@@ -248,6 +248,10 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         return Matrix.zeroes(m.intValueExact(), n.intValueExact(), mc);
     }
     
+    public static Matrix zeroes(Scalar m, Scalar n) {
+        return Matrix.zeroes(m.intValueExact(), n.intValueExact());
+    }
+    
     public static Matrix zeroes(Scalar m) {
         return Matrix.zeroes(m.intValueExact());
     }
