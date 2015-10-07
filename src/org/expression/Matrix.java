@@ -189,6 +189,18 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         return C;
     }
     
+    public static Matrix random(Scalar m, Scalar n, MathContext mc) {
+        return Matrix.random(m.intValueExact(), n.intValueExact(), mc);
+    }
+    
+    public static Matrix random(Scalar m, Scalar n) {
+        return Matrix.random(m.intValueExact(), n.intValueExact());
+    }
+    
+    public static Matrix random(Scalar n) {
+        return Matrix.random(n.intValueExact());
+    }
+    
     /**
      * generates a M-by-N matrix with random values between 0 and 1,
      * using a DECIMAL32 MathContext.
@@ -230,6 +242,14 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
     public static Matrix zeroes(int m, int n, MathContext mc) {
         Matrix C = new Matrix(m, n, mc);
         return C;
+    }
+    
+    public static Matrix zeroes(Scalar m, Scalar n, MathContext mc) {
+        return Matrix.zeroes(m.intValueExact(), n.intValueExact(), mc);
+    }
+    
+    public static Matrix zeroes(Scalar m) {
+        return Matrix.zeroes(m.intValueExact());
     }
     
     /**

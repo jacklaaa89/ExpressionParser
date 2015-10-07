@@ -195,6 +195,14 @@ public class Vector extends BaseStructure<Scalar, Vector> {
         return v;
     }
     
+    public static Vector zeroes(Scalar n, MathContext mc) {
+        return Vector.random(n.intValueExact(), mc);
+    }
+    
+    public static Vector zeroes(Scalar n) {
+        return Vector.zeroes(n.intValueExact());
+    }
+    
     /**
      * Generates a Vector with all random values between 0 and 1,
      * using a provided MathContext.
@@ -218,6 +226,14 @@ public class Vector extends BaseStructure<Scalar, Vector> {
      */
     public static Vector random(int n) {
         return Vector.random(n, MathContext.DECIMAL32);
+    }
+    
+    public static Vector random(Scalar n, MathContext mc) {
+        return Vector.random(n.intValueExact(), mc);
+    }
+    
+    public static Vector random(Scalar n) {
+        return Vector.random(n.intValueExact());
     }
     
     /**
