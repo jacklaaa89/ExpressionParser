@@ -79,6 +79,8 @@ The operation types that can occur are:
 - EXPRESSION_SCALAR - A Scalar - Scalar operation 
 - EXPRESSION_VECTOR - A Vector - Vector operation
 - EXPRESSION_MATRIX - A Matrix - Matrix operation
+- EXPRESSION_SCALAR_VECTOR - A Scalar - Vector operation
+- EXPRESSION_SCALAR_MATRIX - A Scalar - Matrix operation
 - EXPRESSION_VECTOR_SCALAR - A Vector - Scalar operation
 - EXPRESSION_MATRIX_SCALAR - A Matrix - Scalar operation
 - EXPRESSION_MATRIX_VECTOR - A Matrix - Vector operation

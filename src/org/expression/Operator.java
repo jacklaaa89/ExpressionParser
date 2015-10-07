@@ -68,6 +68,16 @@ public class Operator {
     public final static int EXPRESSION_VECTOR_MATRIX = 6;
     
     /**
+     * A scalar - vector expression.
+     */
+    public final static int EXPRESSION_SCALAR_VECTOR = 11;
+    
+    /**
+     * A scalar - matrix expression.
+     */
+    public final static int EXPRESSION_SCALAR_MATRIX = 12;
+    
+    /**
      * Matches all viable expressions. <br><br>i.e:
      * <br>
      * {@link Operator#EXPRESSION_VECTOR_MATRIX} <br>
@@ -77,6 +87,8 @@ public class Operator {
      * {@link Operator#EXPRESSION_SCALAR} <br>
      * {@link Operator#EXPRESSION_VECTOR_SCALAR} <br>
      * {@link Operator#EXPRESSION_MATRIX_SCALAR} <br>
+     * {@link Operator#EXPRESSION_SCALAR_VECTOR} <br>
+     * {@link Operator#EXPRESSION_SCALAR_MATRIX} <br>
      */
     public final static int EXPRESSION_ALL = 10;
     
@@ -108,9 +120,18 @@ public class Operator {
     public final static int EXPRESSION_SYMMETRIC = 9;
     
     /**
+     * Matches all expressions where a scalar is to the left of the operation.<br><br>i.e:
+     * <br>
+     * {@link Operator#EXPRESSION_SCALAR} <br>
+     * {@link Operator#EXPRESSION_SCALAR_VECTOR} <br>
+     * {@link Operator#EXPRESSION_SCALAR_MATRIX} <br>
+     */
+    public final static int EXPRESSION_SCALARS = 13;
+    
+    /**
      * An array of all the viable expressions available.
      */
-    private final int[] ALL = new int[] { 0, 1, 2, 3, 4, 5, 6 };
+    private final int[] ALL = new int[] { 0, 1, 2, 3, 4, 5, 6, 11, 12 };
     
     /**
      * An array of all of the expressions where a matrix is to the left of the expression.
@@ -126,6 +147,11 @@ public class Operator {
      * An array of all of the expressions where the left and right are the same type.
      */
     private final int[] SYMMETRIC = new int[] { 0, 2, 5 };
+    
+    /**
+     * An array of all of the expressions where the left of the expression is a scalar value.
+     */
+    private final int[] SCALARS = new int[] { 5, 11, 12 };
     
     /**
      * Initializes a new Operator using the default evaluator for all expressions. 
@@ -158,19 +184,28 @@ public class Operator {
         this.defaultEvaluator = defaultEvaluator;
     }
     
+    /**
+     * Removes a defined evaluator from this operator based on the expression type.
+     * @param expression the expression type to remove.
+     * @return an instance of itself for method chaining.
+     */
     public Operator removeEvaluator(int expression) {
         switch(expression) {
             case EXPRESSION_MATRICES:
             case EXPRESSION_VECTORS:
             case EXPRESSION_ALL:
             case EXPRESSION_SYMMETRIC:
+            case EXPRESSION_SCALARS:
                 int[] v = (expression == EXPRESSION_ALL)
                         ? ALL
                         : ((expression == EXPRESSION_MATRICES)
                           ? MATRICES
                           : ((expression == EXPRESSION_VECTORS)
                             ? VECTORS
-                            : SYMMETRIC
+                            : ((expression == EXPRESSION_SCALARS)
+                              ? SCALARS
+                              : SYMMETRIC 
+                            )
                           )
                         );
                 for(int i = 0; i < v.length; i++) {
@@ -207,13 +242,17 @@ public class Operator {
             case EXPRESSION_VECTORS:
             case EXPRESSION_ALL:
             case EXPRESSION_SYMMETRIC:
+            case EXPRESSION_SCALARS:
                 int[] v = (expression == EXPRESSION_ALL)
                         ? ALL
                         : ((expression == EXPRESSION_MATRICES)
                           ? MATRICES
                           : ((expression == EXPRESSION_VECTORS)
                             ? VECTORS
-                            : SYMMETRIC
+                            : ((expression == EXPRESSION_SCALARS)
+                              ? SCALARS
+                              : SYMMETRIC 
+                            )
                           )
                         );
                 for(int i = 0; i < v.length; i++) {
@@ -334,20 +373,26 @@ public class Operator {
         
         //if the left or right is a vector and the opposite is an scalar.
         if((left.isArray() && right.isScalar()) || (right.isArray() && left.isScalar())) {
+            int ex = (left.isArray() && right.isScalar())
+                    ? Operator.EXPRESSION_VECTOR_SCALAR
+                    : Operator.EXPRESSION_SCALAR_VECTOR;
             Arithmetic l = (Arithmetic) left.getValue();
             Arithmetic r = (Arithmetic) right.getValue();
-            if(this.evaluators.containsKey(EXPRESSION_VECTOR_SCALAR)) {
-                Evaluator e = this.evaluators.get(EXPRESSION_VECTOR_SCALAR);
+            if(this.evaluators.containsKey(ex)) {
+                Evaluator e = this.evaluators.get(ex);
                 v = e.eval(l, r);
             }
         }
         
         //if the left or right is a matrix and the opposite is an scalar.
         if((left.isMatrix() && right.isScalar()) || (right.isMatrix() && left.isScalar())) {
+            int ex = (left.isMatrix() && right.isScalar())
+                    ? Operator.EXPRESSION_MATRIX_SCALAR
+                    : Operator.EXPRESSION_SCALAR_MATRIX;
             Arithmetic l = (Arithmetic) left.getValue();
             Arithmetic r = (Arithmetic) right.getValue();
-            if(this.evaluators.containsKey(EXPRESSION_MATRIX_SCALAR)) {
-                Evaluator e = this.evaluators.get(EXPRESSION_MATRIX_SCALAR);
+            if(this.evaluators.containsKey(ex)) {
+                Evaluator e = this.evaluators.get(ex);
                 v = e.eval(l, r);
             }
         }
