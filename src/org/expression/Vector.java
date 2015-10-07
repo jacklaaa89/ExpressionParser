@@ -516,14 +516,15 @@ public class Vector extends BaseStructure<Scalar, Vector> {
     @Override
     public Vector addColumn(int index, Type value) {
         if(index < 0 || index > this.size()) throw new ArrayIndexOutOfBoundsException("invalid index");
-        if(!(value instanceof Scalar)) throw new IllegalArgumentException("can only add scalars to vectors");
+        if(value instanceof Matrix) throw new IllegalArgumentException("cannot add a matrix to a vector.");
         Scalar[] sn = this.toArray(new Scalar[]{});
-        Scalar[] dn = new Scalar[sn.length + 1];
-        System.arraycopy(sn, index, dn, index + 1, sn.length - index);
-        dn[index] = (Scalar) value;
-        for(int i = 0; i < index; i++) {
-            dn[i] = sn[i];
+        Vector ds = (value instanceof Vector) ? (Vector) value : new Vector(new Scalar[]{(Scalar)value});
+        Scalar[] dn = new Scalar[sn.length + ds.size()];
+        System.arraycopy(sn, index, dn, index + ds.size(), dn.length - sn.length);
+        for(int i = 0; i < ds.size(); i++) {
+            dn[index + i] = ds.get(i);
         }
+        System.arraycopy(sn, 0, dn, 0, index);
         return new Vector(dn);
     }
 
