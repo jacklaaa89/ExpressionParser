@@ -1,12 +1,15 @@
 package org.expression;
 
+import org.expression.structure.Matrix;
+import org.expression.structure.Vector;
+
 /**
  * An encapsulation of an expression result, either a fragment in the expression or
  * the overall expression itself. 
  * i.e (1 + 1) - 3 would have two contexts, one for the (1 + 1) and one
  * for the 2 - 3 (the evaluated form of the previous context is on the left.)
  * @author Jack Timblin
- * @param <T>
+ * @param <T> The expected result object.
  */
 public class Context<T extends Type> {
     

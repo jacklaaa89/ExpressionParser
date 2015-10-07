@@ -1,6 +1,8 @@
-package org.expression;
+package org.expression.computation;
 
 import java.util.HashMap;
+import org.expression.Context;
+import org.expression.Type;
 
 /**
  * A encapsulation of an operator to use in the grammar.
@@ -318,7 +320,7 @@ public class Operator {
      * @param right the right context
      * @return the computed context for this expression.
      */
-    protected final Context evaluate(Context left, Context right) {
+    public final Context evaluate(Context left, Context right) {
         
         Type v = null;
         
@@ -334,7 +336,6 @@ public class Operator {
         if(left.isArray() && right.isArray()) {
             if(this.evaluators.containsKey(EXPRESSION_VECTOR)) {
                 Evaluator e = this.evaluators.get(EXPRESSION_VECTOR);
-                System.out.println(e);
                 v = e.eval((Arithmetic)left.getValue(), (Arithmetic)right.getValue());
             }
         }

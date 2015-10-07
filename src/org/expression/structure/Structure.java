@@ -1,9 +1,12 @@
-package org.expression;
+package org.expression.structure;
+
+import org.expression.Coordinate;
+import org.expression.Type;
 
 /**
- *
- * @author jacktimblin
- * @param <T>
+ * A interface containing functions applicable to data structures.
+ * @author Jack Timblin
+ * @param <T> The type of structure to return.
  */
 public interface Structure<T extends Type> {
     /**

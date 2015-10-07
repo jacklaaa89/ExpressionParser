@@ -1,7 +1,13 @@
-package org.expression;
+package org.expression.structure;
 
+import org.expression.structure.Structure;
 import java.math.MathContext;
 import java.util.ArrayList;
+import org.expression.computation.Arithmetic;
+import org.expression.computation.Functions;
+import org.expression.computation.Handler;
+import org.expression.Scalar;
+import org.expression.Type;
 
 /**
  * Data structure base class, It gives data structures some generic methods and initialization.

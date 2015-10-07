@@ -1,5 +1,7 @@
-package org.expression;
+package org.expression.structure;
 
+import org.expression.structure.BaseStructure;
+import org.expression.structure.Vector;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Collections;
@@ -7,6 +9,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.expression.computation.Arithmetic;
+import org.expression.Coordinate;
+import org.expression.computation.Functions;
+import org.expression.computation.Handler;
+import org.expression.Scalar;
+import org.expression.Type;
 
 /**
  * A representation of a Matrix.

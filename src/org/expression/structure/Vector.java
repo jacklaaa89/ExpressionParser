@@ -1,4 +1,4 @@
-package org.expression;
+package org.expression.structure;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -9,6 +9,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.expression.computation.Arithmetic;
+import org.expression.Coordinate;
+import org.expression.computation.Handler;
+import org.expression.Scalar;
+import org.expression.Type;
 
 /**
  * A complete implementation of a Vector.
@@ -17,7 +22,7 @@ import java.util.Objects;
  * i.e A + B = C where A and B are both Vectors or the same length.
  * 
  * This class also has implementations so that logical expressions can be
- * used on Vectors. i.e A == B or A >= B.
+ * used on Vectors.
  * @author Jack Timblin
  */
 public class Vector extends BaseStructure<Scalar, Vector> {

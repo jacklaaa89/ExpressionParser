@@ -1,4 +1,7 @@
-package org.expression;
+package org.expression.computation;
+
+import org.expression.Type;
+import org.expression.computation.Arithmetic;
 
 /**
  * An interface which is used to Evaluate operator statements.

@@ -1,4 +1,7 @@
-package org.expression;
+package org.expression.computation;
+
+import org.expression.Scalar;
+import org.expression.Type;
 
 /**
  * Interface in which arithmetic functions are declared.
@@ -80,14 +83,14 @@ public interface Arithmetic<T extends Type> extends Type<T> {
     
     /**
      * Performs a bitwise left using a scalar value.
-     * @param value the scalar value i.e 1.2 >> 2 = 0.012
+     * @param value the scalar value
      * @return the completed bitwise left operation value.
      */
     public Arithmetic bitwiseLeft(Scalar value);
     
     /**
      * Performs a bitwise right using a scalar value.
-     * @param value the scalar value i.e 1.2 << 2 = 120
+     * @param value the scalar value
      * @return the completed bitwise right operation value.
      */
     public Arithmetic bitwiseRight(Scalar value);
@@ -101,7 +104,6 @@ public interface Arithmetic<T extends Type> extends Type<T> {
     
     /**
      * Forces the implementation of Comparable.compareTo() used in logical operations.
-     * {@inheritDoc Comparable.compareTo()}
      * @param o the object to compare to.
      * @return -1, 0 or 1 dependant on whether the object is deemed smaller, equal or larger 
      * than this.

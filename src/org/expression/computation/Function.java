@@ -1,7 +1,8 @@
-package org.expression;
+package org.expression.computation;
 
 import java.util.List;
 import java.util.Locale;
+import org.expression.Type;
 
 /**
  * An encapsulation of a Function.

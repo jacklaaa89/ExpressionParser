@@ -1,4 +1,4 @@
-package org.expression;
+package org.expression.parser;
 
 import java.util.BitSet;
 import org.antlr.v4.runtime.ANTLRErrorListener;

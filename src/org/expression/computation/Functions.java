@@ -1,7 +1,8 @@
-package org.expression;
+package org.expression.computation;
 
 import java.math.MathContext;
 import java.math.RoundingMode;
+import org.expression.Scalar;
 
 
 /**

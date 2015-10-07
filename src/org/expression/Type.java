@@ -1,5 +1,8 @@
 package org.expression;
 
+import org.expression.computation.Handler;
+import org.expression.computation.Functions;
+
 /**
  * An interface which all data types implement to use as a generic 'type'
  * @author Jack Timblin

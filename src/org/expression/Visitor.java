@@ -1,5 +1,9 @@
 package org.expression;
 
+import org.expression.computation.Function;
+import org.expression.computation.Operator;
+import org.expression.structure.Matrix;
+import org.expression.structure.Vector;
 import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.HashMap;

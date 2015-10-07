@@ -1,5 +1,15 @@
 package org.expression;
 
+import org.expression.parser.ErrorHandler;
+import org.expression.computation.Evaluator;
+import org.expression.computation.Handler;
+import org.expression.computation.Arithmetic;
+import org.expression.computation.Functions;
+import org.expression.computation.Function;
+import org.expression.computation.Operator;
+import org.expression.structure.Matrix;
+import org.expression.structure.Vector;
+import org.expression.structure.Structure;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;

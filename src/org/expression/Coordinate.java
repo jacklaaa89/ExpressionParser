@@ -1,5 +1,7 @@
 package org.expression;
 
+import org.expression.structure.Vector;
+
 /**
  * A typical point with an x and y value, used to determine a point in a data structure.
  * @author Jack Timblin
