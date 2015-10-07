@@ -154,4 +154,15 @@ ExpressionParser also has a collection of functions that are available which can
 - MAX(expression) - Returns the largest value from a struture.
 - MIN(expression) - Returns the smallest value from a structure.
 - SUM(expression) - Calculates the sum of all values in a structure.
-- COLUMN(expression1, expression1, index?) - Inserts a _expression_2_ as a new column if _expression_1_ is a Matrix or all the values from _expression_2_ into _expression_1_ if _expression_1_ is a Vector. 
+- COLUMN(expression1, expression2, index?) - Inserts _expression_2_ as a new column if _expression_1_ is a Matrix or all the values from _expression_2_ into _expression_1_ if _expression_1_ is a Vector at the specified index (or the end if index is omitted).
+- SLICE(expression, start, end) - Extracts a slice from _expression_1_ using the start and end indices (start & end must be Vectors when slicing a Matrix and Scalars when slicing a Vector).
+
+###### Functions which accept only Matrix values.
+
+- TRANSPOSE(expression) - Generates the `A^T` transpose matrix from matrix A.
+- IDENTITY(n) - Generates a _n_ by _n_ identity matrix.
+- ROW(expression1, expression2, index?) - Inserts _expression_2_ into _expression_1_ as a new row.
+
+###### Functions which accept only Scalar values.
+
+- SQRT(expression) - Calculates the square root of an evaluated expression.
