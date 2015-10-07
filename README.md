@@ -123,3 +123,25 @@ Context result = e.eval();
 
 System.out.println(result); //prints 4
 ````
+
+### Functions
+
+ExpressionParser also has a collection of functions that are available which can manipulate or generate values. The core functions available are:
+
+###### Functions which accept Scalars, Vectors & Matrices as parameters.
+
+- LOG(expression) - Computes the Natural Logarithm for an evaluated expression.
+- LOG10(expression) - Computes the Base 10 Logarithm for an evaluated expression.
+- RANDOM(args?) - Generates a random Scalar, Vector or Matrix value.
+- SIN(expression) - Calculates the Sine from an evaluated expression.
+- COS(expression) - Calculates the Cosine from an evaluated expression.
+- TAN(expression) - Calculates the Tangent from an evaluated expression.
+- ASIN(expression) - Calculates the inverse Sine from an evaluated expression.
+- ACOS(expression) - Calculates the inverse Cosine from an evaluated expression.
+- ATAN(expression) - Calculates the inverse Tangent from an evaluated expression.
+- SINH(expression) - Calculates the hyperbolic Sine from an evaluated expression.
+- COSH(expression) - Calculates the hyperbolic Cosine from an evaluated expression.
+- TANH(expression) - Calculates the hyperbolic Tangent from an evaluated expression.
+- RAD(expression) - Converts an evaluated value to radians.
+- DEG(expression) - Converts an evaluated value to degrees.
+
