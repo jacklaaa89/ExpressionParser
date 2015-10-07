@@ -38,9 +38,7 @@ eg. `[1,2,3; 4,5,6; 7,8,9]` would be evaluated as a 3 x 3 matrix.
 
 #### Matrix & Vector Operations
 
-Operations performed on Matrices and Vectors require that the dimensions of the left and right sizes of the operation agree. Also when a Matrix/Vector is operated on with a Scalar value, then the Matrix is always evaluated to the left of the statement (with the Scalar on the right) as the position of the scalar does not matter in the outcome of such an operation. 
-
-i.e  `([1,2,3,4] + 3) == (3 + [1,2,3,4]) = 1`
+Operations performed on Matrices and Vectors require that the dimensions of the left and right sizes of the operation agree.
 
 ### Operations
 
