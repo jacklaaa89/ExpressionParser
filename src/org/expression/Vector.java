@@ -465,14 +465,17 @@ public class Vector extends BaseStructure<Scalar, Vector> {
 
     @Override
     public Arithmetic remainder(Type data) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
+            return (Scalar) o1.remainder(data);
+        };
+        return this.apply(h);
     }
     
     @Override
     public Scalar sum() {
         Scalar t = Scalar.ZERO;
-        for(int i = 0; i < this.size(); i++) {
-            BigDecimal d = t.add(this.get(i), mc);
+        for (Scalar aThi : this) {
+            BigDecimal d = t.add(aThi, mc);
             t = new Scalar(d.doubleValue(), mc);
         }
         return t;

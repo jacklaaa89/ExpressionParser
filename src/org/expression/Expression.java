@@ -338,8 +338,7 @@ public class Expression {
                     return left.remainder(right);
                 }   
             )
-            //not valid for vector operations.
-            .removeEvaluator(Operator.EXPRESSION_VECTORS)
+            .removeEvaluator(Operator.EXPRESSION_VECTOR_MATRIX)
         );
         
         addOperator(new Operator("+")
