@@ -6,7 +6,7 @@ package org.expression;
  */
 public class Main {
     public static void main(String[] args) {
-       Expression e = new Expression("[1, 2^3]");
+       Expression e = new Expression("COLUMN([1,2,3], [2.5,3.5], 1)");
        Context<Vector> r = e.eval();
        System.out.println(r);
     }
