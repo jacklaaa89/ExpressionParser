@@ -144,4 +144,14 @@ ExpressionParser also has a collection of functions that are available which can
 - TANH(expression) - Calculates the hyperbolic Tangent from an evaluated expression.
 - RAD(expression) - Converts an evaluated value to radians.
 - DEG(expression) - Converts an evaluated value to degrees.
+- ABS(expression) - Converts an evaluated value to its absolute value (sign is disregarded).
+- ROUND(expression, precision) - Rounds an evaluated value to the requested precision.
+- FLOOR(expression) - Rounds an evaluated value towards negative infinity.
+- CEILING(expression) - Rounds an evaluated value towards positive infinity.
 
+###### Functions which accept Vectors & Matrices as parameters.
+
+- MAX(expression) - Returns the largest value from a struture.
+- MIN(expression) - Returns the smallest value from a structure.
+- SUM(expression) - Calculates the sum of all values in a structure.
+- COLUMN(expression1, expression1, index?) - Inserts a _expression_2_ as a new column if _expression_1_ is a Matrix or all the values from _expression_2_ into _expression_1_ if _expression_1_ is a Vector. 
