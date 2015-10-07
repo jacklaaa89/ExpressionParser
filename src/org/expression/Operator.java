@@ -334,21 +334,21 @@ public class Operator {
         
         //if the left or right is a vector and the opposite is an scalar.
         if((left.isArray() && right.isScalar()) || (right.isArray() && left.isScalar())) {
-            Arithmetic n = (left.isArray()) ? (Arithmetic) right.getValue() : (Arithmetic) left.getValue();
-            Arithmetic ve = (left.isArray()) ? (Arithmetic) left.getValue() : (Arithmetic) right.getValue();
+            Arithmetic l = (Arithmetic) left.getValue();
+            Arithmetic r = (Arithmetic) right.getValue();
             if(this.evaluators.containsKey(EXPRESSION_VECTOR_SCALAR)) {
                 Evaluator e = this.evaluators.get(EXPRESSION_VECTOR_SCALAR);
-                v = e.eval(ve, n);
+                v = e.eval(l, r);
             }
         }
         
         //if the left or right is a matrix and the opposite is an scalar.
         if((left.isMatrix() && right.isScalar()) || (right.isMatrix() && left.isScalar())) {
-            Arithmetic n = (left.isMatrix()) ? (Arithmetic) right.getValue() : (Arithmetic) left.getValue();
-            Arithmetic ve = (left.isMatrix()) ? (Arithmetic) left.getValue() : (Arithmetic) right.getValue();
+            Arithmetic l = (Arithmetic) left.getValue();
+            Arithmetic r = (Arithmetic) right.getValue();
             if(this.evaluators.containsKey(EXPRESSION_MATRIX_SCALAR)) {
                 Evaluator e = this.evaluators.get(EXPRESSION_MATRIX_SCALAR);
-                v = e.eval(ve, n);
+                v = e.eval(l, r);
             }
         }
         

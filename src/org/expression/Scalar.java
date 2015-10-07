@@ -49,32 +49,62 @@ public class Scalar extends BigDecimal implements Arithmetic  {
 
     @Override
     public Arithmetic multiply(Type data) {
-        BigDecimal d = this.multiply((BigDecimal)data, mc);
-        return new Scalar(d.doubleValue());
+        Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
+            return (Scalar) this.multiply((Type)o1);
+        };
+        if(data instanceof Scalar) {
+            BigDecimal d = this.multiply((BigDecimal)data, mc);
+            return new Scalar(d.doubleValue(), mc);
+        }
+        return (Arithmetic) data.apply(h);
     }
 
     @Override
     public Arithmetic divide(Type data) {
-        BigDecimal d = this.divide((BigDecimal)data, mc);
-        return new Scalar(d.doubleValue(), mc);
+        Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
+            return (Scalar) this.divide((Type)o1);
+        };
+        if(data instanceof Scalar) {
+            BigDecimal d = this.divide((BigDecimal)data, mc);
+            return new Scalar(d.doubleValue(), mc);
+        }
+        return (Arithmetic) data.apply(h);
     }
 
     @Override
     public Arithmetic plus(Type data) {
-        BigDecimal d = this.add((BigDecimal)data, mc);
-        return new Scalar(d.doubleValue(), mc);
+        if(data instanceof Scalar) {
+            BigDecimal d = this.add((BigDecimal)data, mc);
+            return new Scalar(d.doubleValue(), mc);
+        }
+        Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
+            return (Scalar) this.plus(o1);
+        };
+        return (Arithmetic) data.apply(h);
     }
 
     @Override
     public Arithmetic minus(Type data) {
-        BigDecimal d = this.subtract((BigDecimal)data, mc);
-        return new Scalar(d.doubleValue(), mc);
+        Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
+            return (Scalar) this.minus(o1);
+        };
+        if(data instanceof Scalar) {
+            BigDecimal d = this.subtract((BigDecimal)data, mc);
+            return new Scalar(d.doubleValue(), mc);
+        }
+        return (Arithmetic) data.apply(h);
     }
 
     @Override
     public Arithmetic remainder(Type data) {
-        BigDecimal d = this.remainder((BigDecimal)data, mc);
-        return new Scalar(d.doubleValue(), mc);
+        if(data instanceof Scalar) {
+            BigDecimal d = this.remainder((BigDecimal)data, mc);
+            return new Scalar(d.doubleValue(), mc);
+        }
+        Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
+            return (Scalar) this.remainder((Type)o1);
+        };
+        return (Arithmetic) data.apply(h);
     }
 
     @Override
