@@ -154,15 +154,53 @@ ExpressionParser also has a collection of functions that are available which can
 - MAX(expression) - Returns the largest value from a struture.
 - MIN(expression) - Returns the smallest value from a structure.
 - SUM(expression) - Calculates the sum of all values in a structure.
-- COLUMN(expression1, expression2, index?) - Inserts _expression_2_ as a new column if _expression_1_ is a Matrix or all the values from _expression_2_ into _expression_1_ if _expression_1_ is a Vector at the specified index (or the end if index is omitted).
+- COLUMN(expression1, expression2, index?) - Inserts _expression_2_ as a new column if _expression_1_ is a Matrix or all the values from _expression_2_ into _expression_1_ if _expression_1_ is a Vector at the specified _index_ (or the end if _index_ is omitted).
 - SLICE(expression, start, end) - Extracts a slice from _expression_1_ using the start and end indices (start & end must be Vectors when slicing a Matrix and Scalars when slicing a Vector).
 
 ###### Functions which accept only Matrix values.
 
 - TRANSPOSE(expression) - Generates the `A^T` transpose matrix from matrix A.
 - IDENTITY(n) - Generates a _n_ by _n_ identity matrix.
-- ROW(expression1, expression2, index?) - Inserts _expression_2_ into _expression_1_ as a new row.
+- ROW(expression1, expression2, index?) - Inserts _expression_2_ into _expression_1_ as a new row at _index_ (or at the end if _index_ is omitted). 
 
 ###### Functions which accept only Scalar values.
 
 - SQRT(expression) - Calculates the square root of an evaluated expression.
+
+#### Adding/Overriding a Function
+
+You can also add or override any function to the ExpressionParser. When adding a new function, add you need to do is provide the name of the function, the minimum amount of arguments it expects and an implementation of its `eval()` method which is triggered when the method is found in the expression.
+
+##### Implementation.
+
+So, for example, we can add a new function which generates a new Scalar, Vector or Matrix (based on the amount of args) full of zero values called `zeros(args?)`.
+
+````java
+Expression e = new Expression();
+
+e.addFunction(new Function("zeros", 0/* minimum args required is none. */){
+	@Override
+	public Type eval(List<Type> args) {
+		//Where a Type object is the generic type for the Scalar, Vector & Matrix objects.
+		if(args.isEmpty()) {
+			//can be empty, as minimum required args is zero.
+			return Scalar.ZERO; //returns a zero Scalar value.
+		}
+		try {
+			Scalar m = (Scalar) args.get(0);
+			if(args.size() > 1) {
+				//we are generating a zero matrix.
+				Scalar n = (Scalar) args.get(1);
+				return Matrix.zeroes(m, n); //generates a new Matrix with zero values.
+			}
+			return Vector.zeroes(m); //generates a new Vector with zero values.
+		} catch (ClassCastException e) {
+			throw new InvalidArgumentException("invalid parameter types.");
+		}
+	}
+});
+
+System.out.println(e.setExpression("ZEROS()").eval()); //prints 0 
+System.out.println(e.setExpression("ZEROS(1)").eval()); //prints [0]
+System.out.println(e.setExpression("ZEROS(3,3)").eval()); //prints [0,0,0; 0,0,0; 0,0,0] 
+````
