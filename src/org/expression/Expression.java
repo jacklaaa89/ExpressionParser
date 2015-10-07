@@ -1,5 +1,6 @@
 package org.expression;
 
+import org.expression.parser.Visitor;
 import org.expression.parser.ErrorHandler;
 import org.expression.computation.Evaluator;
 import org.expression.computation.Handler;
@@ -19,6 +20,7 @@ import java.util.List;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.expression.computation.linear.LinearSystemSolver;
 import org.expression.parser.ExpressionLexer;
 import org.expression.parser.ExpressionParser;
 
@@ -242,6 +244,19 @@ public class Expression {
                     return ma.addRow(i.intValueExact(), va);
                 }
                 throw new ArithmeticException("invalid parameter types.");
+            }
+        });
+        
+        addFunction(new Function("gaussian", 2) {
+            @Override
+            public Type eval(List<Type> args) {
+                try {
+                    Matrix A = (Matrix) args.get(0);
+                    Vector b = (Vector) args.get(1);
+                    return A.solve(LinearSystemSolver.GAUSSIAN_ELIMINATION, b);
+                } catch(ClassCastException e) {
+                    throw new IllegalArgumentException("invalid parameter types.");
+                }
             }
         });
         

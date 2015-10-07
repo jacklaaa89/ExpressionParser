@@ -15,6 +15,8 @@ import org.expression.computation.Functions;
 import org.expression.computation.Handler;
 import org.expression.Scalar;
 import org.expression.Type;
+import org.expression.computation.linear.AbstractSolver;
+import org.expression.computation.linear.LinearSystemSolver;
 
 /**
  * A representation of a Matrix.
@@ -447,6 +449,17 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
             }
         }
         return C;
+    }
+    
+    /**
+     * Attempts to solve a system of linear equations using 
+     * the provided solver and a set of RHS values.
+     * @param solver the solver to use.
+     * @param b the set of RHS values.
+     * @return the solved equation.
+     */
+    public Vector solve(LinearSystemSolver solver, Vector b) {
+        return solver.get(this).solve(b);
     }
     
     /**
