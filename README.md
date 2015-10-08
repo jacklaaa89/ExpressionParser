@@ -195,6 +195,7 @@ ExpressionParser also has a collection of functions that are available which can
 ExpressionParser also has the capability to solve systems of linear equations using typical matrix manipulation methods. All of these functions need a coefficient matrix _A_ and a set of right hand side values _b_ in order to solve `Ax = b`. The functions include:
 
 - GAUSSIAN(_expression_for_A_, _expression_for_b_) - solves the system of linear equations using gaussian elimination.
+- LU(_expression_for_A_, _expression_for_b_) - solves the system of linear equations using LU Factorization.
 
 For example:
 
