@@ -187,6 +187,40 @@ ExpressionParser also has a collection of functions that are available which can
 
 - SQRT(expression) - Calculates the square root of an evaluated expression.
 
+###### Linear equations
+
+ExpressionParser also has the capability to solve systems of linear equations using typical matrix manipulation methods. All of these functions need a coefficient matrix _A_ and a set of right hand side values _b_ in order to solve `Ax = b`. The functions include:
+
+- GAUSSIAN(_expression_for_A_, _expression_for_b_) - solves the system of linear equations using gaussian elimination.
+
+For example:
+
+````java
+Expression e = new Expression();
+
+//  x + 2y + 3z = 15
+//-2x +  y + 2z = 20
+// 5x - 2y +  z = 13
+
+Matrix A = new Matrix(
+    new double[][]{
+        { 1,  2, 3},
+        {-2,  1, 2},
+        { 5, -2, 1}
+    }
+);
+Vector b = new Vector(
+    new double[] {
+        15, 20, 13
+    }
+);
+
+e.addVariable("A", A).addVariable("b", b);
+e.setExpression("GAUSSIAN(A,b)");
+
+System.out.println(e.eval()); //prints [-2.769234, -7.846158, 11.15385]
+````
+
 #### Adding/Overriding a Function
 
 You can also add or override any function to the ExpressionParser. When adding a new function, add you need to do is provide the name of the function, the minimum amount of arguments it expects and an implementation of its `eval()` method which is triggered when the method is found in the expression.
