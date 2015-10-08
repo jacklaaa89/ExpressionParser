@@ -14,6 +14,7 @@ import org.expression.computation.Handler;
 import org.expression.Scalar;
 import org.expression.Type;
 import org.expression.computation.decomposition.AbstractDecompositor;
+import org.expression.computation.decomposition.LUDecompositor;
 import org.expression.computation.decomposition.LinearSystemDecompositor;
 import org.expression.computation.linear.LinearSystemSolver;
 
@@ -982,6 +983,70 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      */
     public boolean is(Predicate predicate) {
         return predicate.test(this);
+    }
+    
+    /**
+     * Calculates the determinant of a matrix.
+     * @return the determinant.
+     */
+    public Scalar determinant() {
+        if(!this.is(Predicate.SQUARE)) {
+            throw new ArithmeticException("can only calculate the determinant from a square matrix.");
+        }
+        
+        switch (M) {
+            case 0:
+                return Scalar.ZERO;
+            case 1:
+                return get(0, 0);
+            case 2:
+                return (Scalar) (get(0, 0).mult(get(1, 1))).minus((get(0, 1).mult(get(1, 0))));
+            case 3:
+                Scalar one = (Scalar) get(0, 0).mult(get(1, 1)).mult(get(2, 2));
+                Scalar two = (Scalar) get(0, 1).mult(get(1, 2)).mult(get(2, 0));
+                Scalar three = (Scalar) get(0, 2).mult(get(1, 0)).mult(get(2, 1));
+                Scalar four = (Scalar) get(0, 2).mult(get(1, 1)).mult(get(2, 0));
+                Scalar five = (Scalar) get(0, 1).mult(get(1, 0)).mult(get(2, 2));
+                Scalar six = (Scalar) get(0, 0).mult(get(1, 2)).mult(get(2, 1));
+                return (Scalar) one.plus(two).plus(three).minus(four).minus(five).minus(six);
+        }
+        
+        LUDecompositor lu = this.decompose(LinearSystemDecompositor.LU);
+        Matrix P = lu.getP();
+        Scalar res = this.diagonalProduct();
+        int[] p = new int[P.M];
+        for(int i = 0; i < P.M; i++) {
+            for(int j = 0; j < P.N; j++) {
+                if(P.get(i, j).compareTo((Type)Scalar.ZERO) == 1) {
+                    p[i] = j;
+                    break;
+                }
+            }
+        }
+        
+        int sign = 1;
+        for(int i = 0; i < p.length; i++) {
+            for(int j = i + 1; j < p.length; j++) {
+                if(p[j] < p[i]) {
+                    sign *= -1;
+                }
+            }
+        }
+        
+        return new Scalar(sign * res.doubleValue());
+        
+    }
+    
+    /**
+     * Determines the diagonal product of this matrix.
+     * @return the diagonal product.
+     */
+    public Scalar diagonalProduct() {
+        Scalar r = Scalar.ONE;
+        for(int i = 0; i < this.M; i++) {
+            r = (Scalar) r.mult(this.get(i, i));
+        }
+        return r;
     }
     
 }

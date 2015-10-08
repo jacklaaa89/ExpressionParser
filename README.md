@@ -184,6 +184,7 @@ ExpressionParser also has a collection of functions that are available which can
 - ROW(expression1, expression2, index?) - Inserts _expression_2_ into _expression_1_ as a new row at _index_ (or at the end if _index_ is omitted).
 - SQUARE(expression) - Determines if a Matrix is square. 
 - DIAGONALLY_DOMINANT(expression) - Determines if a Matrix is diagonally dominant.
+- DET(expression) - Determines the determinant of the evaluated matrix.
 
 ###### Functions which accept only Scalar values.
 

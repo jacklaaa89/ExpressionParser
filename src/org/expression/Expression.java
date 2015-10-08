@@ -233,6 +233,14 @@ public class Expression {
             }
         });
         
+        addFunction(new Function("det", 1){
+            @Override
+            public Type eval(List<Type> args) throws ClassCastException {
+                Matrix m = (Matrix) args.get(0);
+                return m.determinant();
+            }
+        });
+        
         addFunction(new Function("row", 2) {
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
