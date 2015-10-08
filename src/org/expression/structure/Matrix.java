@@ -13,6 +13,8 @@ import org.expression.computation.Functions;
 import org.expression.computation.Handler;
 import org.expression.Scalar;
 import org.expression.Type;
+import org.expression.computation.decomposition.AbstractDecompositor;
+import org.expression.computation.decomposition.LinearSystemDecompositor;
 import org.expression.computation.linear.LinearSystemSolver;
 
 /**
@@ -458,6 +460,18 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      */
     public Vector solve(LinearSystemSolver solver, Vector b) {
         return solver.get(this).solve(b);
+    }
+    
+    /**
+     * Decomposes this Matrix using the defined decomposer.
+     * @param <D> The type of the returned decomposer.
+     * @param decompositor the type of decomposer to use.
+     * @return The decomposer after it has been run on this matrix.
+     */
+    public <D extends AbstractDecompositor> D decompose(LinearSystemDecompositor decompositor) {
+        D d = (D) decompositor.get(this);
+        d.decompose();
+        return d;
     }
     
     /**

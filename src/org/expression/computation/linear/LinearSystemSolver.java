@@ -16,6 +16,16 @@ public enum LinearSystemSolver {
         public AbstractSolver get(Matrix A) {
             return new GaussianElimination(A);
         }
+    },
+    /**
+     * Solver which solves a system of linear equations using 
+     * LU Factorization.
+     */
+    LU {
+        @Override
+        public AbstractSolver get(Matrix A) {
+            return new LU(A);
+        }
     };
     
     /**
