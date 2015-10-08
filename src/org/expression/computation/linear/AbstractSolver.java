@@ -9,6 +9,8 @@ import org.expression.structure.Vector;
  */
 public abstract class AbstractSolver implements Solver {
     
+    public static final double EPSILON = 1e-10;
+    
     protected Matrix A;
     protected int unknowns;
     protected int equations;

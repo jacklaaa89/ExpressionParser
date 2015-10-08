@@ -24,84 +24,50 @@ public class GaussianElimination extends AbstractSolver implements Solver {
     
     @Override
     public Vector solve(Vector b) {
-        if(!this.isRightHandSideCorrect(b)) {
-            throw new ArithmeticException("the amount of values in b doesn't match that of the equations in A");
+        int N = b.size();
+        
+        for(int p = 0; p < N; p++) {
+           int max = p;
+           for(int i = p + 1; i < N; i++) {
+               Scalar ip = (Scalar) A.get(i, p).absolute();
+               Scalar maxp = (Scalar) A.get(max, p).absolute();
+               if(ip.compareTo((Type)maxp) == 1) {
+                   max = i;
+               }
+           }
+           
+           A.swap(p, max);
+           b.swap(p, max);
+           
+           Scalar c = (Scalar) A.get(p, p).absolute();
+           if(c.doubleValue() <= EPSILON) {
+               throw new ArithmeticException("Matrix is singular or nearly singular");
+           }
+           
+           for(int i = p + 1; i < N; i++) {
+               Scalar alp = (Scalar) A.get(i, p).div(A.get(p, p));
+               Scalar e = (Scalar) alp.mult(b.get(p));
+               b.set(i, (Scalar) b.get(i).minus(e));
+               for(int j = p; j < N; j++) {
+                   Scalar m = (Scalar) alp.mult(A.get(p, j));
+                   A.set(i, j, (Scalar) A.get(i, j).minus(m));
+               }
+            }
         }
         
-        Matrix augmented = pivot(this.getA().addColumn(b));
-        return backSubstitution(augmented);
-        
-    }
-    
-    /**
-     * Applies partial pivoting to the augmented matrix.
-     * @param augmented the augmented matrix.
-     * @return the matrix after pivoting has occurred.
-     */
-    private Matrix pivot(Matrix augmented) {
-        
-        for(int i = 0; i < augmented.getRowSize(); i++) {
-            
-            int mi = i;
-            Scalar mii = (Scalar) augmented.get(i, i).absolute();
-            
-            for(int j = i + 1; j < augmented.getRowSize(); j++) {
-                Scalar v = (Scalar) augmented.get(j, i).absolute();
-                if(mii.compareTo((Type)v) == 1) {
-                    mi = j; mii = v;
-                }
+        Vector x = new Vector(N);
+        for(int i = N - 1; i >= 0; i--) {
+            Scalar su = Scalar.ZERO;
+            for(int j = i + 1; j < N; j++) {
+                Scalar m = (Scalar) A.get(i, j).mult(x.get(j));
+                su = (Scalar) su.plus(m);
             }
-            
-            if(mii.equals(Scalar.ZERO)) {
-                throw new ArithmeticException("this system cannot be solved");
-            }
-            
-            if(mi > i) {
-                augmented.swap(mi, i);
-            }
-            
-            for(int k = i + 1; k < augmented.getRowSize(); k++) {
-                Scalar c = (Scalar) augmented.get(k, i).divide((Type)augmented.get(i, i));
-                augmented.add(k, i, new Scalar(0d));
-                
-                for(int j = i + 1; j < augmented.getColumnSize(); j++) {
-                    Scalar kj = augmented.get(k, j);
-                    Scalar ij = augmented.get(i, j);
-                    ij = (Scalar) ij.multiply((Type)c);
-                    augmented.add(k, j, (Scalar) kj.minus(ij));
-                }
-                
-            }
-            
+            Scalar n = (Scalar) b.get(i).minus(su);
+            x.set(i, (Scalar) n.div(A.get(i, i)));
         }
         
-        return augmented;
-    }
-    
-    /**
-     * Attempts to perform back substitution on an augmented
-     * matrix to solve for x.
-     * @param augmented the augmented matrix after pivoting has taken place.
-     * @return the Vector x where Ax = b (or [Ab] = x)
-     */
-    private Vector backSubstitution(Matrix augmented) {
+        return x;
         
-        Vector v = Vector.zeroes(augmented.getColumnSize() - 1);
-        
-        for(int i = augmented.getRowSize() - 1; i >= 0; i--) {
-            Scalar a = Scalar.ZERO;
-            
-            for(int j = i + 1; j < augmented.getColumnSize() - 1; j++) {
-                Scalar s = (Scalar) v.get(i).multiply((Type)augmented.get(i, j));
-                a = (Scalar) a.plus(s);
-            }
-            
-            Scalar e = augmented.get(i, augmented.getColumnSize() - 1);
-            e = (Scalar) e.minus(a);
-            v.set(i, (Scalar) e.divide((Type)augmented.get(i, i)));
-        }
-        
-        return v;
     }
     
 }

@@ -360,7 +360,7 @@ public class Expression {
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
                 (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
-                    return left.remainder(right);
+                    return left.mod(right);
                 }   
             )
             .removeEvaluator(Operator.EXPRESSION_VECTOR_MATRIX)
@@ -381,7 +381,7 @@ public class Expression {
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
                 (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
-                    return left.multiply(right);
+                    return left.mult(right);
                 }   
             )
             //not valid for vector to matrix operations.
@@ -421,7 +421,7 @@ public class Expression {
                 }   
             )
             .addEvaluator(Operator.EXPRESSION_MATRIX_SCALAR,
-                (Evaluator<Matrix>) (Arithmetic left, Arithmetic right) -> {
+                (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
                     Matrix m = (Matrix) left;
                     return m.power(((Scalar)right).intValueExact());
                 }
@@ -432,7 +432,7 @@ public class Expression {
             .addEvaluator(
                 Operator.EXPRESSION_ALL,
                 (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
-                    return left.divide(right);
+                    return left.div(right);
                 }
             )
         );

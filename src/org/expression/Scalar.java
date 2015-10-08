@@ -51,9 +51,9 @@ public class Scalar extends BigDecimal implements Arithmetic  {
     }
 
     @Override
-    public Arithmetic multiply(Type data) {
+    public Arithmetic mult(Type data) {
         Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
-            return (Scalar) this.multiply((Type)o1);
+            return (Scalar) this.mult(o1);
         };
         if(data instanceof Scalar) {
             BigDecimal d = this.multiply((BigDecimal)data, mc);
@@ -63,9 +63,9 @@ public class Scalar extends BigDecimal implements Arithmetic  {
     }
 
     @Override
-    public Arithmetic divide(Type data) {
+    public Arithmetic div(Type data) {
         Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
-            return (Scalar) this.divide((Type)o1);
+            return (Scalar) this.div(o1);
         };
         if(data instanceof Scalar) {
             BigDecimal d = this.divide((BigDecimal)data, mc);
@@ -99,13 +99,13 @@ public class Scalar extends BigDecimal implements Arithmetic  {
     }
 
     @Override
-    public Arithmetic remainder(Type data) {
+    public Arithmetic mod(Type data) {
         if(data instanceof Scalar) {
             BigDecimal d = this.remainder((BigDecimal)data, mc);
             return new Scalar(d.doubleValue(), mc);
         }
         Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
-            return (Scalar) this.remainder((Type)o1);
+            return (Scalar) this.mod(o1);
         };
         return (Arithmetic) data.apply(h);
     }

@@ -310,7 +310,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
      * is attempted.
      */
     @Override
-    public Arithmetic divide(Type B) throws ArithmeticException {
+    public Arithmetic div(Type B) throws ArithmeticException {
         if(B instanceof Scalar) return this.divide((Scalar)B);
         Vector A = this;
         Vector b = (Vector) B;
@@ -390,7 +390,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
     }
     
     @Override
-    public Arithmetic multiply(Type B) {
+    public Arithmetic mult(Type B) {
         if(B instanceof Scalar) return this.multiply((Scalar)B);
         Vector A = this;
         Vector b = (Vector) B;
@@ -485,9 +485,9 @@ public class Vector extends BaseStructure<Scalar, Vector> {
     }
 
     @Override
-    public Arithmetic remainder(Type data) {
+    public Arithmetic mod(Type data) {
         Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
-            return (Scalar) o1.remainder(data);
+            return (Scalar) o1.mod(data);
         };
         return this.apply(h);
     }
@@ -562,6 +562,22 @@ public class Vector extends BaseStructure<Scalar, Vector> {
     @Override
     public int getColumnSize() {
         return this.size();
+    }
+    
+    @Override
+    public void swap(int i, int j) {
+        Scalar temp = this.get(i);
+        this.set(i, this.get(j));
+        this.set(j, temp);
+    }
+    
+    @Override
+    public Vector copy() {
+        Vector v = new Vector(this.size());
+        for(int i = 0; i < this.size(); i++) {
+            v.set(i, this.get(i));
+        }
+        return v;
     }
     
 }

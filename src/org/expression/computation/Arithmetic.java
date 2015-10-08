@@ -15,7 +15,7 @@ public interface Arithmetic<T extends Type> extends Type<T> {
      * @param data the data to multiply this data structure with.
      * @return the computed data structure.
      */
-    public Arithmetic multiply(Type data);
+    public Arithmetic mult(Type data);
     
     /**
      * Negates a value (or all values in a structure)
@@ -40,7 +40,7 @@ public interface Arithmetic<T extends Type> extends Type<T> {
      * @param data the data to divide each corresponding element with.
      * @return the computed data structure.
      */
-    public Arithmetic divide(Type data);
+    public Arithmetic div(Type data);
     
     /**
      * Add A+B to give C.
@@ -61,7 +61,7 @@ public interface Arithmetic<T extends Type> extends Type<T> {
      * @param data the data to compute with A to get C.
      * @return the computed data structure.
      */
-    public Arithmetic remainder(Type data);
+    public Arithmetic mod(Type data);
     
     /**
      * Calculate the smallest value.

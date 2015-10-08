@@ -20,4 +20,6 @@ public interface Structure<T extends Type> {
     public T addColumn(Type value);
     public T addRow(int index, Type type);
     public T addRow(Type type);
+    public void swap(int i, int j);
+    public T copy();
 }

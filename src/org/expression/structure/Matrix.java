@@ -1,7 +1,5 @@
 package org.expression.structure;
 
-import org.expression.structure.BaseStructure;
-import org.expression.structure.Vector;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Collections;
@@ -15,7 +13,6 @@ import org.expression.computation.Functions;
 import org.expression.computation.Handler;
 import org.expression.Scalar;
 import org.expression.Type;
-import org.expression.computation.linear.AbstractSolver;
 import org.expression.computation.linear.LinearSystemSolver;
 
 /**
@@ -193,7 +190,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         Matrix C = new Matrix(m, n, mc);
         for(int i = 0; i < m; i++) {
             for(int j = 0; j < n; j++) {
-               C.add(i, j, new Scalar(Math.random()));
+               C.set(i, j, new Scalar(Math.random()));
             }
         }
         return C;
@@ -316,7 +313,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
     public static Matrix identity(int n, MathContext mc) {
         Matrix C = new Matrix(n, n, mc);
         for(int i = 0; i < n; i++)
-            C.add(i, i, new Scalar(1d));
+            C.set(i, i, new Scalar(1d));
         return C;
     }
     
@@ -342,7 +339,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
     public static  Matrix scalar(int n, Scalar scalar, MathContext mc) {
         Matrix C = new Matrix(n, n, mc);
         for(int i = 0; i < n; i++) {
-            C.add(i, i, scalar);
+            C.set(i, i, scalar);
         }
         return C;
     }
@@ -371,7 +368,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         Matrix A = new Matrix(this.M, this.N, mc);
         for(int i = 0; i < M; i++) {
             for(int j = 0; j < N; j++) {
-                A.add(j, i, this.get(i, j));
+                A.set(j, i, this.get(i, j));
             }
         }
         return A;
@@ -382,6 +379,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @param i the index for row i
      * @param j the index for row j
      */
+    @Override
     public void swap(int i, int j) {
         Vector temp = this.get(i);
         this.set(i, this.get(j));
@@ -445,7 +443,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
             for(int j = 0; j < N; j++) {
                 BigDecimal value = A.get(i, j).add(b.get(i, j), mc);
                 Scalar n = new Scalar(value.doubleValue(), mc);
-                C.add(i, j, n);
+                C.set(i, j, n);
             }
         }
         return C;
@@ -478,7 +476,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
             for(int j = 0; j < N; j++) {
                 BigDecimal value = A.get(i, j).subtract(b.get(i, j), mc);
                 Scalar n = new Scalar(value.doubleValue(), mc);
-                C.add(i, j, n);
+                C.set(i, j, n);
             }
         }
         return C;
@@ -490,9 +488,9 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @return the solution to AB = C
      */
     @Override
-    public Arithmetic multiply(Type B) {
-        if(B instanceof Scalar) return this.multiply((Scalar)B);
-        if(B instanceof Vector) return this.multiply((Vector)B);
+    public Arithmetic mult(Type B) {
+        if(B instanceof Scalar) return this.mult((Scalar)B);
+        if(B instanceof Vector) return this.mult((Vector)B);
         Matrix A = this;
         Matrix b = (Matrix) B;
         if(A.N != b.M) throw new RuntimeException("Illegal matrix dimensions");
@@ -504,7 +502,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
                     BigDecimal a = A.get(i, k).multiply(b.get(k, j), mc);
                     v = v.add(a, mc);
                     Scalar n = new Scalar(v.doubleValue(), mc);
-                    C.add(i, j, n);
+                    C.set(i, j, n);
                 }
             }
         }
@@ -518,19 +516,19 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @param B the vector to multiply this matrix by.
      * @return the result of the computation.
      */
-    public Arithmetic multiply(Vector B) {
+    private Arithmetic mult(Vector B) {
         Matrix m = new Matrix(this.M, B.size(), mc);
         for(int i = 0; i < B.size(); i++) {
-            m.add(0, i, B.get(i));
+            m.set(0, i, B.get(i));
         }
         m = m.transpose();
         //create a new matrix from the first entry in row.
         Matrix m1 = new Matrix(B.size(), 1, mc);
         for(int i = 0; i < m.M; i++) {
             Vector c = this.get(i);
-            m1.add(i, 0, c.get(0));
+            m1.set(i, 0, c.get(0));
         }
-        return this.multiply((Type)m1);
+        return this.mult((Type)m1);
     }
     
     @Override
@@ -568,17 +566,17 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @param n the exponent to power this matrix by.
      * @return the matrix powered to the exponent n.
      */
-    public Matrix power(int n) {
+    public Arithmetic power(int n) {
         if(!this.isSquare()) throw new ArithmeticException("can only power square matrices");
         Matrix I = Matrix.identity(this.N, mc);
         Matrix A = this;
         
         while(n > 0) {
             if(n % 2 == 1) {
-                I = (Matrix) I.multiply(A);
+                I = (Matrix) I.mult(A);
             }
             n /= 2;
-            A = (Matrix) A.multiply(A);
+            A = (Matrix) A.mult(A);
         }
         
         return I;
@@ -591,7 +589,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @param n the row position index.
      * @param value the value to set.
      */
-    public void add(int m, int n, Scalar value) {
+    public void set(int m, int n, Scalar value) {
         if((m >= 0 && m < this.M) && 
                 (n >= 0 && n < this.N)) {
             Vector v = this.get(m);
@@ -627,21 +625,21 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @param scalar the scalar to multiply this matrix by
      * @return this matrix multiplied by the scalar value.
      */
-    public Matrix multiply(Scalar scalar) {
+    private Matrix mult(Scalar scalar) {
         Matrix A = this;
         Matrix C = new Matrix(A.M, A.N, mc);
         for(int i = 0; i < A.M; i++) {
             for(int j = 0; i < A.N; j++) {
                 BigDecimal d = A.get(i, j).multiply(scalar, mc);
-                C.add(i, j, new Scalar(d.doubleValue(), mc));
+                C.set(i, j, new Scalar(d.doubleValue(), mc));
             }
         }
         return C;
     }
 
     @Override
-    public Arithmetic divide(Type data) {
-        if(data instanceof Scalar) return this.divide((Scalar)data);
+    public Arithmetic div(Type data) {
+        if(data instanceof Scalar) return this.div((Scalar)data);
         throw new ArithmeticException("matrix division is unsupported");
     }
     
@@ -650,14 +648,14 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @param scalar the scalar value to divide each element in this matrix by.
      * @return the result to A/b = C.
      */
-    public Matrix divide(Scalar scalar) {
+    private Matrix div(Scalar scalar) {
         Matrix A = this;
         Matrix C = new Matrix(A.M, A.N, mc);
         for(int i = 0; i < A.M; i++) {
             for(int j = 0; j < A.N; j++) {
                 BigDecimal d = A.get(i, j).divide(scalar, mc);
                 Scalar n = new Scalar(d.doubleValue(), mc);
-                C.add(i, j, n);
+                C.set(i, j, n);
             }
         }
         return C;
@@ -668,7 +666,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @param scalar the scalar value b.
      * @return the result of A + B = C.
      */
-    public Arithmetic plus(Scalar scalar) {
+    private Arithmetic plus(Scalar scalar) {
         Matrix B = Matrix.scalar(this.N, scalar, mc);
         return this.plus(B);
     }
@@ -678,7 +676,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @param scalar the scalar value b.
      * @return the result of A - B = C.
      */
-    public Arithmetic minus(Scalar scalar) {
+    private Arithmetic minus(Scalar scalar) {
         Matrix B = Matrix.scalar(this.N, scalar, mc);
         return this.minus(B);
     }
@@ -764,8 +762,8 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
     }
 
     @Override
-    public Arithmetic remainder(Type data) {
-        if(data instanceof Scalar) return this.remainder((Scalar)data);
+    public Arithmetic mod(Type data) {
+        if(data instanceof Scalar) return this.mod((Scalar)data);
         Matrix A = this;
         Matrix B = (Matrix) data;
         if((A.M != B.M) || A.N != B.N) throw new ArithmeticException("invalid matrix dimensions");
@@ -774,7 +772,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         for(int i = 0; i < A.M; i++) {
             for(int j = 0; j < A.N; j++) {
                BigDecimal d = A.get(i,j).remainder(B.get(i,j), mc);
-               C.add(i,j, new Scalar(d.doubleValue(), mc));
+               C.set(i,j, new Scalar(d.doubleValue(), mc));
             }
         }
         return C;
@@ -785,14 +783,14 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @param scalar the scalar value.
      * @return the result of A%b = C
      */
-    public Matrix remainder(Scalar scalar) {
+    private Matrix mod(Scalar scalar) {
         Matrix A = this;
         
         Matrix C = Matrix.from(A, mc);
         for(int i = 0; i < A.M; i++) {
             for(int j = 0; j < A.N; j++) {
                BigDecimal d = A.get(i,j).remainder(scalar, mc);
-               C.add(i,j, new Scalar(d.doubleValue(), mc));
+               C.set(i,j, new Scalar(d.doubleValue(), mc));
             }
         }
         return C;
@@ -814,7 +812,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         for(int i = 0; i < A.M; i++) {
             for(int j = 0; j < A.N; j++) {
                 Scalar s = handler.handle(A.get(i, j), mc);
-                B.add(i, j, s);
+                B.set(i, j, s);
             }
         }
         return B;
@@ -837,7 +835,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         Matrix m = Matrix.zeroes(end.x - start.x, end.y - start.y, mc);
         for(int i = start.x; i < end.x; i++) {
             for(int j = start.y; j < end.y; j++) {
-                m.add(i - start.x, j - start.y, this.get(i, j));
+                m.set(i - start.x, j - start.y, this.get(i, j));
             }
         }
         return m;
@@ -852,15 +850,15 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         if(v.size() != M) throw new ArithmeticException("vectors dimensions do not match that of the matrix");
         for(int i = 0; i < this.M; i++) {
             for(int j = 0; j < index; j++) {
-                m.add(i, j, this.get(i, j));
+                m.set(i, j, this.get(i, j));
             }
         }
         for(int i = 0; i < v.size(); i++) {
-            m.add(i, index, v.get(i));
+            m.set(i, index, v.get(i));
         }
         for(int i = 0; i < this.M; i++) {
             for(int j = index + 1; j < m.N; j++) {
-                m.add(i, j, this.get(i, j - 1));
+                m.set(i, j, this.get(i, j - 1));
             }
         }
         return m;
@@ -875,15 +873,15 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         Matrix m = Matrix.zeroes(M + 1, N, mc);
         for(int i = 0; i < index; i++) {
             for(int j = 0; j < this.N; j++) {
-                m.add(i, j, this.get(i, j));
+                m.set(i, j, this.get(i, j));
             }
         }
         for(int i = 0; i < this.N; i++) {
-            m.add(index, i, v.get(i));
+            m.set(index, i, v.get(i));
         }
         for(int i = index + 1; i < m.M; i++) {
             for(int j = 0; j < this.N; j++) {
-                m.add(i, j, this.get(i - 1, j));
+                m.set(i, j, this.get(i - 1, j));
             }
         }
         return m;
@@ -959,6 +957,25 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      */
     public Matrix applyToColumn(int n, Functions handler) {
         return this.applyToColumn(n, handler.get());
+    }
+    
+    @Override
+    public Matrix copy() {
+        Matrix m = Matrix.from(this, mc);
+        for(int i = 0; i < this.M; i++) {
+            Vector v = this.get(i).copy();
+            m.set(i, v);
+        }
+        return m;
+    }
+    
+    /**
+     * Tests to see if this Matrix is a certain predicate.
+     * @param predicate the predicate to test.
+     * @return true if this matrix is the predicate, false otherwise.
+     */
+    public boolean is(Predicate predicate) {
+        return predicate.test(this);
     }
     
 }
