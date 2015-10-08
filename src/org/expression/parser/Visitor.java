@@ -13,7 +13,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.expression.Context;
 import org.expression.Scalar;
 import org.expression.Type;
-import org.expression.parser.ExpressionBaseVisitor;
 import org.expression.parser.ExpressionParser.BoolExprContext;
 import org.expression.parser.ExpressionParser.ExprContext;
 import org.expression.parser.ExpressionParser.FuncDefinitionContext;
@@ -200,12 +199,13 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         }
         
         if(args.size() < f.getAmountOfExpectedParameters()) {
-            throw new RuntimeException("invalid amount of parameters");
+            throw new RuntimeException("invalid amount of parameters provided for function: " + f.getName());
         }
+        
         try {
             return new Context(f.eval(args));
         } catch(ClassCastException e) {
-            throw new IllegalArgumentException("invalid parameter types");
+            throw new IllegalArgumentException("invalid parameter types provided for function: " + f.getName());
         }
    }
    
