@@ -181,7 +181,9 @@ ExpressionParser also has a collection of functions that are available which can
 
 - TRANSPOSE(expression) - Generates the `A^T` transpose matrix from matrix A.
 - IDENTITY(n) - Generates a _n_ by _n_ identity matrix.
-- ROW(expression1, expression2, index?) - Inserts _expression_2_ into _expression_1_ as a new row at _index_ (or at the end if _index_ is omitted). 
+- ROW(expression1, expression2, index?) - Inserts _expression_2_ into _expression_1_ as a new row at _index_ (or at the end if _index_ is omitted).
+- SQUARE(expression) - Determines if a Matrix is square. 
+- DIAGONALLY_DOMINANT(expression) - Determines if a Matrix is diagonally dominant.
 
 ###### Functions which accept only Scalar values.
 

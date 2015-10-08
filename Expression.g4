@@ -56,7 +56,7 @@ matrix
 	;
 
 funcName
-	: LETTER (LETTER|DIGIT)*
+	: LETTER (LETTER|DIGIT|UNDERSCORE)*
 	;
 
 variable
@@ -65,6 +65,10 @@ variable
 
 LBRACE
 	: '['
+	;
+
+UNDERSCORE
+	: '_'
 	;
 
 RBRACE

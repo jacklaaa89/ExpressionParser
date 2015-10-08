@@ -237,6 +237,14 @@ public class Expression {
             }
         });
         
+        addFunction(new Function("diagonally_dominant", 1){
+            @Override
+            public Type eval(List<Type> args) throws ClassCastException {
+                Matrix m = (Matrix) args.get(0);
+                return m.is(Predicate.DIAGONALLY_DOMINANT) ? Scalar.ONE : Scalar.ZERO;
+            }
+        });
+        
         addFunction(new Function("row", 2) {
             @Override
             public Type eval(List<Type> args) {
