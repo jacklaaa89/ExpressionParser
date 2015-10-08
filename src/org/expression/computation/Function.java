@@ -52,6 +52,6 @@ public abstract class Function {
      * @param args the parameters which were provided.
      * @return the result to the computation.
      */
-    public abstract Type eval(List<Type> args);
+    public abstract Type eval(List<Type> args) throws ClassCastException;
     
 }

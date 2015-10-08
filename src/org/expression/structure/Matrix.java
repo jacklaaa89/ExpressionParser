@@ -554,20 +554,12 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
     }
     
     /**
-     * determines if this Matrix is square.
-     * @return <b>TRUE</b> if this matrix is square, <b>FALSE</b> otherwise.
-     */
-    public boolean isSquare() {
-        return this.M == this.N;
-    }
-    
-    /**
      * Attempts to power a matrix with an exponent.
      * @param n the exponent to power this matrix by.
      * @return the matrix powered to the exponent n.
      */
     public Arithmetic power(int n) {
-        if(!this.isSquare()) throw new ArithmeticException("can only power square matrices");
+        if(!this.is(Predicate.SQUARE)) throw new ArithmeticException("can only power square matrices");
         Matrix I = Matrix.identity(this.N, mc);
         Matrix A = this;
         

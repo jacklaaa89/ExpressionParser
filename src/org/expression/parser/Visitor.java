@@ -202,8 +202,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         if(args.size() < f.getAmountOfExpectedParameters()) {
             throw new RuntimeException("invalid amount of parameters");
         }
-       
-       return new Context(f.eval(args));
+        try {
+            return new Context(f.eval(args));
+        } catch(ClassCastException e) {
+            throw new IllegalArgumentException("invalid parameter types");
+        }
    }
    
    /**

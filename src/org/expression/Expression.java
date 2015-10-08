@@ -23,6 +23,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.expression.computation.linear.LinearSystemSolver;
 import org.expression.parser.ExpressionLexer;
 import org.expression.parser.ExpressionParser;
+import org.expression.structure.Predicate;
 
 /**
  * The Expression class which is an encapsulation of an expression to parse.
@@ -225,6 +226,14 @@ public class Expression {
                     throw new ArithmeticException("n must be a number.");
                 }
                 return Matrix.identity(((Scalar) c).intValueExact());
+            }
+        });
+        
+        addFunction(new Function("square", 1){
+            @Override
+            public Type eval(List<Type> args) throws ClassCastException {
+                Matrix m = (Matrix) args.get(0);
+                return m.is(Predicate.SQUARE) ? Scalar.ONE : Scalar.ZERO;
             }
         });
         

@@ -3,6 +3,7 @@ package org.expression.computation.linear;
 import org.expression.Scalar;
 import org.expression.Type;
 import org.expression.structure.Matrix;
+import org.expression.structure.Predicate;
 import org.expression.structure.Vector;
 
 /**
@@ -17,7 +18,7 @@ public class GaussianElimination extends AbstractSolver implements Solver {
      */
     public GaussianElimination(Matrix A) {
         super(A);
-        if(!A.isSquare()) {
+        if(!A.is(Predicate.SQUARE)) {
             throw new ArithmeticException("Matrix A must be a square system.");
         }
     }
