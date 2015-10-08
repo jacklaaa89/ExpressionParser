@@ -101,8 +101,27 @@ public class Expression {
         //set the default math context.
         this.mc = MathContext.DECIMAL32;
         
-        //add the core functions.
+        //Logarithm functions.
         addFunction("log", Functions.LOG);
+        addFunction("log10", Functions.LOG10);
+        
+        //Sine, Cosine & Tangent functions.
+        addFunction("sin", Functions.SIN);
+        addFunction("cos", Functions.COS);
+        addFunction("tan", Functions.TAN);
+        addFunction("asin", Functions.ASIN);
+        addFunction("atan", Functions.ATAN);
+        addFunction("acos", Functions.ACOS);
+        addFunction("sinh", Functions.SINH);
+        addFunction("cosh", Functions.COSH);
+        addFunction("tanh", Functions.TANH);
+        
+        //Converter functions.
+        addFunction("rad", Functions.RAD);
+        addFunction("deg", Functions.DEG);
+        addFunction("abs", Functions.ABS);
+        addFunction("floor", Functions.FLOOR);
+        addFunction("ceiling", Functions.CEILING);
         
         addFunction(new Function("random", 0){
             @Override
@@ -143,50 +162,29 @@ public class Expression {
             }
         );
         
-        addFunction("sin", Functions.SIN);
-        addFunction("cos", Functions.COS);
-        addFunction("tan", Functions.TAN);
-        addFunction("asin", Functions.ASIN);
-        addFunction("atan", Functions.ATAN);
-        addFunction("acos", Functions.ACOS);
-        addFunction("sinh", Functions.SINH);
-        addFunction("cosh", Functions.COSH);
-        addFunction("tanh", Functions.TANH);
-        addFunction("rad", Functions.RAD);
-        addFunction("deg", Functions.DEG);
-        
         addFunction(new Function("max", 1){
             @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    return ((Arithmetic)r).max();
+                public Type eval(List<Type> args) throws ClassCastException {
+                    return ((Arithmetic) args.get(0)).max();
                 }
             }
         );
         
         addFunction(new Function("min", 1){
             @Override
-                public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    return ((Arithmetic)r).min();
+                public Type eval(List<Type> args) throws ClassCastException {
+                    return ((Arithmetic) args.get(0)).min();
                 }
             }
         );
         
-        addFunction("abs", Functions.ABS);
-        addFunction("log10", Functions.LOG10);
-        
         addFunction(new Function("round", 2){
             @Override
-                public Type eval(List<Type> args) {
+                public Type eval(List<Type> args) throws ClassCastException {
                     Type r = args.get(0);
-                    Type p = args.get(1);
+                    Scalar p = (Scalar) args.get(1);
                     
-                    if(!(p instanceof Scalar)) {
-                        throw new RuntimeException("precision must be a number");
-                    }
-                    
-                    int precision = ((Scalar)p).intValueExact();
+                    int precision = p.intValueExact();
                     Handler hndlr = (Handler) (Scalar o1, MathContext mc) -> {
                         return new Scalar(o1.setScale(precision, mc.getRoundingMode()).doubleValue(), mc);
                     };
@@ -195,37 +193,27 @@ public class Expression {
             }
         );
         
-        addFunction("floor", Functions.FLOOR);
-        
         addFunction(new Function("sum", 1) {
             @Override
-            public Type eval(List<Type> args) {
-                Type c = args.get(0);
-                return ((Arithmetic)c).sum();
+            public Type eval(List<Type> args) throws ClassCastException {
+                return ((Arithmetic) args.get(0)).sum();
             }
         });
         
-        addFunction("ceiling", Functions.CEILING);
-        
-        addFunction(new Function("transpose", 1){
+        //Matrix functions.
+        addFunction(new Function("transpose", 1) {
             @Override
-            public Type eval(List<Type> args) {
-                Type c = args.get(0);
-                if(!(c instanceof Matrix)) {
-                    throw new ArithmeticException("can only transpose matrices.");
-                }
-                return ((Matrix) c).transpose();
+            public Type eval(List<Type> args) throws ClassCastException {
+                Matrix c = (Matrix) args.get(0);
+                return c.transpose();
             }
         });
         
         addFunction(new Function("identity", 1){
             @Override
-            public Type eval(List<Type> args) {
-                Type c = args.get(0);
-                if(!(c instanceof Scalar)) {
-                    throw new ArithmeticException("n must be a number.");
-                }
-                return Matrix.identity(((Scalar) c).intValueExact());
+            public Type eval(List<Type> args) throws ClassCastException {
+                Scalar c = (Scalar) args.get(0);
+                return Matrix.identity(c.intValueExact());
             }
         });
         
@@ -247,33 +235,31 @@ public class Expression {
         
         addFunction(new Function("row", 2) {
             @Override
-            public Type eval(List<Type> args) {
-                //adds a new row to a structure.
-                //can only be called on matrices.
-                Type m = args.get(0); //the matrix.
-                Type n = args.get(1); //the new row to add, is a vector.
-                if(m instanceof Matrix && n instanceof Vector) {
-                    Matrix ma = (Matrix) m;
-                    Vector va = (Vector) n;
-                    Scalar i  = (args.size() > 2 && args.get(2) instanceof Scalar) 
-                            ? ((Scalar)args.get(2))
-                            : new Scalar(ma.getRowSize());
-                    return ma.addRow(i.intValueExact(), va);
-                }
-                throw new ArithmeticException("invalid parameter types.");
+            public Type eval(List<Type> args) throws ClassCastException {
+                Matrix m = (Matrix) args.get(0);
+                Vector n = (Vector) args.get(1);
+                Scalar i  = (args.size() > 2) 
+                        ? ((Scalar)args.get(2))
+                        : new Scalar(m.getRowSize());
+                return m.addRow(i.intValueExact(), n);
             }
         });
         
         addFunction(new Function("gaussian", 2) {
             @Override
             public Type eval(List<Type> args) {
-                try {
-                    Matrix A = (Matrix) args.get(0);
-                    Vector b = (Vector) args.get(1);
-                    return A.solve(LinearSystemSolver.GAUSSIAN_ELIMINATION, b);
-                } catch(ClassCastException e) {
-                    throw new IllegalArgumentException("invalid parameter types.");
-                }
+                Matrix A = (Matrix) args.get(0);
+                Vector b = (Vector) args.get(1);
+                return A.solve(LinearSystemSolver.GAUSSIAN_ELIMINATION, b);
+            }
+        });
+        
+        addFunction(new Function("lu", 2){
+            @Override
+            public Type eval(List<Type> args) throws ClassCastException {
+                Matrix A = (Matrix) args.get(0);
+                Vector b = (Vector) args.get(1);
+                return A.solve(LinearSystemSolver.LU, b);
             }
         });
         
