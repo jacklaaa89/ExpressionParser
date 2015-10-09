@@ -11,7 +11,7 @@ import java.math.MathContext;
  *
  * @author jacktimblin
  */
-public class Scalar extends BigDecimal implements Arithmetic  {
+public class Scalar<T> extends BigDecimal implements Arithmetic  {
     
     public static final Scalar ZERO = new Scalar(0d);
     public static final Scalar ONE  = new Scalar(1d);
@@ -131,13 +131,6 @@ public class Scalar extends BigDecimal implements Arithmetic  {
         Scalar o = (Scalar) object;
         return this.equals(o);
     }
-
-    @Override
-    public int compareTo(Type object) {
-        if(!(object instanceof Scalar)) return -1;
-        Scalar o = (Scalar) object;
-        return super.compareTo(o);
-    }
     
     @Override
     public Scalar apply(Functions handle) {
@@ -155,18 +148,23 @@ public class Scalar extends BigDecimal implements Arithmetic  {
     }
 
     @Override
-    public Arithmetic neg() {
+    public Scalar neg() {
         return new Scalar(this.negate().doubleValue(), mc);
     }
 
     @Override
-    public Arithmetic pos() {
+    public Scalar pos() {
         return new Scalar(this.abs(mc).doubleValue(), mc);
     }
 
     @Override
-    public Arithmetic absolute() {
+    public Scalar absolute() {
         return new Scalar(this.abs(mc).doubleValue(), mc);
+    }
+
+    @Override
+    public int compareTo(Type o) {
+        return super.compareTo((BigDecimal)o);
     }
     
 }

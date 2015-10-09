@@ -15,53 +15,53 @@ public interface Arithmetic<T extends Type> extends Type<T> {
      * @param data the data to multiply this data structure with.
      * @return the computed data structure.
      */
-    public Arithmetic mult(Type data);
+    public <D extends Arithmetic> D mult(Type data);
     
     /**
      * Negates a value (or all values in a structure)
      * @return the value after all values have been negated.
      */
-    public Arithmetic neg();
+    public  <D extends Arithmetic> D neg();
     
     /**
      * Makes a value (or all values in a structure) positive.
      * @return the value after all of the values have been made positive.
      */
-    public Arithmetic pos();
+    public  <D extends Arithmetic> D pos();
     
     /**
      * Returns the absolute value for this value.
      * @return the absolute value for this value.
      */
-    public Arithmetic absolute();
+    public  <D extends Arithmetic> D absolute();
     
     /**
      * Divide A/B to give C.
      * @param data the data to divide each corresponding element with.
      * @return the computed data structure.
      */
-    public Arithmetic div(Type data);
+    public  <D extends Arithmetic> D div(Type data);
     
     /**
      * Add A+B to give C.
      * @param data the data to add to A to get C.
      * @return the computed data structure.
      */
-    public Arithmetic plus(Type data);
+    public  <D extends Arithmetic> D plus(Type data);
     
     /**
      * Subtract A-B to give C.
      * @param data the data to subtract from A to get C.
      * @return the computed data structure.
      */
-    public Arithmetic minus(Type data);
+    public  <D extends Arithmetic> D minus(Type data);
     
     /**
      * Perform A%B to give C (the remainder operator).
      * @param data the data to compute with A to get C.
      * @return the computed data structure.
      */
-    public Arithmetic mod(Type data);
+    public  <D extends Arithmetic> D mod(Type data);
     
     /**
      * Calculate the smallest value.
@@ -86,14 +86,14 @@ public interface Arithmetic<T extends Type> extends Type<T> {
      * @param value the scalar value
      * @return the completed bitwise left operation value.
      */
-    public Arithmetic bitwiseLeft(Scalar value);
+    public  <D extends Arithmetic> D bitwiseLeft(Scalar value);
     
     /**
      * Performs a bitwise right using a scalar value.
      * @param value the scalar value
      * @return the completed bitwise right operation value.
      */
-    public Arithmetic bitwiseRight(Scalar value);
+    public  <D extends Arithmetic> D bitwiseRight(Scalar value);
     
     /**
      * Determines if an object is the same capacity as this.

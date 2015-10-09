@@ -248,7 +248,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
      * @throws ArithmeticException if the vectors lengths are not the same.
      */
     @Override
-    public Arithmetic plus(Type B) throws ArithmeticException {
+    public Vector plus(Type B) throws ArithmeticException {
         if(B instanceof Scalar) return this.plus((Scalar)B);
         Vector A = this;
         Vector b = (Vector) B;
@@ -310,7 +310,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
      * is attempted.
      */
     @Override
-    public Arithmetic div(Type B) throws ArithmeticException {
+    public Vector div(Type B) throws ArithmeticException {
         if(B instanceof Scalar) return this.divide((Scalar)B);
         Vector A = this;
         Vector b = (Vector) B;
@@ -346,7 +346,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
     }
     
     @Override
-    public Arithmetic minus(Type B) {
+    public Vector minus(Type B) {
         if(B instanceof Scalar) return this.minus((Scalar)B);
         Vector A = this;
         Vector b = (Vector) B;
@@ -390,7 +390,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
     }
     
     @Override
-    public Arithmetic mult(Type B) {
+    public Vector mult(Type B) {
         if(B instanceof Scalar) return this.multiply((Scalar)B);
         Vector A = this;
         Vector b = (Vector) B;

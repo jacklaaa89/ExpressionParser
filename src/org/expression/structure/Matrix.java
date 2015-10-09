@@ -16,6 +16,8 @@ import org.expression.Type;
 import org.expression.computation.decomposition.AbstractDecompositor;
 import org.expression.computation.decomposition.LUDecompositor;
 import org.expression.computation.decomposition.LinearSystemDecompositor;
+import org.expression.computation.decomposition.SingleValueDecomposition;
+import org.expression.computation.linear.AbstractSolver;
 import org.expression.computation.linear.LinearSystemSolver;
 
 /**
@@ -436,7 +438,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @return the computed matrix from A + B.
      */
     @Override
-    public Arithmetic plus(Type B) {
+    public Matrix plus(Type B) {
         if(B instanceof Scalar) return this.plus((Scalar)B);
         Matrix b = (Matrix) B;
         Matrix A = this;
@@ -481,7 +483,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @return the computed matrix from A - B.
      */
     @Override
-    public Arithmetic minus(Type B) {
+    public Matrix minus(Type B) {
         if(B instanceof Scalar) return this.minus((Scalar)B);
         Matrix A = this;
         Matrix b = (Matrix) B;
@@ -503,7 +505,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @return the solution to AB = C
      */
     @Override
-    public Arithmetic mult(Type B) {
+    public Matrix mult(Type B) {
         if(B instanceof Scalar) return this.mult((Scalar)B);
         if(B instanceof Vector) return this.mult((Vector)B);
         Matrix A = this;
@@ -531,7 +533,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @param B the vector to multiply this matrix by.
      * @return the result of the computation.
      */
-    private Arithmetic mult(Vector B) {
+    private Matrix mult(Vector B) {
         Matrix m = new Matrix(this.M, B.size(), mc);
         for(int i = 0; i < B.size(); i++) {
             m.set(0, i, B.get(i));
@@ -573,7 +575,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @param n the exponent to power this matrix by.
      * @return the matrix powered to the exponent n.
      */
-    public Arithmetic power(int n) {
+    public Matrix power(int n) {
         if(!this.is(Predicate.SQUARE)) throw new ArithmeticException("can only power square matrices");
         Matrix I = Matrix.identity(this.N, mc);
         Matrix A = this;
@@ -645,7 +647,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
     }
 
     @Override
-    public Arithmetic div(Type data) {
+    public Matrix div(Type data) {
         if(data instanceof Scalar) return this.div((Scalar)data);
         throw new ArithmeticException("matrix division is unsupported");
     }
@@ -673,7 +675,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @param scalar the scalar value b.
      * @return the result of A + B = C.
      */
-    private Arithmetic plus(Scalar scalar) {
+    private Matrix plus(Scalar scalar) {
         Matrix B = Matrix.scalar(this.N, scalar, mc);
         return this.plus(B);
     }
@@ -683,7 +685,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
      * @param scalar the scalar value b.
      * @return the result of A - B = C.
      */
-    private Arithmetic minus(Scalar scalar) {
+    private Matrix minus(Scalar scalar) {
         Matrix B = Matrix.scalar(this.N, scalar, mc);
         return this.minus(B);
     }
@@ -769,7 +771,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
     }
 
     @Override
-    public Arithmetic mod(Type data) {
+    public Matrix mod(Type data) {
         if(data instanceof Scalar) return this.mod((Scalar)data);
         Matrix A = this;
         Matrix B = (Matrix) data;
@@ -986,7 +988,33 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
     }
     
     /**
+     * Calculates the rank of a matrix.
+     * The rank of a matrix is the number of linearly independent rows of a full matrix.
+     * @return the rank of a matrix.
+     */
+    public Scalar rank() {
+        if(this.getRowSize() == 0 || this.getColumnSize() == 0) {
+            return Scalar.ZERO;
+        }
+        SingleValueDecomposition svd = this.decompose(LinearSystemDecompositor.SINGLE_VALUE);
+        Matrix s = svd.getD();
+        Scalar tol = new Scalar(
+            Math.max(M, N) * s.get(0, 0).doubleValue() * AbstractSolver.EPSILON
+        );
+        Scalar rank = Scalar.ZERO;
+        for(int i = 0; i < s.getRowSize(); i++) {
+            if(s.get(i, i).compareTo((Type)tol) == 1) {
+                rank = (Scalar) rank.plus(Scalar.ONE);
+            }
+        }
+        return rank;
+    }
+    
+    /**
      * Calculates the determinant of a matrix.
+     * The determinant is used to determine if a solution exists to a system of
+     * linear equations. If the determinant is zero, then the system is singular and
+     * this system doesn't have an inverse.
      * @return the determinant.
      */
     public Scalar determinant() {
