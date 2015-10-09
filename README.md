@@ -269,4 +269,4 @@ System.out.println(e.setExpression("ZEROS(3,3)").eval()); //prints [0,0,0; 0,0,0
 
 There is some functionality that is in the works of being implemented. These are:
 
-- [] Update the grammar to allow for array access. i.e `SIZE(A)[0]` where `A` is a 4x4 Matrix would return the Scalar value `4.0`. 
+- [ ] Update the grammar to allow for array access. i.e `SIZE(A)[0]` where `A` is a 4x4 Matrix would return the Scalar value `4.0`. 
