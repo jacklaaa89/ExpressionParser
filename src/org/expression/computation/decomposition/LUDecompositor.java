@@ -1,6 +1,7 @@
 package org.expression.computation.decomposition;
 
 import org.expression.Scalar;
+import org.expression.Type;
 import static org.expression.computation.linear.AbstractSolver.EPS_SCALAR;
 import org.expression.structure.Matrix;
 
@@ -53,7 +54,7 @@ public class LUDecompositor extends AbstractDecompositor implements Decompositor
             }
             int pivot = j;
             for(int i = j + 1; i < lu.getRowSize(); i++) {
-                if(lu.get(i, j).absolute().compareTo(lu.get(pivot, j).absolute()) == 1) {
+                if(lu.get(i, j).absolute().compareTo((Type)lu.get(pivot, j).absolute()) == 1) {
                     pivot = i;
                 }
             }
@@ -63,7 +64,7 @@ public class LUDecompositor extends AbstractDecompositor implements Decompositor
                 p.swap(pivot, j);
             }
             
-            if(j < lu.getRowSize() && lu.get(j, j).absolute().compareTo(EPS_SCALAR) == 1) {
+            if(j < lu.getRowSize() && lu.get(j, j).absolute().compareTo((Type)EPS_SCALAR) == 1) {
                 for(int i = j + 1; i < lu.getRowSize(); i++) {
                     Scalar e = (Scalar) lu.get(i, j).div(lu.get(j, j));
                     lu.set(i, j, e);
