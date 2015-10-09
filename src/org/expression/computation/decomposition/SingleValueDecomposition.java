@@ -38,7 +38,7 @@ public class SingleValueDecomposition extends AbstractDecompositor implements De
             if(k < nc) {
                 s.set(k, k, Scalar.ZERO);
                 for(int i = k; i < a.getRowSize(); i++) {
-                    s.set(k, k, hypot(s.get(k, k), a.get(i, k)));
+                    s.set(k, k, Scalar.hypot(s.get(k, k), a.get(i, k)));
                 }
                 if(s.get(k, k).compareTo(EPS_SCALAR) == 1) {
                     if(a.get(k, k).compareTo(Scalar.ZERO) == -1) {
@@ -79,7 +79,7 @@ public class SingleValueDecomposition extends AbstractDecompositor implements De
             if(k < nr) {
                 e.set(k, Scalar.ZERO);
                 for(int i = k + 1; i < a.getColumnSize(); i++) {
-                    e.set(k, hypot(e.get(k), e.get(i)));
+                    e.set(k, Scalar.hypot(e.get(k), e.get(i)));
                 }
                 if(e.get(k).abs().compareTo(EPS_SCALAR) == 1) {
                     if(e.get(k + 1).compareTo(Scalar.ZERO) == -1) {
@@ -230,7 +230,7 @@ public class SingleValueDecomposition extends AbstractDecompositor implements De
                     Scalar f = e.get(p - 2);
                     e.set(p - 2, Scalar.ZERO);
                     for(int j = p - 2; j >= k; j--) {
-                        Scalar t = hypot(s.get(j, j), f);
+                        Scalar t = Scalar.hypot(s.get(j, j), f);
                         Scalar cs = s.get(j, j).divide(t);
                         Scalar sn = f.divide(t);
                         s.set(j, j, t);
@@ -254,7 +254,7 @@ public class SingleValueDecomposition extends AbstractDecompositor implements De
                     Scalar f = e.get(k - 1);
                     e.set(k - 1, Scalar.ZERO);
                     for(int j = k; j < p; j++) {
-                        Scalar t = hypot(s.get(j, j), f);
+                        Scalar t = Scalar.hypot(s.get(j, j), f);
                         Scalar cs = s.get(j, j).divide(t);
                         Scalar sn = f.divide(t);
                         s.set(j, j, t);
@@ -299,7 +299,7 @@ public class SingleValueDecomposition extends AbstractDecompositor implements De
                     Scalar f = (sk.add(sp).multiply(sk.subtract(sp))).add(shift);
                     Scalar g = sk.multiply(ekk);
                     for(int j = k; j < p - 1; j++) {
-                        Scalar t = hypot(f, g);
+                        Scalar t = Scalar.hypot(f, g);
                         Scalar cs = f.divide(t);
                         Scalar sn = g.divide(t);
                         if(j != k) {
@@ -314,7 +314,7 @@ public class SingleValueDecomposition extends AbstractDecompositor implements De
                             v.set(i, j + 1, sn.negate().multiply(v.get(i, j)).add(cs.multiply(v.get(i, j + 1))));
                             v.set(i, j, t);
                         }
-                        t = hypot(f, g);
+                        t = Scalar.hypot(f, g);
                         cs = f.divide(t);
                         sn = g.divide(t);
                         s.set(j, j, t);
@@ -374,24 +374,6 @@ public class SingleValueDecomposition extends AbstractDecompositor implements De
             }
         }
         this.U = u; this.D = s; this.V = v;
-    }
-
-    private Scalar hypot(Scalar a, Scalar b) {
-        Scalar result;
-        if(a.abs().compareTo(b.abs()) == 1) {
-            Scalar e = b.divide(a);
-            double ed = e.doubleValue();
-            Scalar f = new Scalar(Math.sqrt(1 + ed * ed));
-            result = a.abs().multiply(f);
-        } else if(!b.equals(Scalar.ZERO)) {
-            Scalar e = a.divide(b);
-            double ed = e.doubleValue();
-            Scalar f = new Scalar(Math.sqrt(1 + ed * ed));
-            result = b.abs().multiply(f);
-        } else {
-            result = Scalar.ZERO;
-        }
-        return result;
     }
     
     /**

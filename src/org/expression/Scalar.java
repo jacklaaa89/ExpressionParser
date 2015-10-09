@@ -84,6 +84,59 @@ public class Scalar implements Arithmetic<Arithmetic>  {
         return new Scalar(Math.random(), mc);
     }
     
+    /**
+     * Returns the larger of the two Scalar values.
+     * @param o1 an argument
+     * @param o2 another argument.
+     * @return the larger of {@code o1} and {@code o2}.
+     */
+    public static Scalar max(Scalar o1, Scalar o2) {
+        return new Scalar(Math.max(o1.value, o2.value));
+    }
+    
+    /**
+     * Returns the smaller of the two Scalar values.
+     * @param o1 an argument
+     * @param o2 another argument.
+     * @return the smaller of {@code o1} and {@code o2}.
+     */
+    public static Scalar min(Scalar o1, Scalar o2) {
+        return new Scalar(Math.min(o1.value, o2.value));
+    }
+    
+    /**
+     * Returns the square root of a particular value.
+     * @param v the value to sqrt.
+     * @return the value square rooted.
+     */
+    public static Scalar sqrt(Scalar v) {
+        return new Scalar(Math.sqrt(v.value));
+    }
+    
+    /**
+     * Returns sqrt(x2 + y2).
+     * @param a the x value.
+     * @param b the y value.
+     * @return sqrt(x2 + y2)
+     */
+    public static Scalar hypot(Scalar a, Scalar b) {
+        Scalar result;
+        if(a.abs().compareTo(b.abs()) == 1) {
+            Scalar e = b.divide(a);
+            double ed = e.doubleValue();
+            Scalar f = new Scalar(Math.sqrt(1 + ed * ed));
+            result = a.abs().multiply(f);
+        } else if(!b.equals(Scalar.ZERO)) {
+            Scalar e = a.divide(b);
+            double ed = e.doubleValue();
+            Scalar f = new Scalar(Math.sqrt(1 + ed * ed));
+            result = b.abs().multiply(f);
+        } else {
+            result = Scalar.ZERO;
+        }
+        return result;
+    }
+    
     @Override
     public Scalar apply(Handler handler) {
         return (Scalar) handler.handle(this, mc);
