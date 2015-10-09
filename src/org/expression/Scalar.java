@@ -313,8 +313,8 @@ public class Scalar implements Arithmetic<Arithmetic>  {
     @Override
     public int compareTo(Arithmetic o) {
         if(!(o instanceof Scalar)) return -1;
-        Double d = ((Scalar)o).value;
-        return d.compareTo(this.value);
+        Double d = this.value;
+        return d.compareTo(((Scalar)o).value);
     }
     
     /**

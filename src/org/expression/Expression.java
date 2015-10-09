@@ -404,21 +404,7 @@ public class Expression {
             .addEvaluator(
                 Operator.EXPRESSION_SCALAR, 
                 (Evaluator<Scalar>) (Arithmetic lleft, Arithmetic rright) -> {
-                    BigDecimal left = (BigDecimal) lleft;
-                    BigDecimal right = (BigDecimal) rright;
-
-                    int rightSign = right.signum();
-                    double dLeft = left.doubleValue();
-                    right = right.multiply(new BigDecimal(rightSign));
-                    BigDecimal rightRemainder = right.remainder(BigDecimal.ONE);
-                    BigDecimal rightIntPart = right.subtract(rightRemainder);
-                    BigDecimal intPow = left.pow(rightIntPart.intValueExact(), mc);
-                    BigDecimal doublePow = new BigDecimal(Math.pow(dLeft, rightRemainder.doubleValue()));
-                    BigDecimal result = intPow.multiply(doublePow, mc);
-                    if(rightSign == -1) {
-                        result = BigDecimal.ONE.divide(result, mc.getPrecision(), RoundingMode.HALF_UP);
-                    }
-                    return new Scalar(result.doubleValue(), mc);
+                    return ((Scalar)lleft).power((Scalar)rright);
                 }   
             )
             .addEvaluator(Operator.EXPRESSION_MATRIX_SCALAR,
@@ -647,6 +633,7 @@ public class Expression {
      * Sets the precision to use.
      * @param precision the precision to use.
      * @return a reference to itself for method chaining.
+     * @deprecated 
      */
     public final Expression setPrecision(int precision) {
         RoundingMode m = RoundingMode.HALF_EVEN;
@@ -661,6 +648,7 @@ public class Expression {
      * Sets the rounding mode to use.
      * @param mode the rounding mode to use.
      * @return a reference to itself for method chaining.
+     * @deprecated
      */
     public final Expression setRoundingMode(RoundingMode mode) {
         int precision = 7;
