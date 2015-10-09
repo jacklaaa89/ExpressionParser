@@ -1077,4 +1077,36 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         return r;
     }
     
+    /**
+     * Replaces the column at index {@code n} with {@code col}
+     * @param n the index to replace.
+     * @param col the column to replace with.
+     * @return the new matrix after the replacement.
+     */
+    public Matrix setColumn(int n, Vector col) {
+        if(n > N - 1) throw new ArithmeticException("invalid index");
+        if(col.size() != N) throw new ArithmeticException("column vector is the wrong size.");
+        Matrix m = this.copy();
+        for(int i = 0; i < M; i++) {
+            Vector c = m.get(i);
+            c.set(n, col.get(i));
+            m.set(i, c);
+        }
+        return m;
+    }
+    
+    /**
+     * Replaces the row at index {@code m} with {@code row}
+     * @param m the index to replace.
+     * @param row the row to replace with.
+     * @return the new matrix after the replacement.
+     */
+    public Matrix setRow(int m, Vector row) {
+        if(m > M - 1) throw new ArithmeticException("invalid index");
+        if(row.size() != M) throw new ArithmeticException("column vector is the wrong size.");
+        Matrix ma = this.copy();
+        ma.set(m, row);
+        return ma;
+    }
+    
 }

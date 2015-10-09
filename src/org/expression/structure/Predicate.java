@@ -6,6 +6,7 @@
 package org.expression.structure;
 
 import org.expression.structure.predicate.DiagonallyDominant;
+import org.expression.structure.predicate.FullRank;
 import org.expression.structure.predicate.Square;
 
 /**
@@ -26,6 +27,12 @@ public enum Predicate {
         @Override
         public boolean test(Matrix A) {
             return new Square().test(A);
+        }
+    },
+    FULL_RANK {
+        @Override
+        public boolean test(Matrix A) {
+            return new FullRank().test(A);
         }
     };
     public abstract boolean test(Matrix A);
