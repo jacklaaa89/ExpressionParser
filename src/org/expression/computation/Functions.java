@@ -176,7 +176,7 @@ public enum Functions {
         @Override
         public Handler get() {
             return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(o1.abs(mc).doubleValue(), mc);
+                return new Scalar(o1.abs().value, mc);
             };
         }
     },
@@ -187,7 +187,7 @@ public enum Functions {
         @Override
         public Handler get() {
             return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(o1.setScale(0, RoundingMode.FLOOR).doubleValue(), mc);
+                return new Scalar(Math.floor(o1.value));
             };
         }
     },
@@ -198,7 +198,7 @@ public enum Functions {
         @Override
         public Handler get() {
             return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(o1.setScale(0, RoundingMode.CEILING).doubleValue(), mc);
+                return new Scalar(Math.ceil(o1.value));
             };
         }
     },
@@ -209,7 +209,7 @@ public enum Functions {
         @Override
         public Handler get() {
             return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(o1.negate(mc).doubleValue(), mc);
+                return new Scalar(o1.negate().value, mc);
             };
         }
     },
@@ -220,7 +220,7 @@ public enum Functions {
         @Override
         public Handler get() {
             return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(o1.abs(mc).doubleValue(), mc);
+                return new Scalar(o1.abs().value, mc);
             };
         }
     };

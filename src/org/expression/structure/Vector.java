@@ -1,6 +1,5 @@
 package org.expression.structure;
 
-import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Collection;
 import java.util.Collections;
@@ -201,11 +200,11 @@ public class Vector extends BaseStructure<Scalar, Vector> {
     }
     
     public static Vector zeroes(Scalar n, MathContext mc) {
-        return Vector.random(n.intValueExact(), mc);
+        return Vector.random(n.intValue(), mc);
     }
     
     public static Vector zeroes(Scalar n) {
-        return Vector.zeroes(n.intValueExact());
+        return Vector.zeroes(n.intValue());
     }
     
     /**
@@ -234,11 +233,11 @@ public class Vector extends BaseStructure<Scalar, Vector> {
     }
     
     public static Vector random(Scalar n, MathContext mc) {
-        return Vector.random(n.intValueExact(), mc);
+        return Vector.random(n.intValue(), mc);
     }
     
     public static Vector random(Scalar n) {
-        return Vector.random(n.intValueExact());
+        return Vector.random(n.intValue());
     }
     
     /**
@@ -248,7 +247,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
      * @throws ArithmeticException if the vectors lengths are not the same.
      */
     @Override
-    public Vector plus(Type B) throws ArithmeticException {
+    public Vector add(Type B) throws ArithmeticException {
         if(B instanceof Scalar) return this.plus((Scalar)B);
         Vector A = this;
         Vector b = (Vector) B;
@@ -257,8 +256,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
         if(N != BN) throw new ArithmeticException("Columns have to be same size.");
         Vector C = new Vector(N);
         for(int i = 0; i < N; i++) {
-            BigDecimal v = A.get(i).add(b.get(i), mc);
-            Scalar n = new Scalar(v.doubleValue());
+            Scalar n = (Scalar) A.get(i).add(b.get(i));
             C.set(i, n);
         }
         return C;
@@ -275,8 +273,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
         int N = this.size();
         Vector C = new Vector(N);
         for(int i = 0; i < N; i++) {
-            BigDecimal v = A.get(i).add(augend, mc);
-            Scalar n = new Scalar(v.doubleValue());
+            Scalar n = (Scalar) A.get(i).add(augend);
             C.set(i, n);
         }
         return C;
@@ -289,13 +286,12 @@ public class Vector extends BaseStructure<Scalar, Vector> {
      * @throws ArithmeticException if a division by zero is attempted.
      */
     public Vector divide(Scalar divisor) throws ArithmeticException {
-        if(divisor.equals(BigDecimal.ZERO)) throw new ArithmeticException("division by zero.");
+        if(divisor.equals(Scalar.ZERO)) throw new ArithmeticException("division by zero.");
         Vector A = this;
         int N = this.size();
         Vector C = new Vector(N);
         for(int i = 0; i < N; i++) {
-            BigDecimal v = A.get(i).divide(divisor, mc);
-            Scalar n = new Scalar(v.doubleValue());
+            Scalar n = (Scalar) A.get(i).divide(divisor);
             C.set(i, n);
         }
         return C;
@@ -310,7 +306,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
      * is attempted.
      */
     @Override
-    public Vector div(Type B) throws ArithmeticException {
+    public Vector divide(Type B) throws ArithmeticException {
         if(B instanceof Scalar) return this.divide((Scalar)B);
         Vector A = this;
         Vector b = (Vector) B;
@@ -319,10 +315,9 @@ public class Vector extends BaseStructure<Scalar, Vector> {
         if(N != BN) throw new ArithmeticException("Columns have to be same size.");
         Vector C = new Vector(N);
         for(int i = 0; i < N; i++) {
-            BigDecimal bi = b.get(i);
-            if(bi.equals(BigDecimal.ZERO)) throw new ArithmeticException("division by zero.");
-            BigDecimal v = A.get(i).divide(bi, mc);
-            Scalar n = new Scalar(v.doubleValue());
+            Scalar bi = b.get(i);
+            if(bi.equals(Scalar.ZERO)) throw new ArithmeticException("division by zero.");
+            Scalar n = (Scalar) A.get(i).divide(bi);
             C.set(i, n);
         }
         return C;
@@ -338,15 +333,14 @@ public class Vector extends BaseStructure<Scalar, Vector> {
         int N = this.size();
         Vector C = new Vector(N);
         for(int i = 0; i < N; i++) {
-            BigDecimal v = A.get(i).subtract(subtrahend, mc);
-            Scalar n = new Scalar(v.doubleValue());
+            Scalar n = (Scalar) A.get(i).subtract(subtrahend);
             C.set(i, n);
         }
         return C;
     }
     
     @Override
-    public Vector minus(Type B) {
+    public Vector subtract(Type B) {
         if(B instanceof Scalar) return this.minus((Scalar)B);
         Vector A = this;
         Vector b = (Vector) B;
@@ -355,8 +349,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
         if(N != BN) throw new RuntimeException("Columns have to be same size.");
         Vector C = new Vector(N);
         for(int i = 0; i < N; i++) {
-            BigDecimal v = A.get(i).subtract(b.get(i), mc);
-            Scalar n = new Scalar(v.doubleValue());
+            Scalar n = (Scalar) A.get(i).subtract(b.get(i));
             C.set(i, n);
         }
         return C;
@@ -382,15 +375,14 @@ public class Vector extends BaseStructure<Scalar, Vector> {
         int N = this.size();
         Vector C = new Vector(N);
         for(int i = 0; i < N; i++) {
-            BigDecimal v = A.get(i).multiply(multiplicand, mc);
-            Scalar n = new Scalar(v.doubleValue());
+            Scalar n = (Scalar) A.get(i).multiply(multiplicand);
             C.set(i, n);
         }
         return C;
     }
     
     @Override
-    public Vector mult(Type B) {
+    public Vector multiply(Type B) {
         if(B instanceof Scalar) return this.multiply((Scalar)B);
         Vector A = this;
         Vector b = (Vector) B;
@@ -399,8 +391,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
         if(N != BN) throw new RuntimeException("Columns have to be same size.");
         Vector C = new Vector(N);
         for(int i = 0; i < N; i++) {
-            BigDecimal v = A.get(i).multiply(b.get(i), mc);
-            Scalar n = new Scalar(v.doubleValue());
+            Scalar n = (Scalar) A.get(i).multiply(b.get(i));
             C.set(i, n);
         }
         return C;
@@ -419,9 +410,8 @@ public class Vector extends BaseStructure<Scalar, Vector> {
         if(N != BN) throw new RuntimeException("Columns have to be same size.");
         Scalar d = new Scalar(0d);
         for(int i = 0; i < N; i++) {
-            BigDecimal v = A.get(i).multiply(B.get(i), mc);
-            BigDecimal de = d.add(v, mc);
-            d = new Scalar(de.doubleValue());
+            Scalar v = (Scalar) A.get(i).multiply(B.get(i));
+            d = (Scalar) d.add(v);
         }
         
         return d;
@@ -443,7 +433,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
     }
 
     @Override
-    public int compareTo(Type O) {
+    public int compareTo(Arithmetic O) {
         
         if(!(O instanceof Vector)) throw new RuntimeException("can only compare a vector to a vector.");
         
@@ -455,7 +445,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
         HashMap<Integer, Integer> in = new HashMap<>();
         //run compareTo on the values in the vector.
         for(int i = 0; i < this.size(); i++) {
-            int e = this.get(i).compareTo((Type)o.get(i));
+            int e = this.get(i).compareTo(o.get(i));
             if(e != 0) {
                 if(!in.containsKey(e)) {
                     in.put(e, 0);
@@ -485,9 +475,9 @@ public class Vector extends BaseStructure<Scalar, Vector> {
     }
 
     @Override
-    public Arithmetic mod(Type data) {
+    public Arithmetic remainder(Type data) {
         Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
-            return (Scalar) o1.mod(data);
+            return (Scalar) o1.remainder(data);
         };
         return this.apply(h);
     }
@@ -496,8 +486,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
     public Scalar sum() {
         Scalar t = Scalar.ZERO;
         for (Scalar aThi : this) {
-            BigDecimal d = t.add(aThi, mc);
-            t = new Scalar(d.doubleValue(), mc);
+            t = (Scalar) aThi.add(t);
         }
         return t;
     }

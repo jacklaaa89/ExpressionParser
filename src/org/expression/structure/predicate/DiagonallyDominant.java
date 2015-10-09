@@ -23,11 +23,11 @@ public class DiagonallyDominant implements MatrixPredicate {
             Scalar sum = Scalar.ZERO;
             for(int j = 0; j < A.getColumnSize(); j++) {
                 if(i != j) {
-                    sum.plus((Scalar)A.get(i, j).absolute());
+                    sum.add((Scalar)A.get(i, j).abs());
                 }
             }
-            Scalar e = (Scalar) A.get(i, i).absolute().minus(new Scalar(AbstractSolver.EPSILON));
-            if(sum.compareTo((Type)e) == 1) {
+            Scalar e = (Scalar) A.get(i, i).abs().subtract(new Scalar(AbstractSolver.EPSILON));
+            if(sum.compareTo(e) == 1) {
                 return false;
             }
         }

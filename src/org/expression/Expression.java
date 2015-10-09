@@ -146,15 +146,15 @@ public class Expression {
                         //or an array if we have one entry more than 1.
                         //or a single value if 1.
                         if(v.size() >= 2) {
-                           m = Matrix.random(v.get(0).intValueExact(), v.get(1).intValueExact());
+                           m = Matrix.random(v.get(0).intValue(), v.get(1).intValue());
                         } else {
-                           int amount = v.get(0).intValueExact();
+                           int amount = v.get(0).intValue();
                            m = (amount <= 1) ? Scalar.random() : Vector.random(amount);
                         }
                     } else {
                         //we have a whole number.
                         Scalar n = (Scalar) r;
-                        int amount = n.intValueExact();
+                        int amount = n.intValue();
                         m = (amount <= 1) ? Scalar.random() : Vector.random(amount);
                     }
                     return m;
@@ -184,9 +184,10 @@ public class Expression {
                     Type r = args.get(0);
                     Scalar p = (Scalar) args.get(1);
                     
-                    int precision = p.intValueExact();
+                    int precision = p.intValue();
                     Handler hndlr = (Handler) (Scalar o1, MathContext mc) -> {
-                        return new Scalar(o1.setScale(precision, mc.getRoundingMode()).doubleValue(), mc);
+                        BigDecimal d = new BigDecimal(o1.value);
+                        return new Scalar(d.setScale(precision, mc.getRoundingMode()).doubleValue());
                     };
                     return r.apply(hndlr);
                 }
@@ -213,7 +214,7 @@ public class Expression {
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
                 Scalar c = (Scalar) args.get(0);
-                return Matrix.identity(c.intValueExact());
+                return Matrix.identity(c.intValue());
             }
         });
         
@@ -257,7 +258,7 @@ public class Expression {
                 Scalar i  = (args.size() > 2) 
                         ? ((Scalar)args.get(2))
                         : new Scalar(m.getRowSize());
-                return m.addRow(i.intValueExact(), n);
+                return m.addRow(i.intValue(), n);
             }
         });
         
@@ -296,7 +297,7 @@ public class Expression {
                         throw new ArithmeticException("invalid parameter types");
                     }
                 }
-                return ((Structure)r).addColumn(index.intValueExact(), a);
+                return ((Structure)r).addColumn(index.intValue(), a);
             }
         });
         
@@ -323,28 +324,9 @@ public class Expression {
         addFunction(new Function("sqrt", 1){
                 @Override
                 public Type eval(List<Type> args) {
-                    Type r = args.get(0);
-                    if(!(r instanceof Scalar)) {
-                        throw new RuntimeException("Arrays are not supported in sqrt.");
-                    }
-                    
-                    Scalar x = (Scalar) r;
-                    if(x.compareTo((Type)Scalar.ZERO) == 0) {
-                        return Scalar.ZERO;
-                    }
-                    if(x.signum() < 0) {
-                        return Scalar.ZERO;
-                    }
-                    BigInteger n = x.movePointRight(mc.getPrecision() << 1).toBigInteger();
-                    int bits = (n.bitLength() + 1) >> 1;
-                    BigInteger ix = n.shiftRight(bits);
-                    BigInteger ixPrev;
-                    do {
-                        ixPrev = ix;
-                        ix = ix.add(n.divide(ix)).shiftRight(1);
-                        Thread.yield();
-                    } while (ix.compareTo(ixPrev) != 0);
-                    return new Scalar(ix, mc.getPrecision());
+                    Scalar x = (Scalar) args.get(0);
+                    double y = Math.sqrt(x.value);
+                    return new Scalar(y);
                 }
             }
         );
@@ -379,7 +361,7 @@ public class Expression {
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
                 (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
-                    return left.mod(right);
+                    return left.remainder(right);
                 }   
             )
             .removeEvaluator(Operator.EXPRESSION_VECTOR_MATRIX)
@@ -389,7 +371,7 @@ public class Expression {
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
                 (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
-                    return left.plus(right);
+                    return left.add(right);
                 }   
             )
             //not valid for vector to matrix operations.
@@ -400,7 +382,7 @@ public class Expression {
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
                 (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
-                    return left.mult(right);
+                    return left.multiply(right);
                 }   
             )
             //not valid for vector to matrix operations.
@@ -411,7 +393,7 @@ public class Expression {
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
                 (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
-                    return left.minus(right);
+                    return left.subtract(right);
                 }   
             )
             //not valid for vector to matrix operations.
@@ -442,7 +424,7 @@ public class Expression {
             .addEvaluator(Operator.EXPRESSION_MATRIX_SCALAR,
                 (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
                     Matrix m = (Matrix) left;
-                    return m.power(((Scalar)right).intValueExact());
+                    return m.power(((Scalar)right).intValue());
                 }
             )
         );
@@ -451,7 +433,7 @@ public class Expression {
             .addEvaluator(
                 Operator.EXPRESSION_ALL,
                 (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
-                    return left.div(right);
+                    return left.divide(right);
                 }
             )
         );

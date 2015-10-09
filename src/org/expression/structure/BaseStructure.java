@@ -1,6 +1,5 @@
 package org.expression.structure;
 
-import org.expression.structure.Structure;
 import java.math.MathContext;
 import java.util.ArrayList;
 import org.expression.computation.Arithmetic;
@@ -67,9 +66,8 @@ public abstract class BaseStructure<T, O extends Type> extends ArrayList<T>
      */
     @Override
     public Arithmetic bitwiseLeft(Scalar value) {
-        final int n = value.intValueExact();
         Handler h = (Scalar o1, MathContext mc1) -> {
-            return new Scalar(o1.movePointLeft(n).doubleValue(), mc1);
+            return (Scalar) o1.bitwiseLeft(value);
         };
         return this.apply(h);
     }
@@ -81,9 +79,8 @@ public abstract class BaseStructure<T, O extends Type> extends ArrayList<T>
      */
     @Override
     public Arithmetic bitwiseRight(Scalar value) {
-        final int n = value.intValueExact();
         Handler h = (Scalar o1, MathContext mc1) -> {
-            return new Scalar(o1.movePointRight(n).doubleValue(), mc1);
+            return (Scalar) o1.bitwiseRight(value);
         };
         return this.apply(h);
     }
@@ -93,7 +90,7 @@ public abstract class BaseStructure<T, O extends Type> extends ArrayList<T>
      * @return the data structure after the operation has been completed.
      */
     @Override
-    public Arithmetic neg() {
+    public Arithmetic negate() {
         return this.apply(Functions.NEGATE);
     }
     
@@ -102,7 +99,7 @@ public abstract class BaseStructure<T, O extends Type> extends ArrayList<T>
      * @return the data structure after the operation has been completed.
      */
     @Override
-    public Arithmetic pos() {
+    public Arithmetic plus() {
         return this.apply(Functions.PLUS);
     }
     
@@ -111,7 +108,7 @@ public abstract class BaseStructure<T, O extends Type> extends ArrayList<T>
      * @return the data structure after the operation has been completed.
      */
     @Override
-    public Arithmetic absolute() {
+    public Arithmetic abs() {
         return this.apply(Functions.ABS);
     }
     

@@ -1,7 +1,6 @@
 package org.expression.computation.linear;
 
 import org.expression.Scalar;
-import org.expression.Type;
 import org.expression.structure.Matrix;
 import org.expression.structure.Predicate;
 import org.expression.structure.Vector;
@@ -30,9 +29,9 @@ public class GaussianElimination extends AbstractSolver implements Solver {
         for(int p = 0; p < N; p++) {
            int max = p;
            for(int i = p + 1; i < N; i++) {
-               Scalar ip = (Scalar) A.get(i, p).absolute();
-               Scalar maxp = (Scalar) A.get(max, p).absolute();
-               if(ip.compareTo((Type)maxp) == 1) {
+               Scalar ip = A.get(i, p).abs();
+               Scalar maxp = A.get(max, p).abs();
+               if(ip.compareTo(maxp) == 1) {
                    max = i;
                }
            }
@@ -40,18 +39,18 @@ public class GaussianElimination extends AbstractSolver implements Solver {
            A.swap(p, max);
            b.swap(p, max);
            
-           Scalar c = (Scalar) A.get(p, p).absolute();
+           Scalar c = A.get(p, p).abs();
            if(c.doubleValue() <= EPSILON) {
                throw new ArithmeticException("Matrix is singular or nearly singular");
            }
            
            for(int i = p + 1; i < N; i++) {
-               Scalar alp = (Scalar) A.get(i, p).div(A.get(p, p));
-               Scalar e = (Scalar) alp.mult(b.get(p));
-               b.set(i, (Scalar) b.get(i).minus(e));
+               Scalar alp = A.get(i, p).divide(A.get(p, p));
+               Scalar e = alp.multiply(b.get(p));
+               b.set(i, b.get(i).subtract(e));
                for(int j = p; j < N; j++) {
-                   Scalar m = (Scalar) alp.mult(A.get(p, j));
-                   A.set(i, j, (Scalar) A.get(i, j).minus(m));
+                   Scalar m = alp.multiply(A.get(p, j));
+                   A.set(i, j, A.get(i, j).subtract(m));
                }
             }
         }
@@ -60,11 +59,11 @@ public class GaussianElimination extends AbstractSolver implements Solver {
         for(int i = N - 1; i >= 0; i--) {
             Scalar su = Scalar.ZERO;
             for(int j = i + 1; j < N; j++) {
-                Scalar m = (Scalar) A.get(i, j).mult(x.get(j));
-                su = (Scalar) su.plus(m);
+                Scalar m = A.get(i, j).multiply(x.get(j));
+                su = su.add(m);
             }
-            Scalar n = (Scalar) b.get(i).minus(su);
-            x.set(i, (Scalar) n.div(A.get(i, i)));
+            Scalar n = b.get(i).subtract(su);
+            x.set(i, n.divide(A.get(i, i)));
         }
         
         return x;

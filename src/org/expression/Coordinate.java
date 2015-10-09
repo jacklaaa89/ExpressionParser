@@ -41,7 +41,7 @@ public class Coordinate implements Comparable<Coordinate> {
      * @param x the scalar value.
      */
     public Coordinate(Scalar x) {
-        this(x.intValueExact());
+        this(x.intValue());
     } 
     
     /**
@@ -53,9 +53,9 @@ public class Coordinate implements Comparable<Coordinate> {
         if(xy.size() < 1) {
             throw new RuntimeException("not enough values provided");
         }
-        this.x = xy.get(0).intValueExact();
+        this.x = xy.get(0).intValue();
         if(xy.size() > 1) {
-            this.y = xy.get(1).intValueExact();
+            this.y = xy.get(1).intValue();
         }
     }
     

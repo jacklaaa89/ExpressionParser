@@ -51,16 +51,16 @@ public class LU extends AbstractSolver implements Solver {
         
         for(int j = 0; j < n; j++) {
             for(int i = j + 1; i < n; i++) {
-                Scalar m = (Scalar) x.get(j).mult(lu.get(i, j));
-                x.set(i, (Scalar) x.get(i).minus(m));
+                Scalar m = x.get(j).multiply(lu.get(i, j));
+                x.set(i, x.get(i).subtract(m));
             }
         }
         
         for(int j = n - 1; j >= 0; j--) {
-            x.set(j, (Scalar) x.get(j).div(lu.get(j, j)));
+            x.set(j, (Scalar) x.get(j).divide(lu.get(j, j)));
             for(int i = 0; i < j; i++) {
-                Scalar e = (Scalar) x.get(j).mult(lu.get(i, j));
-                x.set(i, (Scalar) x.get(i).minus(e));
+                Scalar e = x.get(j).multiply(lu.get(i, j));
+                x.set(i, x.get(i).subtract(e));
             }
         }
         

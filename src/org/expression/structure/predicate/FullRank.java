@@ -11,7 +11,7 @@ public class FullRank implements MatrixPredicate {
 
     @Override
     public boolean test(Matrix A) {
-        return A.rank().intValueExact() == A.getRowSize();
+        return A.rank().intValue() == A.getRowSize();
     }
     
 }
