@@ -301,6 +301,18 @@ public class Expression {
             }
         });
         
+        addFunction(new Function("size", 1){
+            @Override
+            public Type eval(List<Type> args) throws ClassCastException {
+                Type t = args.get(0);
+                if(t instanceof Vector) {
+                    return new Scalar((double)((Vector) t).size());
+                } else {
+                    return ((Matrix)t).getDimensions();
+                }
+            }
+        });
+        
         addFunction(new Function("slice", 3) {
             @Override
             public Type eval(List<Type> args) {

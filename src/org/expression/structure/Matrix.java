@@ -1117,4 +1117,14 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         return ma;
     }
     
+    /**
+     * returns the dimensions of this Matrix as a Vector ([M, N])
+     * @return this matrix' dimensions.
+     */
+    public Vector getDimensions() {
+        Vector v = new Vector(2);
+        v.set(0, new Scalar((double)M)); v.set(1, new Scalar((double)N));
+        return v;
+    }
+    
 }
