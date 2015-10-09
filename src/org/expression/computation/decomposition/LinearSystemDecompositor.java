@@ -15,7 +15,16 @@ public enum LinearSystemDecompositor {
         public AbstractDecompositor get(Matrix A) {
             return new LUDecompositor(A);
         }
-    };
+    },
+    /**
+     * The LU Factorization decomposer. 
+     */
+    SINGLE_VALUE {
+        @Override
+        public AbstractDecompositor get(Matrix A) {
+            return new SingleValueDecomposition(A);
+        }
+    };;
     
     /**
      * Initializes and returns a decomposer for coefficient Matrix A.

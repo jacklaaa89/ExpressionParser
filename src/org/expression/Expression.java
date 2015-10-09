@@ -241,6 +241,14 @@ public class Expression {
             }
         });
         
+        addFunction(new Function("rank", 1) {
+            @Override
+            public Type eval(List<Type> args) throws ClassCastException {
+                Matrix m = (Matrix) args.get(0);
+                return m.rank();
+            }
+        });
+        
         addFunction(new Function("row", 2) {
             @Override
             public Type eval(List<Type> args) throws ClassCastException {

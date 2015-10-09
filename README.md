@@ -185,6 +185,7 @@ ExpressionParser also has a collection of functions that are available which can
 - SQUARE(expression) - Determines if a Matrix is square. 
 - DIAGONALLY_DOMINANT(expression) - Determines if a Matrix is diagonally dominant.
 - DET(expression) - Determines the determinant of the evaluated matrix.
+- RANK(expression) - Detemines the rank of the evaluated matrix.
 
 ###### Functions which accept only Scalar values.
 
