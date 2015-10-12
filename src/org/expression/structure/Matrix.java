@@ -467,6 +467,17 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
     }
     
     /**
+     * Attempts to solve a system of linear equations using 
+     * the provided solver and a set of RHS values.
+     * @param solver the solver to use.
+     * @param b the set of RHS values.
+     * @return the solved equation.
+     */
+    public Vector solve(AbstractSolver solver, Vector b) {
+        return solver.solve(b);
+    }
+    
+    /**
      * Decomposes this Matrix using the defined decomposer.
      * @param <D> The type of the returned decomposer.
      * @param decompositor the type of decomposer to use.
