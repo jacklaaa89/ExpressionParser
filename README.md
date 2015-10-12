@@ -184,24 +184,30 @@ Function Name | Description
 
 ###### Functions which accept only Matrix values.
 
-- TRANSPOSE(expression) - Generates the `A^T` transpose matrix from matrix A.
-- IDENTITY(n) - Generates a _n_ by _n_ identity matrix.
-- ROW(expression1, expression2, index?) - Inserts _expression_2_ into _expression_1_ as a new row at _index_ (or at the end if _index_ is omitted).
-- SQUARE(expression) - Determines if a Matrix is square. 
-- DIAGONALLY_DOMINANT(expression) - Determines if a Matrix is diagonally dominant.
-- DET(expression) - Determines the determinant of the evaluated matrix.
-- RANK(expression) - Detemines the rank of the evaluated matrix.
+Function Name | Description
+------------- | -----------
+**TRANSPOSE(**_expression_**)** | Generates the `A^T` transpose matrix from matrix A.
+**IDENTITY(**_n_**)** | Generates a _n_ by _n_ identity matrix.
+**ROW(**_expression1_, _expression2_, _index?_) | Inserts _expression2_ into _expression1_ as a new row at _index_ (or at the end if _index_ is omitted).
+**SQUARE(**_expression_**)** | Determines if a Matrix is square. 
+**DIAGONALLY_DOMINANT(**_expression_**)** | Determines if a Matrix is diagonally dominant.
+**DET(**_expression_**)** | Determines the determinant of the evaluated matrix.
+**RANK(**_expression_**)** | Detemines the rank of the evaluated matrix.
 
 ###### Functions which accept only Scalar values.
 
-- SQRT(expression) - Calculates the square root of an evaluated expression.
+Function Name | Description
+------------- | -----------
+**SQRT(**_expression_**)** | Calculates the square root of an evaluated expression.
 
 ###### Linear equations
 
 ExpressionParser also has the capability to solve systems of linear equations using typical matrix manipulation methods. All of these functions need a coefficient matrix _A_ and a set of right hand side values _b_ in order to solve `Ax = b`. The functions include:
 
-- GAUSSIAN(_expression_for_A_, _expression_for_b_) - solves the system of linear equations using gaussian elimination.
-- LU(_expression_for_A_, _expression_for_b_) - solves the system of linear equations using LU Factorization.
+Function Name | Description
+------------- | -----------
+**GAUSSIAN(**_A_, _b_**)** | solves the system of linear equations using gaussian elimination.
+**LU(**_A_, _b_**)** | solves the system of linear equations using LU Factorization.
 
 For example:
 
