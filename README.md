@@ -154,7 +154,7 @@ Function Name | Description
 ------------- | -----------
 **LOG(**_expression_**)** | Computes the Natural Logarithm for an evaluated expression.
 **LOG10(**_expression_**)** | Computes the Base 10 Logarithm for an evaluated expression.
-RANDOM(args?) | Generates a random Scalar, Vector or Matrix value.
+**RANDOM(**_args?_**)** | Generates a random Scalar, Vector or Matrix value.
 **SIN(**_expression_**)** | Calculates the Sine from an evaluated expression.
 **COS(**_expression_**)** | Calculates the Cosine from an evaluated expression.
 **TAN(**_expression_**)** | Calculates the Tangent from an evaluated expression.
@@ -173,12 +173,14 @@ RANDOM(args?) | Generates a random Scalar, Vector or Matrix value.
 
 ###### Functions which accept Vectors & Matrices as parameters.
 
-- MAX(expression) - Returns the largest value from a struture.
-- MIN(expression) - Returns the smallest value from a structure.
-- SUM(expression) - Calculates the sum of all values in a structure.
-- COLUMN(expression1, expression2, index?) - Inserts _expression_2_ as a new column if _expression_1_ is a Matrix or all the values from _expression_2_ into _expression_1_ if _expression_1_ is a Vector at the specified _index_ (or the end if _index_ is omitted).
-- SLICE(expression, start, end) - Extracts a slice from _expression_1_ using the start and end indices (start & end must be Vectors when slicing a Matrix and Scalars when slicing a Vector).
-- SIZE(expression) - Calculates the dimensions of a Structure.
+Function Name | Description
+------------- | -----------
+**MAX(**_expression_**)** | Returns the largest value from a struture.
+**MIN(**_expression_**)** | Returns the smallest value from a structure.
+**SUM(**_expression_**)** | Calculates the sum of all values in a structure.
+**COLUMN(**_expression1_, _expression2_, _index?_**)** | Inserts _expression2_ as a new column if _expression1_ is a Matrix or all the values from _expression2_ into _expression1_ if _expression1_ is a Vector at the specified _index_ (or the end if _index_ is omitted).
+**SLICE(**_expression_, _start_, _end_**)** | Extracts a slice from _expression_ using the start and end indices (start & end must be Vectors when slicing a Matrix and Scalars when slicing a Vector).
+**SIZE(**_expression_**)** | Calculates the dimensions of a Structure.
 
 ###### Functions which accept only Matrix values.
 
@@ -228,6 +230,8 @@ e.setExpression("GAUSSIAN(A,b)");
 
 System.out.println(e.eval()); //prints [-2.769234, -7.846158, 11.15385]
 ````
+
+> parameters ending in a '?' mean they are optional and can be omitted.
 
 #### Adding/Overriding a Function
 
