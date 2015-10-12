@@ -152,26 +152,24 @@ ExpressionParser also has a collection of functions that are available which can
 
 Function Name | Description
 ------------- | -----------
-**LOG(**expression**)** | Computes the Natural Logarithm for an evaluated expression.
-
-- LOG(expression) - Computes the Natural Logarithm for an evaluated expression.
-- LOG10(expression) - Computes the Base 10 Logarithm for an evaluated expression.
-- RANDOM(args?) - Generates a random Scalar, Vector or Matrix value.
-- SIN(expression) - Calculates the Sine from an evaluated expression.
-- COS(expression) - Calculates the Cosine from an evaluated expression.
-- TAN(expression) - Calculates the Tangent from an evaluated expression.
-- ASIN(expression) - Calculates the inverse Sine from an evaluated expression.
-- ACOS(expression) - Calculates the inverse Cosine from an evaluated expression.
-- ATAN(expression) - Calculates the inverse Tangent from an evaluated expression.
-- SINH(expression) - Calculates the hyperbolic Sine from an evaluated expression.
-- COSH(expression) - Calculates the hyperbolic Cosine from an evaluated expression.
-- TANH(expression) - Calculates the hyperbolic Tangent from an evaluated expression.
-- RAD(expression) - Converts an evaluated value to radians.
-- DEG(expression) - Converts an evaluated value to degrees.
-- ABS(expression) - Converts an evaluated value to its absolute value (sign is disregarded).
-- ROUND(expression, precision) - Rounds an evaluated value to the requested precision.
-- FLOOR(expression) - Rounds an evaluated value towards negative infinity.
-- CEILING(expression) - Rounds an evaluated value towards positive infinity.
+**LOG(**_expression_**)** | Computes the Natural Logarithm for an evaluated expression.
+**LOG10(**_expression_**)** | Computes the Base 10 Logarithm for an evaluated expression.
+RANDOM(args?) | Generates a random Scalar, Vector or Matrix value.
+**SIN(**_expression_**)** | Calculates the Sine from an evaluated expression.
+**COS(**_expression_**)** | Calculates the Cosine from an evaluated expression.
+**TAN(**_expression_**)** | Calculates the Tangent from an evaluated expression.
+**ASIN(**_expression_**)** | Calculates the inverse Sine from an evaluated expression.
+**ACOS(**_expression_**)** | Calculates the inverse Cosine from an evaluated expression.
+**ATAN(**_expression_**)** | Calculates the inverse Tangent from an evaluated expression.
+**SINH(**_expression_**)** | Calculates the hyperbolic Sine from an evaluated expression.
+**COSH(**_expression_**)** | Calculates the hyperbolic Cosine from an evaluated expression.
+**TANH(**_expression_**)** | Calculates the hyperbolic Tangent from an evaluated expression.
+**RAD(**_expression_**)** | Converts an evaluated value to radians.
+**DEG(**_expression_**)** | Converts an evaluated value to degrees.
+**ABS(**_expression_**)** | Converts an evaluated value to its absolute value (sign is disregarded).
+**ROUND(**_expression_, _precision_**)** | Rounds an evaluated value to the requested precision.
+**FLOOR(**_expression_**)** | Rounds an evaluated value towards negative infinity.
+**CEILING(**_expression_**)** | Rounds an evaluated value towards positive infinity.
 
 ###### Functions which accept Vectors & Matrices as parameters.
 
