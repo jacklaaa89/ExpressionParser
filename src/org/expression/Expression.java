@@ -12,7 +12,6 @@ import org.expression.structure.Matrix;
 import org.expression.structure.Vector;
 import org.expression.structure.Structure;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.HashMap;
