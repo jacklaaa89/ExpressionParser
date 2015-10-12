@@ -150,6 +150,10 @@ ExpressionParser also has a collection of functions that are available which can
 
 ###### Functions which accept Scalars, Vectors & Matrices as parameters.
 
+Function Name | Description
+------------- | -----------
+**LOG(**expression**)** | Computes the Natural Logarithm for an evaluated expression.
+
 - LOG(expression) - Computes the Natural Logarithm for an evaluated expression.
 - LOG10(expression) - Computes the Base 10 Logarithm for an evaluated expression.
 - RANDOM(args?) - Generates a random Scalar, Vector or Matrix value.
