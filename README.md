@@ -95,6 +95,8 @@ As stated above, the ExpressionParser also supports logical operators, which are
 - And '&&'
 - Or '||'
 
+> The result from using logical operators will either be `1` or `0`, i.e boolean TRUE or FALSE.
+
 #### Adding/Overriding an Operator
 
 In addition to using the core operations, you can also add or override any exisiting operator the ExpressionParser uses.
@@ -291,6 +293,39 @@ System.out.println(e.setExpression("ZEROS()").eval()); //prints 0
 System.out.println(e.setExpression("ZEROS(1)").eval()); //prints [0]
 System.out.println(e.setExpression("ZEROS(3,3)").eval()); //prints [0,0,0; 0,0,0; 0,0,0] 
 ````
+
+### Usage Examples
+
+##### 1: Solving a system of linear equations using LU factorization and confirming that the generated `x` values are correct.
+
+````java
+
+/** 
+ * The sum of the first row in 'A' with the computed values of 'x'
+ * (in this case using LU Factorization) should equal the first value in 'b'. 
+ **/
+String expression = "SUM(A[0] * LU(A,b)) == b[0]"; 
+
+//  x + 2y + 3z = 15
+//-2x +  34y + 2z = 20
+// 5x - 2y +  8z = 13
+Matrix A = new Matrix(
+    new double[][]{
+        { 100,  2,  3 },
+        {-2,  34, 2 },
+        { 5, -2,  8 }
+    }
+);
+Vector b = new Vector(
+    new double[] {
+        15, 20, 13
+    }
+);
+Expression e = new Expression();
+e.addVariable("A", A).addVariable("b", b).setExpression(expression);
+
+System.out.println(e.eval()); //prints 1.0 (or equivilent to boolean TRUE)
+```` 
 
 ### TODO
 
