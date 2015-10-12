@@ -301,7 +301,7 @@ System.out.println(e.setExpression("ZEROS(3,3)").eval()); //prints [0,0,0; 0,0,0
 ````java
 
 /** 
- * The sum of the first row in 'A' with the computed values of 'x'
+ * The sum of the first row in 'A' multiplied with the computed values of 'x'
  * (in this case using LU Factorization) should equal the first value in 'b'. 
  **/
 String expression = "SUM(A[0] * LU(A,b)) == b[0]"; 
@@ -332,4 +332,4 @@ System.out.println(e.eval()); //prints 1.0 (or equivilent to boolean TRUE)
 There is some functionality that is in the works of being implemented. These are:
 
 - [x] Update the grammar to allow for array access. i.e `SIZE(A)[0]` where `A` is a 4x4 Matrix would return the Scalar value `4.0`. 
-- [ ] Add support for calcuating the inverse matrix `A^-1` from matrix `A`.
+- [ ] Add support for calculating the inverse matrix `A^-1` from matrix `A`.
