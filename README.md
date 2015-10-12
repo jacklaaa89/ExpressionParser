@@ -225,6 +225,7 @@ Function Name | Description
 ------------- | -----------
 **GAUSSIAN(**_A_, _b_**)** | solves the system of linear equations using gaussian elimination.
 **LU(**_A_, _b_**)** | solves the system of linear equations using LU Factorization.
+**QR(**_A_, _b_**)** | solves the system of linear equations using QR Factorization.
 
 For example:
 

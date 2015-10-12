@@ -17,14 +17,23 @@ public enum LinearSystemDecompositor {
         }
     },
     /**
-     * The LU Factorization decomposer. 
+     * Single Value Decomposition.
      */
     SINGLE_VALUE {
         @Override
         public AbstractDecompositor get(Matrix A) {
             return new SingleValueDecomposition(A);
         }
-    };;
+    },
+    /**
+     * The QR Factorization decompositor.
+     */
+    QR {
+        @Override
+        public AbstractDecompositor get(Matrix A) {
+            return new QRDecomposition(A);
+        }
+    };
     
     /**
      * Initializes and returns a decomposer for coefficient Matrix A.

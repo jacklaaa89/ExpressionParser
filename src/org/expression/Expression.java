@@ -279,6 +279,15 @@ public class Expression {
             }
         });
         
+        addFunction(new Function("qr", 2) {
+            @Override
+            public Type eval(List<Type> args) throws ClassCastException {
+                Matrix A = (Matrix) args.get(0);
+                Vector b = (Vector) args.get(1);
+                return A.solve(LinearSystemSolver.LEAST_SQUARES, b);
+            }
+        });
+        
         addFunction(new Function("column", 2){
             @Override
             public Type eval(List<Type> args) {

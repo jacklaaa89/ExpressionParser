@@ -26,6 +26,12 @@ public enum LinearSystemSolver {
         public AbstractSolver get(Matrix A) {
             return new LU(A);
         }
+    },
+    LEAST_SQUARES {
+        @Override
+        public AbstractSolver get(Matrix A) {
+            return new LeastSquares(A);
+        }
     };
     
     /**
