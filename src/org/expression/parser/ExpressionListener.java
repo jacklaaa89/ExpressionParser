@@ -1,4 +1,4 @@
-// Generated from /Users/jacktimblin/Desktop/Expression.g4 by ANTLR 4.5.1
+// Generated from /Users/jacktimblin/ExpressionParser/Expression.g4 by ANTLR 4.5.1
 
 package org.expression.parser;
 
@@ -21,6 +21,18 @@ public interface ExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFuncExpr(ExpressionParser.FuncExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code arrayAccessExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayAccessExpr(ExpressionParser.ArrayAccessExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code arrayAccessExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayAccessExpr(ExpressionParser.ArrayAccessExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code opExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
@@ -81,6 +93,16 @@ public interface ExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAtomValue(ExpressionParser.AtomValueContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#arrayAccess}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayAccess(ExpressionParser.ArrayAccessContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#arrayAccess}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayAccess(ExpressionParser.ArrayAccessContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ExpressionParser#number}.
 	 * @param ctx the parse tree

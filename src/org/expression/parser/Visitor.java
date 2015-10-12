@@ -6,13 +6,17 @@ import org.expression.structure.Matrix;
 import org.expression.structure.Vector;
 import java.math.MathContext;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.expression.Context;
 import org.expression.Scalar;
 import org.expression.Type;
+import org.expression.parser.ExpressionParser.ArrayAccessContext;
+import org.expression.parser.ExpressionParser.ArrayAccessExprContext;
 import org.expression.parser.ExpressionParser.BoolExprContext;
 import org.expression.parser.ExpressionParser.ExprContext;
 import org.expression.parser.ExpressionParser.FuncDefinitionContext;
@@ -80,6 +84,59 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        }
        
        return this.operators.get(ctx.op.getText()).evaluate(left, right);
+   }
+   
+   @Override
+   public Context visitArrayAccessExpr(ArrayAccessExprContext ctx) {
+       
+       ArrayAccessContext c = ctx.arrayAccess();
+       boolean isFuncCall = c.func() != null;
+      
+       //evaluate the child and then attempt to access the result and return.
+       Context con;
+       if(isFuncCall) {
+           con = this.visit(c.func());
+       } else {
+           con = this.visit(c.atom());
+       }
+       
+       //cannot access a scalar as an array.
+       if(con.isScalar()) {
+           throw new IllegalArgumentException("cannot access scalar as an array.");
+       }
+       
+       //determine the index to access.
+       List<TerminalNode> nodes = c.DIGIT();
+       int[] indices = this.convertNodeToInt(nodes);
+       
+       Context res;
+       if(con.isArray() && indices.length == 1) {
+           //we have array access.
+           res = new Context(((Vector)con.getValue()).get(indices[0]));
+       } else if(con.isMatrix() && indices.length >= 1) {
+           //we have matrix access.
+           if(indices.length == 1) {
+               //return the vector row.
+               res = new Context(((Matrix)con.getValue()).get(indices[0]));
+               return res;
+           }
+           res = new Context(((Matrix)con.getValue()).get(indices[0], indices[1]));
+       } else {
+           //anything else is an error.
+           throw new IllegalArgumentException("an error occured attempting to access array.");
+       }
+       
+       return res;
+       
+   }
+   
+   private int[] convertNodeToInt(List<TerminalNode> nodes) {
+       int[] ints = new int[nodes.size()];
+       for(int i = 0; i < nodes.size(); i++) {
+           Integer in = Integer.parseInt(nodes.get(i).getText());
+           ints[i] = in;
+       }
+       return ints;
    }
    
    /**

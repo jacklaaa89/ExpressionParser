@@ -1,4 +1,4 @@
-// Generated from /Users/jacktimblin/Desktop/Expression.g4 by ANTLR 4.5.1
+// Generated from /Users/jacktimblin/ExpressionParser/Expression.g4 by ANTLR 4.5.1
 
 package org.expression.parser;
 

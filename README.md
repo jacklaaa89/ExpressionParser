@@ -36,9 +36,20 @@ Matrices share a similar syntax to Vectors which the only difference being a sem
 
 eg. `[1,2,3; 4,5,6; 7,8,9]` would be evaluated as a 3 x 3 matrix.
 
-#### Matrix & Vector 
+#### Matrix & Vector Operations
 
 Operations performed on Matrices and Vectors require that the dimensions of the left and right sizes of the operation agree.
+
+##### Matrix & Vector Array Access
+Matrix & Vector values (including any function or variable which evaluates to a Matrix or Vector) can have its values accessed using using array access notation.
+
+So, for example `[1, 2, 3][0]` will return the Scalar value `1.0` (Vector and Matrix indices always start from 0).
+
+When working with a Matrix you can provide two values to access a specific row/column index or a single value to return the row vector at index _n_.
+
+Again, for example `[1, 2, 3; 4, 5, 6][0]` would return the row vector `[1, 2, 3]` and `[1, 2, 3; 4, 5, 6][0,1]` would return the Scalar value `2.0`.
+
+As stated above, accessing values using this notation can also be achieved from function results and evaluated variables, so, for example, `SIZE([1,2,3; 4,5,6])[0,1]`, `SIZE(A)[0,1]` and `A[0]` are all valid. 
 
 ### Variables
 
@@ -285,4 +296,5 @@ System.out.println(e.setExpression("ZEROS(3,3)").eval()); //prints [0,0,0; 0,0,0
 
 There is some functionality that is in the works of being implemented. These are:
 
-- [ ] Update the grammar to allow for array access. i.e `SIZE(A)[0]` where `A` is a 4x4 Matrix would return the Scalar value `4.0`. 
+- [x] Update the grammar to allow for array access. i.e `SIZE(A)[0]` where `A` is a 4x4 Matrix would return the Scalar value `4.0`. 
+- [ ] Add support for calcuating the inverse matrix `A^-1` from matrix `A`.

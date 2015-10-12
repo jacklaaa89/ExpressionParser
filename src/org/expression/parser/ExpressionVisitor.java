@@ -1,4 +1,4 @@
-// Generated from /Users/jacktimblin/Desktop/Expression.g4 by ANTLR 4.5.1
+// Generated from /Users/jacktimblin/ExpressionParser/Expression.g4 by ANTLR 4.5.1
 
 package org.expression.parser;
 
@@ -19,6 +19,13 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFuncExpr(ExpressionParser.FuncExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code arrayAccessExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayAccessExpr(ExpressionParser.ArrayAccessExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code opExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
@@ -54,6 +61,12 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitAtomValue(ExpressionParser.AtomValueContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#arrayAccess}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayAccess(ExpressionParser.ArrayAccessContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ExpressionParser#number}.
 	 * @param ctx the parse tree

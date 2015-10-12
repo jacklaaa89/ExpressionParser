@@ -14,6 +14,7 @@ expr
 	| func                                 #funcExpr
 	| atom                                 #atomExpr
 	| left=expr op=POINT        right=expr #opExpr
+	| arrayAccess                          #arrayAccessExpr
 	;
 
 atom
@@ -21,6 +22,10 @@ atom
 	| variable         #atomValue
 	| array            #atomValue
 	| matrix           #atomValue
+	;
+
+arrayAccess
+	: (func | atom) LBRACE DIGIT (COMMA DIGIT)? RBRACE
 	;
 
 number
