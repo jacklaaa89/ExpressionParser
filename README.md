@@ -96,23 +96,27 @@ There are different operation types which can occur in each operation. For examp
 
 The operation types that can occur are:
 
-- EXPRESSION_SCALAR - A Scalar - Scalar operation 
-- EXPRESSION_VECTOR - A Vector - Vector operation
-- EXPRESSION_MATRIX - A Matrix - Matrix operation
-- EXPRESSION_SCALAR_VECTOR - A Scalar - Vector operation
-- EXPRESSION_SCALAR_MATRIX - A Scalar - Matrix operation
-- EXPRESSION_VECTOR_SCALAR - A Vector - Scalar operation
-- EXPRESSION_MATRIX_SCALAR - A Matrix - Scalar operation
-- EXPRESSION_MATRIX_VECTOR - A Matrix - Vector operation
-- EXPRESSION_VECTOR_MATRIX - A Vector - Matrix operation
+Expression Type | Description
+--------------- | -----------
+**EXPRESSION_SCALAR** | A Scalar - Scalar operation 
+**EXPRESSION_VECTOR** | A Vector - Vector operation
+**EXPRESSION_MATRIX** | A Matrix - Matrix operation
+**EXPRESSION_SCALAR_VECTOR** | A Scalar - Vector operation
+**EXPRESSION_SCALAR_MATRIX** | A Scalar - Matrix operation
+**EXPRESSION_VECTOR_SCALAR** | A Vector - Scalar operation
+**EXPRESSION_MATRIX_SCALAR** | A Matrix - Scalar operation
+**EXPRESSION_MATRIX_VECTOR** | A Matrix - Vector operation
+**EXPRESSION_VECTOR_MATRIX** | A Vector - Matrix operation
 
 When creating a new operator you can define 1 or all of the operation types based on what your operator will support. There are also some other expression types defined in the `Operator` class to make your life easier in defining operations. These are:
 
-- EXPRESSION_ALL - This matches all types of operation stated above.
-- EXPRESSION_MATRICES - This matches all operations where a Matrix is at the left of the expression.
-- EXPRESSION_VECTORS - This matches all operations where a Vector is at the left of the expression.
-- EXPRESSION_SYMMETRIC - This matches operations where the type of the left and right sides are the same.
-- EXPRESSION_SCALARS - This matches operations where a Scalar is at the left of the expression.
+Expression Type | Description
+--------------- | -----------
+**EXPRESSION_ALL** | This matches all types of operation stated above.
+**EXPRESSION_MATRICES** | This matches all operations where a Matrix is at the left of the expression.
+**EXPRESSION_VECTORS** | This matches all operations where a Vector is at the left of the expression.
+**EXPRESSION_SYMMETRIC** | This matches operations where the type of the left and right sides are the same.
+**EXPRESSION_SCALARS** | This matches operations where a Scalar is at the left of the expression.
 
 ##### Implementation
 
