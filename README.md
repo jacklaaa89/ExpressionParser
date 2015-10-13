@@ -373,4 +373,4 @@ There is some functionality that is in the works of being implemented. These are
 - [ ] Add support for calculating the inverse matrix `A^-1` from matrix `A`.
 - [x] Add support for storing variables which can be used on subsequent lines.
 - [x] Add support for comments in expressions.
-- [ ] Expressions can be parsed from files as well as strings.
+- [x] Expressions can be parsed from files as well as strings.
