@@ -1,5 +1,7 @@
 package org.expression;
 
+import java.io.File;
+import java.io.IOException;
 import org.expression.parser.Visitor;
 import org.expression.parser.ErrorHandler;
 import org.expression.computation.Evaluator;
@@ -16,7 +18,9 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
+import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.expression.computation.linear.LinearSystemSolver;
@@ -38,24 +42,24 @@ public class Expression {
      * A collection of the functions which are available.
      * i.e log, sin, tan, round etc.
      */
-    private final HashMap<String, Function> functions;
+    private HashMap<String, Function> functions;
     
     /**
      * The expression to parse.
      */
-    private String expression;
+    private CharStream expression;
     
     /**
      * A collection of the operators available.
      * i.e +, /, *, -, ^, % etc
      */
-    private final HashMap<String, Operator> operators;
+    private HashMap<String, Operator> operators;
     
     /**
      * A collection of the variables / constants which are available.
      * i.e PI, TRUE, FALSE, x, y etc
      */
-    private final HashMap<String, Type> variables;
+    private HashMap<String, Type> variables;
     
     /**
      * The currently defined MathContext.
@@ -82,7 +86,7 @@ public class Expression {
     public static final Scalar FALSE = Scalar.ZERO;
     
     public Expression() {
-        this(null);
+        this.initialize();
     }
     
     /**
@@ -90,10 +94,36 @@ public class Expression {
      * @param expression The expression to parse.
      */    
     public Expression(String expression) {
-        
+        if(expression == null || expression.isEmpty()) {
+            throw new IllegalArgumentException("invalid expression");
+        }
+        this.expression = new ANTLRInputStream(expression);
+        this.initialize();
+    }
+    
+    /**
+     * Initializes a new Expression and adds all of the core operators, variables and functions.
+     * @param source The expression source file to parse.
+     */
+    public Expression(File source) {
+        if(!source.exists() || source.isDirectory()) {
+            throw new RuntimeException("source file must exist.");
+        }
+        //TODO - check file extension.
+        try {
+            this.expression = new ANTLRFileStream(source.getAbsolutePath());
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        this.initialize();
+    }
+    
+    /**
+     * Initializes the Expression class, adding all of the core operations, variables and functions.
+     */
+    private void initialize() {
         //Initialize the data collections.
         this.functions = new HashMap<>();
-        this.expression = expression;
         this.operators = new HashMap<>();
         this.variables = new HashMap<>();
         
@@ -654,7 +684,6 @@ public class Expression {
         
         //set the default precision and rounding mode.
         setPrecision(14); setRoundingMode(RoundingMode.HALF_EVEN);
-        
     }
     
     /**
@@ -687,6 +716,12 @@ public class Expression {
         return this;
     }
     
+    /**
+     * Adds a new function from a pre-defined handler.
+     * @param name the name of the function
+     * @param function the handler to apply when this function is called.
+     * @return a reference to itself for method chaining.
+     */
     public final Expression addFunction(String name, Functions function) {
         Function f = new Function(name, 1) {
             @Override
@@ -713,7 +748,7 @@ public class Expression {
      * @return the expression we are evaluating.
      */
     public String getExpression() {
-        return this.expression;
+        return this.expression.toString();
     }
     
     /**
@@ -748,8 +783,36 @@ public class Expression {
         return this;
     }
     
+    /**
+     * Sets an expression to use.
+     * @param expression the expression to use.
+     * @return a reference to itself for method chaining.
+     */
     public final Expression setExpression(String expression) {
-        this.expression = expression;
+        if(expression == null || expression.isEmpty()) {
+            throw new IllegalArgumentException("invalid expression");
+        }
+        this.expression = new ANTLRInputStream(expression);
+        return this;
+    }
+    
+    /**
+     * Sets an expression to use from a file.
+     * @param source the expression source file to use.
+     * @return a reference to itself for method chaining.
+     */
+    public final Expression setExpression(File source) {
+        if(source == null || !source.exists() || source.isDirectory()) {
+            if(source == null) {
+                throw new IllegalArgumentException("invalid source location: location is null.");
+            }
+            throw new IllegalArgumentException("invalid source location: '" + source.getAbsolutePath()+ "'");
+        }
+        try {
+            this.expression = new ANTLRFileStream(source.getAbsolutePath());
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
         return this;
     }
     
@@ -771,12 +834,11 @@ public class Expression {
      */
     public Context eval() throws RuntimeException {
         
-        if(this.expression == null || this.expression.isEmpty()) {
+        if(this.expression == null) {
             throw new IllegalArgumentException("no valid expression was defined");
         }
         
-        ANTLRInputStream stream = new ANTLRInputStream(this.expression);
-        ExpressionLexer lexer = new ExpressionLexer(stream);
+        ExpressionLexer lexer = new ExpressionLexer(expression);
         ErrorHandler handler = new ErrorHandler();
         lexer.removeErrorListeners();
         lexer.addErrorListener(handler);
