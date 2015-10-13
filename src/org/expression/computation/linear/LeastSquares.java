@@ -1,6 +1,5 @@
 package org.expression.computation.linear;
 
-import org.expression.Coordinate;
 import org.expression.Scalar;
 import org.expression.computation.decomposition.LinearSystemDecompositor;
 import org.expression.computation.decomposition.QRDecomposition;

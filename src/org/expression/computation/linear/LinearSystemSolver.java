@@ -32,6 +32,12 @@ public enum LinearSystemSolver {
         public AbstractSolver get(Matrix A) {
             return new LeastSquares(A);
         }
+    },
+    JACOBI {
+        @Override
+        public AbstractSolver get(Matrix A) {
+            return new Jacobi(A);
+        }
     };
     
     /**
