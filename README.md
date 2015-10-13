@@ -10,7 +10,7 @@ ExpressionParser parses and evaluates mathematical and boolean expressions. It u
 In its simplest terms, all you have to do is provide the `Expression` class which an expression to evaluate and then call `eval()` to obtain the result. For example:
 
 ````java
-Expression e = new Expression("[1,2,3] + [4,5,6]");
+Expression e = new Expression("[1,2,3] + [4,5,6];");
 Context result = e.eval();
 
 System.out.println(result); //prints [5, 7, 9]
@@ -65,7 +65,7 @@ Scalar y = new Scalar(10d);
 
 e.addVariable("x", x).addVariable("y", y);
 
-e.setExpression("x * y");
+e.setExpression("x * y;");
 Context result = e.eval();
 
 System.out.println(result); //prints [10, 20, 30]
@@ -192,7 +192,7 @@ e.addOperator(
 );
 
 //Our '+' operator now only supports Scalar - Scalar expressions.
-e.setExpression("-2 + 2");
+e.setExpression("-2 + 2;");
 Context result = e.eval();
 
 System.out.println(result); //prints 4
@@ -287,7 +287,7 @@ Vector b = new Vector(
 );
 
 e.addVariable("A", A).addVariable("b", b);
-e.setExpression("GAUSSIAN(A,b)");
+e.setExpression("GAUSSIAN(A,b);");
 
 System.out.println(e.eval()); //prints [-2.769234, -7.846158, 11.15385]
 ````
@@ -342,7 +342,7 @@ System.out.println(e.setExpression("ZEROS(3,3)").eval()); //prints [0,0,0; 0,0,0
  * The sum of the first row in 'A' multiplied with the computed values of 'x'
  * (in this case using LU Factorization) should equal the first value in 'b'. 
  **/
-String expression = "SUM(A[0] * LU(A,b)) == b[0]"; 
+String expression = "SUM(A[0] * LU(A,b)) == b[0];"; 
 
 //  x + 2y + 3z = 15
 //-2x +  34y + 2z = 20
@@ -363,6 +363,30 @@ Expression e = new Expression();
 e.addVariable("A", A).addVariable("b", b).setExpression(expression);
 
 System.out.println(e.eval()); //prints 1.0 (or equivilent to boolean TRUE)
+```` 
+
+##### 2: Vector addition from a source file.
+
+````
+/* This source file.ex performs vector addition. */
+//File saved at path/to/source/file.ex
+
+var x = [100, 45, 3e2]; //should be [100, 45, 300].
+var y = [(12 * 12), 8, MAX(x)]; //should be [144, 8, 300].
+
+//print x & y to standard output.
+PRINT(x); PRINT(y);
+
+/* calculate x + y */
+x + y;
+````
+
+````java
+File source = new File("/path/to/source/file.ex");
+
+Expression e = new Expression(source);
+
+System.out.println(e.eval()); //prints [244, 53, 600]
 ```` 
 
 ### TODO
