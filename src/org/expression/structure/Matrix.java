@@ -1,6 +1,5 @@
 package org.expression.structure;
 
-import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,6 +20,7 @@ import org.expression.computation.inverse.AbstractInverter;
 import org.expression.computation.inverse.LinearSystemInverter;
 import org.expression.computation.linear.AbstractSolver;
 import org.expression.computation.linear.LinearSystemSolver;
+import org.expression.structure.function.MatrixFunction;
 
 /**
  * A representation of a Matrix.
@@ -1138,4 +1138,13 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         return v;
     }
     
+    /**
+     * Updates a value in this matrix using a MatrixFunction.
+     * @param m the row index.
+     * @param n the column index.
+     * @param f the function to apply at the row/index.
+     */
+    public void updateAt(int m, int n, MatrixFunction f) {
+        set(m, n, f.evaluate(m, n, get(m, n)));
+    }
 }

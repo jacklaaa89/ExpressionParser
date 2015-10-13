@@ -13,6 +13,7 @@ import org.expression.Coordinate;
 import org.expression.computation.Handler;
 import org.expression.Scalar;
 import org.expression.Type;
+import org.expression.structure.function.VectorFunction;
 
 /**
  * A complete implementation of a Vector.
@@ -567,6 +568,15 @@ public class Vector extends BaseStructure<Scalar, Vector> {
             v.set(i, this.get(i));
         }
         return v;
+    }
+    
+    /**
+     * Updates a value in this vector using a VectorFunction.
+     * @param i the index.
+     * @param v the function to apply at the row/index.
+     */
+    public void updateAt(int i, VectorFunction v) {
+        set(i, v.evaluate(i, get(i)));
     }
     
 }
