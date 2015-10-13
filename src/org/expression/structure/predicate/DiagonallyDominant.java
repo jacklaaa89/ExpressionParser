@@ -1,15 +1,14 @@
 package org.expression.structure.predicate;
 
 import org.expression.Scalar;
-import org.expression.Type;
 import org.expression.computation.linear.AbstractSolver;
 import org.expression.structure.Matrix;
 import org.expression.structure.MatrixPredicate;
 import org.expression.structure.Predicate;
 
 /**
- *
- * @author jacktimblin
+ * Predicate to test whether a Matrix is diagonally dominant.
+ * @author Jack Timblin
  */
 public class DiagonallyDominant implements MatrixPredicate {
 

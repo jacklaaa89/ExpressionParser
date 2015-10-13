@@ -1,16 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.expression.structure.predicate;
 
 import org.expression.structure.Matrix;
 import org.expression.structure.MatrixPredicate;
 
 /**
- *
- * @author jacktimblin
+ * Predicate to test whether a Matrix is square.
+ * @author Jack Timblin
  */
 public class Square implements MatrixPredicate {
     @Override
