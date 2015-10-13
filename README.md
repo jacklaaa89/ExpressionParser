@@ -224,6 +224,7 @@ Function Name | Description
 **ROUND(**_expression_, _precision_**)** | Rounds an evaluated value to the requested precision.
 **FLOOR(**_expression_**)** | Rounds an evaluated value towards negative infinity.
 **CEILING(**_expression_**)** | Rounds an evaluated value towards positive infinity.
+**PRINT(**_expression_**)** | Prints the evaluated expression to the console.
 
 ###### Functions which accept Vectors & Matrices as parameters.
 
