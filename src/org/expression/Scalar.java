@@ -342,6 +342,22 @@ public class Scalar implements Arithmetic<Arithmetic>  {
     }
     
     /**
+     * Increments the value of this Scalar by one.
+     * @return this value incremented by one.
+     */
+    public Scalar increment() {
+        return this.add(Scalar.ONE);
+    }
+    
+    /**
+     * Decrements the value of this Scalar by one.
+     * @return this value decremented by one.
+     */
+    public Scalar decrement() {
+        return this.subtract(Scalar.ONE);
+    }
+    
+    /**
      * returns this raised to the power of {@code n}.
      * @param n the exponent
      * @return the value of {@code this}<sup>{@code n}</sup>.
