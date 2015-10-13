@@ -6,7 +6,6 @@ import org.expression.structure.Matrix;
 import org.expression.structure.Vector;
 import java.math.MathContext;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
