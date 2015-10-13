@@ -398,3 +398,4 @@ There is some functionality that is in the works of being implemented. These are
 - [x] Add support for storing variables which can be used on subsequent lines.
 - [x] Add support for comments in expressions.
 - [x] Expressions can be parsed from files as well as strings.
+- [ ] Ability to change where the `PRINT(expression)` prints its output.

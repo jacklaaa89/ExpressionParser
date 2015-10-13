@@ -385,7 +385,8 @@ public class Expression {
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
                 System.out.println(args.get(0));
-                return null;
+                return args.get(0); //return the type in the case that this is 
+                //the last function called.
             }
         });
         
