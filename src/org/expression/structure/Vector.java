@@ -25,7 +25,7 @@ import org.expression.structure.function.VectorFunction;
  * used on Vectors.
  * @author Jack Timblin
  */
-public class Vector extends BaseStructure<Scalar, Vector> {
+public class Vector extends BaseStructure<Scalar, Vector, VectorFunction> {
     
     /**
      * the maximum amount of elements this Vector can have.
@@ -525,11 +525,10 @@ public class Vector extends BaseStructure<Scalar, Vector> {
     }
 
     @Override
-    public Vector addColumn(int index, Type value) {
+    public Vector addColumn(int index, Scalar value) {
         if(index < 0 || index > this.size()) throw new ArrayIndexOutOfBoundsException("invalid index");
-        if(value instanceof Matrix) throw new IllegalArgumentException("cannot add a matrix to a vector.");
         Scalar[] sn = this.toArray(new Scalar[]{});
-        Vector ds = (value instanceof Vector) ? (Vector) value : new Vector(new Scalar[]{(Scalar)value});
+        Vector ds = new Vector(new Scalar[]{(Scalar)value});
         Scalar[] dn = new Scalar[sn.length + ds.size()];
         System.arraycopy(sn, index, dn, index + ds.size(), dn.length - sn.length);
         for(int i = 0; i < ds.size(); i++) {
@@ -540,7 +539,7 @@ public class Vector extends BaseStructure<Scalar, Vector> {
     }
 
     @Override
-    public Vector addRow(int index, Type type) {
+    public Vector addRow(int index, Scalar type) {
         throw new ArithmeticException("Vectors are only one row.");
     }
 
@@ -572,10 +571,11 @@ public class Vector extends BaseStructure<Scalar, Vector> {
     
     /**
      * Updates a value in this vector using a VectorFunction.
-     * @param i the index.
+     * @param n the index.
      * @param v the function to apply at the row/index.
      */
-    public void updateAt(int i, VectorFunction v) {
+    public void updateAt(Coordinate n, VectorFunction v) {
+        int i = n.x;
         set(i, v.evaluate(i, get(i)));
     }
     

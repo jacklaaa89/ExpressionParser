@@ -26,7 +26,7 @@ import org.expression.structure.function.MatrixFunction;
  * A representation of a Matrix.
  * @author Jack Timblin
  */
-public class Matrix extends BaseStructure<Vector, Matrix> {
+public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     
     /**
      * the row size of this matrix
@@ -870,7 +870,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
     }
 
     @Override
-    public Matrix addColumn(int index, Type value) {
+    public Matrix addColumn(int index, Vector value) {
         if(!(value instanceof Vector)) throw new IllegalArgumentException("columns in a matrix can only be a vector.");
         if(index < 0 || index > N) throw new ArrayIndexOutOfBoundsException("invalid index defined.");
         Matrix m = Matrix.zeroes(M, N + 1);
@@ -893,7 +893,7 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
     }
 
     @Override
-    public Matrix addRow(int index, Type type) {
+    public Matrix addRow(int index, Vector type) {
         if(!(type instanceof Vector)) throw new IllegalArgumentException("columns in a matrix can only be a vector.");
         if(index < 0 || index > M) throw new ArrayIndexOutOfBoundsException("invalid index defined.");
         Vector v = (Vector) type;
@@ -1138,13 +1138,9 @@ public class Matrix extends BaseStructure<Vector, Matrix> {
         return v;
     }
     
-    /**
-     * Updates a value in this matrix using a MatrixFunction.
-     * @param m the row index.
-     * @param n the column index.
-     * @param f the function to apply at the row/index.
-     */
-    public void updateAt(int m, int n, MatrixFunction f) {
+    @Override
+    public void updateAt(Coordinate i, MatrixFunction f) {
+        int m = i.x; int n = i.y;
         set(m, n, f.evaluate(m, n, get(m, n)));
     }
 }

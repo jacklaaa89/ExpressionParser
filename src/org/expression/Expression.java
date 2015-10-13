@@ -299,7 +299,7 @@ public class Expression {
                 if(index == null) {
                     if(r instanceof Matrix && a instanceof Vector) {
                         index = new Scalar(((Matrix)r).getColumnSize());
-                    } else if(r instanceof Vector && (!(a instanceof Matrix))) {
+                    } else if(r instanceof Vector && a instanceof Scalar) {
                         index = new Scalar(((Vector)r).size());
                     } else {
                         throw new ArithmeticException("invalid parameter types");

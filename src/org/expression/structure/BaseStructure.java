@@ -7,15 +7,17 @@ import org.expression.computation.Functions;
 import org.expression.computation.Handler;
 import org.expression.Scalar;
 import org.expression.Type;
+import org.expression.structure.function.Function;
 
 /**
  * Data structure base class, It gives data structures some generic methods and initialization.
  * @author Jack Timblin
  * @param <T> The value that this structure holds.
  * @param <O> The type of Object that will be returned when manipulating the structure.
+ * @param <F> The type of Function this Structure will apply to its elements.
  */
-public abstract class BaseStructure<T, O extends Type> extends ArrayList<T> 
-        implements Structure<O>, Arithmetic<Arithmetic> {
+public abstract class BaseStructure<T, O extends Type, F extends Function> extends ArrayList<T> 
+        implements Structure<O, F, T>, Arithmetic<Arithmetic> {
     
     /**
      * Initializes the structure.
@@ -32,7 +34,7 @@ public abstract class BaseStructure<T, O extends Type> extends ArrayList<T>
      * @return the data structure with the newly added column.
      */
     @Override
-    public O addColumn(Type value) {
+    public O addColumn(T value) {
         return this.addColumn(this.getColumnSize(), value);
     }
     
@@ -43,7 +45,7 @@ public abstract class BaseStructure<T, O extends Type> extends ArrayList<T>
      * @return the data structure with the newly added column.
      */
     @Override
-    public O addRow(Type type) {
+    public O addRow(T type) {
         return this.addRow(this.getRowSize(), type);
     }
     
