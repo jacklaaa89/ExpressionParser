@@ -13,12 +13,17 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	/**
-	 * Visit a parse tree produced by the {@code funcExpr}
-	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * Visit a parse tree produced by {@link ExpressionParser#start}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFuncExpr(ExpressionParser.FuncExprContext ctx);
+	T visitStart(ExpressionParser.StartContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpression(ExpressionParser.ExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code arrayAccessExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
@@ -26,6 +31,13 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitArrayAccessExpr(ExpressionParser.ArrayAccessExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code funcExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFuncExpr(ExpressionParser.FuncExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code opExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
@@ -48,6 +60,13 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBoolExpr(ExpressionParser.BoolExprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code assignExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssignExpr(ExpressionParser.AssignExprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code parenExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
 	 * @param ctx the parse tree
@@ -67,6 +86,12 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitArrayAccess(ExpressionParser.ArrayAccessContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#assignment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssignment(ExpressionParser.AssignmentContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ExpressionParser#number}.
 	 * @param ctx the parse tree

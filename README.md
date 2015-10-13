@@ -71,6 +71,43 @@ Context result = e.eval();
 System.out.println(result); //prints [10, 20, 30]
 ````
 
+### Syntax
+
+The syntax conventions copy that of other traditional programming languages so it should be quite familiar to use. An expression script can contain one or more expressions terminated with a ';' (semi-colon).
+
+##### Assigning Variables.
+
+Variables can be assigned during expression evaluation using the 'var' keyword. Variables can be assigned from any valid expression, i.e a function return, evaluated expression or from another variable. For example:
+
+````java
+Matrix A = new Matrix(
+    new double[][]{
+        { 100,  2, 3 },
+        {  -2, 34, 2 }
+    }
+);
+
+Expression e = new Expression("var b = A; SIZE(b)[0] == 2;");
+e.addVariable("A", A);
+
+System.out.println(e.eval()); //prints 1.0 (boolean TRUE)
+````
+
+##### Result Value
+
+The last evaluated expression in the script will be returned as the result of the evaluation, but all expressions in the script will be evaluated. So for example:
+
+````java
+Expression e = new Expression("var a = [1, 2, 3]; 1 + 1; a;");
+System.out.println(e.eval()); //prints [1, 2, 3]
+````
+
+You can print out results from other expressions using the `PRINT(expression)` function which prints the result to the console. 
+
+##### Commenting
+
+Expressions also support commenting in the form of `/* comment */` and `//comment` which are ignored by the parser.
+
 ### Operations
 
 The core operations that are included are as follows: (Also be aware that these are in the order that the operator takes precedence in the operation.)
@@ -334,3 +371,6 @@ There is some functionality that is in the works of being implemented. These are
 
 - [x] Update the grammar to allow for array access. i.e `SIZE(A)[0]` where `A` is a 4x4 Matrix would return the Scalar value `4.0`. 
 - [ ] Add support for calculating the inverse matrix `A^-1` from matrix `A`.
+- [x] Add support for storing variables which can be used on subsequent lines.
+- [x] Add support for comments in expressions.
+- [ ] Expressions can be parsed from files as well as strings.

@@ -10,17 +10,25 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface ExpressionListener extends ParseTreeListener {
 	/**
-	 * Enter a parse tree produced by the {@code funcExpr}
-	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * Enter a parse tree produced by {@link ExpressionParser#start}.
 	 * @param ctx the parse tree
 	 */
-	void enterFuncExpr(ExpressionParser.FuncExprContext ctx);
+	void enterStart(ExpressionParser.StartContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code funcExpr}
-	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * Exit a parse tree produced by {@link ExpressionParser#start}.
 	 * @param ctx the parse tree
 	 */
-	void exitFuncExpr(ExpressionParser.FuncExprContext ctx);
+	void exitStart(ExpressionParser.StartContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpression(ExpressionParser.ExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpression(ExpressionParser.ExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code arrayAccessExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
@@ -33,6 +41,18 @@ public interface ExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArrayAccessExpr(ExpressionParser.ArrayAccessExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code funcExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterFuncExpr(ExpressionParser.FuncExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code funcExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitFuncExpr(ExpressionParser.FuncExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code opExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
@@ -70,6 +90,18 @@ public interface ExpressionListener extends ParseTreeListener {
 	 */
 	void exitBoolExpr(ExpressionParser.BoolExprContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code assignExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssignExpr(ExpressionParser.AssignExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code assignExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssignExpr(ExpressionParser.AssignExprContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code parenExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
 	 * @param ctx the parse tree
@@ -103,6 +135,16 @@ public interface ExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArrayAccess(ExpressionParser.ArrayAccessContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#assignment}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssignment(ExpressionParser.AssignmentContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#assignment}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssignment(ExpressionParser.AssignmentContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ExpressionParser#number}.
 	 * @param ctx the parse tree

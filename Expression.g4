@@ -4,8 +4,18 @@ grammar Expression;
 package org.expression.parser;
 }
 
+start 
+	: expression (expression)*
+	;
+
+expression
+	: expr SEMI_COLON
+	;
+
 expr
-	: LPAREN expr RPAREN                   #parenExpr
+	: arrayAccess                          #arrayAccessExpr
+	| assignment                           #assignExpr
+	| LPAREN expr RPAREN                   #parenExpr
 	| left=expr op=LOGICAL 		right=expr #boolExpr
 	| left=expr op=POW          right=expr #opExpr
 	| left=expr op=(TIMES|DIV)  right=expr #opExpr
@@ -14,7 +24,6 @@ expr
 	| func                                 #funcExpr
 	| atom                                 #atomExpr
 	| left=expr op=POINT        right=expr #opExpr
-	| arrayAccess                          #arrayAccessExpr
 	;
 
 atom
@@ -26,6 +35,10 @@ atom
 
 arrayAccess
 	: (func | atom) LBRACE DIGIT (COMMA DIGIT)? RBRACE
+	;
+
+assignment
+	: VAR variable ASSIGN expr
 	;
 
 number
@@ -164,12 +177,20 @@ NEQ
 	: '!='
 	;
 
+ASSIGN
+	: '='
+	;
+
 DIGIT
 	: ('0'..'9')
 	;
 
 POINT
 	: '.'
+	;
+
+VAR
+	: 'var'
 	;
 
 LETTER
@@ -183,3 +204,11 @@ WS
 MODULO
 	: '%'
 	;
+
+COMMENT
+    :   '/*' .*? '*/' -> channel(HIDDEN)
+    ;
+    
+LINE_COMMENT
+    :   '//' ~[\r\n]* -> channel(HIDDEN)
+    ;

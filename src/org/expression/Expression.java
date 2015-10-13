@@ -351,6 +351,14 @@ public class Expression {
             }
         );
         
+        addFunction(new Function("print", 1) {
+            @Override
+            public Type eval(List<Type> args) throws ClassCastException {
+                System.out.println(args.get(0));
+                return null;
+            }
+        });
+        
         addOperator(new Operator("<<")
             .addEvaluator(
                 new int[] {
@@ -776,7 +784,7 @@ public class Expression {
         ExpressionParser parser = new ExpressionParser(tokens);
         parser.removeErrorListeners();
         parser.addErrorListener(handler);
-        ParseTree tree = parser.expr();
+        ParseTree tree = parser.start();
         
         Visitor ve = new Visitor(functions, operators, variables, mc);
         Context c = ve.visit(tree);
