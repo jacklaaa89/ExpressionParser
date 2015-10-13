@@ -6,7 +6,7 @@ import org.expression.Scalar;
  * A Function which is applied to a particular element in a Matrix.
  * @author Jack Timblin
  */
-public interface MatrixFunction {
+public interface MatrixFunction extends Function {
     /**
      * Evaluates the new value at index {@code i}, {@code j}
      * @param i the row index.

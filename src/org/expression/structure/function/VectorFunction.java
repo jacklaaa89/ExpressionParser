@@ -6,7 +6,7 @@ import org.expression.Scalar;
  * A Function which is applied to a particular element in a Vector.
  * @author Jack Timblin
  */
-public interface VectorFunction {
+public interface VectorFunction extends Function {
     /**
      * Evaluates the new value at index {@code i}.
      * @param i the row index.
