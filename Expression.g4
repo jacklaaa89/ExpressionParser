@@ -5,7 +5,7 @@ package org.expression.parser;
 }
 
 start 
-	: (expression|print) (expression|print)*
+	: (expression|print|assignment) (expression|print|assignment)*
 	;
 
 expression
@@ -14,7 +14,6 @@ expression
 
 expr
 	: arrayAccess                          #arrayAccessExpr
-	| assignment                           #assignExpr
 	| LPAREN expr RPAREN                   #parenExpr
 	| left=expr op=LOGICAL 		right=expr #boolExpr
 	| left=expr op=POW          right=expr #opExpr
@@ -42,7 +41,7 @@ print
 	;
 
 assignment
-	: VAR variable ASSIGN expr
+	: VAR variable ASSIGN expression
 	;
 
 number

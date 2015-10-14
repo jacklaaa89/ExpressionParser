@@ -28,7 +28,6 @@ import org.expression.parser.ExpressionParser.OpExprContext;
 import org.expression.parser.ExpressionParser.ParenExprContext;
 import org.expression.parser.ExpressionParser.ArrayContext;
 import org.expression.parser.ExpressionParser.ArrayInnerContext;
-import org.expression.parser.ExpressionParser.AssignExprContext;
 import org.expression.parser.ExpressionParser.AssignmentContext;
 import org.expression.parser.ExpressionParser.AtomValueContext;
 import org.expression.parser.ExpressionParser.ColumnContext;
@@ -66,10 +65,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     }
     
     @Override
-    public Context visitAssignExpr(AssignExprContext ctx) {
-        AssignmentContext c = ctx.assignment();
-        Context v = this.visit(c.expr());
-        this.variables.put(c.variable().getText(), v.getValue());
+    public Context visitAssignment(AssignmentContext ctx) {
+        Context v = this.visit(ctx.expression().expr());
+        this.variables.put(ctx.variable().getText(), v.getValue());
         return null;
     }
     

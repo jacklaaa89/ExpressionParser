@@ -12,6 +12,7 @@ public interface Arithmetic<T extends Arithmetic> extends Type<T>, Comparable<T>
     
     /**
      * Multiply A*B to give C.
+     * @param <D> The data type to return.
      * @param data the data to multiply this data structure with.
      * @return the computed data structure.
      */
@@ -19,24 +20,28 @@ public interface Arithmetic<T extends Arithmetic> extends Type<T>, Comparable<T>
     
     /**
      * Negates a value (or all values in a structure)
+     * @param <D> The data type to return.
      * @return the value after all values have been negated.
      */
     public  <D extends Arithmetic> D negate();
     
     /**
      * Makes a value (or all values in a structure) positive.
+     * @param <D> The data type to return.
      * @return the value after all of the values have been made positive.
      */
     public  <D extends Arithmetic> D plus();
     
     /**
      * Returns the absolute value for this value.
+     * @param <D> The data type to return.
      * @return the absolute value for this value.
      */
     public  <D extends Arithmetic> D abs();
     
     /**
      * Divide A/B to give C.
+     * @param <D> The data type to return.
      * @param data the data to divide each corresponding element with.
      * @return the computed data structure.
      */
@@ -44,6 +49,7 @@ public interface Arithmetic<T extends Arithmetic> extends Type<T>, Comparable<T>
     
     /**
      * Add A+B to give C.
+     * @param <D> The data type to return.
      * @param data the data to add to A to get C.
      * @return the computed data structure.
      */

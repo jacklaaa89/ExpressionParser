@@ -90,18 +90,6 @@ public interface ExpressionListener extends ParseTreeListener {
 	 */
 	void exitBoolExpr(ExpressionParser.BoolExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code assignExpr}
-	 * labeled alternative in {@link ExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterAssignExpr(ExpressionParser.AssignExprContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code assignExpr}
-	 * labeled alternative in {@link ExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitAssignExpr(ExpressionParser.AssignExprContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code parenExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
 	 * @param ctx the parse tree

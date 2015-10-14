@@ -60,13 +60,6 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBoolExpr(ExpressionParser.BoolExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code assignExpr}
-	 * labeled alternative in {@link ExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAssignExpr(ExpressionParser.AssignExprContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code parenExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
 	 * @param ctx the parse tree
