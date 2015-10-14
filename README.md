@@ -401,7 +401,7 @@ var x = [100, 45, 3e2]; //should be [100, 45, 300].
 var y = [(12 * 12), 8, MAX(x)]; //should be [144, 8, 300].
 
 //print x & y to standard output.
-PRINT(x); PRINT(y);
+print x; print y;
 
 /* calculate x + y */
 x + y;
@@ -414,6 +414,47 @@ Expression e = new Expression(source);
 
 System.out.println(e.eval()); //prints [244, 53, 600]
 ```` 
+
+##### 3: Storing all evaluated expressions in a List.
+
+````java
+public class ExpressionLister implements OutputInterface {
+	private List<Context> expressions = new ArrayList<>();
+
+	/**
+	 * Used to add the final context to the list.
+	 * @param ctx the final context.
+	 */
+	public void add(Context ctx) {
+		this.expressions.add(ctx);
+	}
+
+	@Override
+	public void print(Context ctx, int ln, String ex, int cpin) {
+		this.add(ctx);
+	}
+
+	/**
+	 * gets the list of expressions.
+	 * @return the list of expressions.
+	 */
+	public List<Context> getList() {
+		return this.expressions;
+	}
+
+}
+````
+
+````java
+Expression e = new Expression();
+OutputLister l = new OutputLister();
+e.setOutputListener(l);
+
+//don't need to add last if we place a 'print' statement on the final statement.
+e.setExpression("var x = 1; var y = 2; print x + 1; print y + 1; print (x * 2) + y;").eval();
+
+System.out.println(l); //prints [2, 3, 4]
+````
 
 ### TODO
 
