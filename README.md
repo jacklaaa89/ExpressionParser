@@ -102,7 +102,33 @@ Expression e = new Expression("var a = [1, 2, 3]; 1 + 1; a;");
 System.out.println(e.eval()); //prints [1, 2, 3]
 ````
 
-You can print out results from other expressions using the `PRINT(expression)` function which prints the result to the console. 
+You can print out results from other expressions using the `print` keyword which prints the result to the output listener.
+
+###### Output Listener
+
+When the `print` keyword is used, the output listeners print method is triggered. By default it just prints the result of the evaluated expression to the console. This functionality can be overrided using the `setOutputListener` method in the `Expression` class. 
+
+For Example:
+
+````java
+Expression e = new Expression();
+
+e.setOutputListener(
+	new OutputListener() {
+		@Override
+		public void print(Context context, int lineNo, String expression, int charPositionInLine) {
+			System.out.format("%s = %s\n", expression, context);
+		}
+	}
+);
+
+//using print on the final statement also triggers the listener as well as returning this result.
+e.setExpression("var x = 1; var y = 2; print x; print y; print x + y;"); 
+//prints:
+//x = 1.0
+//y = 2.0
+//x + y = 3.0
+````
 
 ##### Commenting
 
@@ -224,7 +250,6 @@ Function Name | Description
 **ROUND(**_expression_, _precision_**)** | Rounds an evaluated value to the requested precision.
 **FLOOR(**_expression_**)** | Rounds an evaluated value towards negative infinity.
 **CEILING(**_expression_**)** | Rounds an evaluated value towards positive infinity.
-**PRINT(**_expression_**)** | Prints the evaluated expression to the console.
 
 ###### Functions which accept Vectors & Matrices as parameters.
 
@@ -399,4 +424,4 @@ There is some functionality that is in the works of being implemented. These are
 - [x] Add support for storing variables which can be used on subsequent lines.
 - [x] Add support for comments in expressions.
 - [x] Expressions can be parsed from files as well as strings.
-- [ ] Ability to change where the `PRINT(expression)` prints its output.
+- [x] Ability to change where the `PRINT(expression)` prints its output.

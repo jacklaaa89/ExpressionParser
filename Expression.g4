@@ -5,7 +5,7 @@ package org.expression.parser;
 }
 
 start 
-	: expression (expression)*
+	: (expression|print) (expression|print)*
 	;
 
 expression
@@ -35,6 +35,10 @@ atom
 
 arrayAccess
 	: (func | atom) LBRACE DIGIT (COMMA DIGIT)? RBRACE
+	;
+
+print
+	: PRI expression 
 	;
 
 assignment
@@ -205,10 +209,14 @@ MODULO
 	: '%'
 	;
 
+PRI
+	: 'print'
+	;
+
 COMMENT
     :   '/*' .*? '*/' -> channel(HIDDEN)
     ;
-    
+
 LINE_COMMENT
     :   '//' ~[\r\n]* -> channel(HIDDEN)
     ;

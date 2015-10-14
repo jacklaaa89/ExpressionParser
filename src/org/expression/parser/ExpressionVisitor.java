@@ -87,6 +87,12 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArrayAccess(ExpressionParser.ArrayAccessContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#print}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrint(ExpressionParser.PrintContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ExpressionParser#assignment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

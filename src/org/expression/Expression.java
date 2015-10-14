@@ -24,6 +24,7 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.expression.computation.linear.LinearSystemSolver;
+import org.expression.output.OutputListener;
 import org.expression.parser.ExpressionLexer;
 import org.expression.parser.ExpressionParser;
 import org.expression.structure.Predicate;
@@ -66,6 +67,11 @@ public class Expression {
      * Sets the precision and rounding mode to use during calculation.
      */
     private MathContext mc;
+    
+    /**
+     * The output listener to use when outputting print statements.
+     */
+    private OutputListener listener;
     
     /**
      * A reference to the PI constant.
@@ -380,15 +386,6 @@ public class Expression {
                 }
             }
         );
-        
-        addFunction(new Function("print", 1) {
-            @Override
-            public Type eval(List<Type> args) throws ClassCastException {
-                System.out.println(args.get(0));
-                return args.get(0); //return the type in the case that this is 
-                //the last function called.
-            }
-        });
         
         addOperator(new Operator("<<")
             .addEvaluator(
@@ -753,6 +750,16 @@ public class Expression {
     }
     
     /**
+     * Sets the output listener to use when outputting evaluated statements.
+     * @param listener the listener to use.
+     * @return a reference to itself for method chaining.
+     */
+    public final Expression setOutputListener(OutputListener listener) {
+        this.listener = listener;
+        return this;
+    }
+    
+    /**
      * Adds a new operator to use.
      * @param operator the operator to use
      * @return a reference to itself for method chaining.
@@ -849,7 +856,7 @@ public class Expression {
         parser.addErrorListener(handler);
         ParseTree tree = parser.start();
         
-        Visitor ve = new Visitor(functions, operators, variables, mc);
+        Visitor ve = new Visitor(functions, operators, variables, mc, listener);
         Context c = ve.visit(tree);
         
         if(c == null || c.getValue() == null) {

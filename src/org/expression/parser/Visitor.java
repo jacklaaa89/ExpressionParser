@@ -10,10 +10,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.expression.Context;
 import org.expression.Scalar;
 import org.expression.Type;
+import org.expression.output.ConsoleOutput;
+import org.expression.output.OutputListener;
 import org.expression.parser.ExpressionParser.ArrayAccessContext;
 import org.expression.parser.ExpressionParser.ArrayAccessExprContext;
 import org.expression.parser.ExpressionParser.BoolExprContext;
@@ -30,6 +34,7 @@ import org.expression.parser.ExpressionParser.AtomValueContext;
 import org.expression.parser.ExpressionParser.ColumnContext;
 import org.expression.parser.ExpressionParser.ExpressionContext;
 import org.expression.parser.ExpressionParser.MatrixContext;
+import org.expression.parser.ExpressionParser.PrintContext;
 
 /**
  *
@@ -41,20 +46,22 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     private final HashMap<String, Function> functions;
     private final HashMap<String, Operator> operators;
     private final HashMap<String, Type> variables;
+    private OutputListener listener;
     
     public Visitor(HashMap<String, Function> functions, 
             HashMap<String, Operator> operators, 
-            HashMap<String, Type> variables) {
+            HashMap<String, Type> variables, OutputListener listener) {
         this.functions = functions;
         this.operators = operators;
         this.variables = variables;
+        this.listener = listener;
     }
     
     public Visitor(HashMap<String, Function> functions, 
             HashMap<String, Operator> operators, 
             HashMap<String, Type> variables,
-            MathContext mc) {
-        this(functions, operators, variables);
+            MathContext mc, OutputListener listener) {
+        this(functions, operators, variables, listener);
         this.mc = mc;
     }
     
@@ -219,6 +226,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        return r;
    }
    
+   /**
+    * Attempts to parse a value from a context.
+    * @param ctx the context to parse.
+    * @return the parsed value.
+    */
    private Type parseValue(ParserRuleContext ctx) {
        try{ 
            double f = Double.parseDouble(ctx.getText());
@@ -274,6 +286,31 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         } catch(ClassCastException e) {
             throw new IllegalArgumentException("invalid parameter types provided for function: " + f.getName());
         }
+   }
+   
+   @Override
+   public Context visitPrint(PrintContext ctx) {
+       Context c = this.visit(ctx.expression());
+       Token t = ctx.PRI().getSymbol();
+       ParserRuleContext exp = ctx.expression();
+       String expression = this.getFullStatement(exp);
+       if(listener == null) {
+           listener = new ConsoleOutput();
+       }
+       listener.print(c, t.getLine(), expression.substring(0, expression.length() - 1).trim(), t.getCharPositionInLine());
+       return c;
+   }
+   
+   /**
+    * Attempts to get the full statement from the parser, including whitespace.
+    * @param ctx the context to get the full statement for.
+    * @return the full statement.
+    */
+   private String getFullStatement(ParserRuleContext ctx) {
+       if(ctx.start == null || ctx.stop == null || ctx.start.getStartIndex() < 0 || ctx.stop.getStopIndex() < 0) {
+           return ctx.getText();
+       }
+       return ctx.start.getInputStream().getText(Interval.of(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
    }
    
    /**
