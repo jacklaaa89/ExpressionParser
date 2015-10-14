@@ -434,12 +434,9 @@ public class ExpressionLister implements OutputInterface {
 		this.add(ctx);
 	}
 
-	/**
-	 * gets the list of expressions.
-	 * @return the list of expressions.
-	 */
-	public List<Context> getList() {
-		return this.expressions;
+	@Override
+	public String toString() {
+		return this.expressions.toString();
 	}
 
 }
@@ -447,7 +444,7 @@ public class ExpressionLister implements OutputInterface {
 
 ````java
 Expression e = new Expression();
-OutputLister l = new OutputLister();
+ExpressionLister l = new ExpressionLister();
 e.setOutputListener(l);
 
 //don't need to add last if we place a 'print' statement on the final statement.
