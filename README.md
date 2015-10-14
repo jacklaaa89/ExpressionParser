@@ -418,7 +418,7 @@ System.out.println(e.eval()); //prints [244, 53, 600]
 ##### 3: Storing all evaluated expressions in a List.
 
 ````java
-public class ExpressionLister implements OutputInterface {
+public class ExpressionLister implements OutputListener {
 	private List<Context> expressions = new ArrayList<>();
 
 	/**
