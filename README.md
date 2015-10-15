@@ -453,6 +453,23 @@ e.setExpression("var x = 1; var y = 2; print x + 1; print y + 1; print (x * 2) +
 System.out.println(l); //prints [2, 3, 4]
 ````
 
+##### 4: Constructing complex data structures to use within Java.
+
+````java
+Expression e = new Expression();
+e.setExpression(
+        "[ MAX([12, 4, 10]), "
+        + "SUM([18, 12, 6; 56, 34, -89; 3e2, (2^10 / 2), 45]), "
+        + "(10 - 4) + 3 - RANDOM(),"
+        + "IDENTITY(5)[0,0] ];");
+
+Vector v = (Vector) e.eval().getValue();
+
+//Manipulate vector 'v'....
+
+System.out.println(v); //prints [12.0, 894.0, 8.260880967445882, 1.0]
+````
+
 ### TODO
 
 There is some functionality that is in the works of being implemented. These are:
