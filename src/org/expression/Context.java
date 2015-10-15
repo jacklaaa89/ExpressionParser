@@ -106,7 +106,7 @@ public class Context<T extends Type> {
     @Override
     public String toString() {
         String v = this.value.toString();
-        return v;
+        return this.expression + " = " + v;
     }
     
 }
