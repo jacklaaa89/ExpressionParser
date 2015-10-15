@@ -116,8 +116,8 @@ Expression e = new Expression();
 e.setOutputListener(
 	new OutputListener() {
 		@Override
-		public void print(Context context, int lineNo, String expression, int charPositionInLine) {
-			System.out.format("%s = %s\n", expression, context);
+		public void print(Context context) {
+			System.out.format("%s = %s\n", context.getExpression(), context.getValue());
 		}
 	}
 );
@@ -430,7 +430,7 @@ public class ExpressionLister implements OutputListener {
 	}
 
 	@Override
-	public void print(Context ctx, int ln, String ex, int cpin) {
+	public void print(Context ctx) {
 		this.add(ctx);
 	}
 
