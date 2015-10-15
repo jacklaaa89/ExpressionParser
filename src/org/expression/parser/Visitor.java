@@ -106,6 +106,8 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        
        ArrayAccessContext c = ctx.arrayAccess();
        boolean isFuncCall = c.func() != null;
+       Token t = c.start;
+       String ex = this.getFullStatement(c);
       
        //evaluate the child and then attempt to access the result and return.
        Context con;
@@ -127,15 +129,15 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Context res;
        if(con.isArray() && indices.length == 1) {
            //we have array access.
-           res = new Context(((Vector)con.getValue()).get(indices[0]));
+           res = new Context(((Vector)con.getValue()).get(indices[0]), t.getLine(), t.getCharPositionInLine(), ex);
        } else if(con.isMatrix() && indices.length >= 1) {
            //we have matrix access.
            if(indices.length == 1) {
                //return the vector row.
-               res = new Context(((Matrix)con.getValue()).get(indices[0]));
+               res = new Context(((Matrix)con.getValue()).get(indices[0]), t.getLine(), t.getCharPositionInLine(), ex);
                return res;
            }
-           res = new Context(((Matrix)con.getValue()).get(indices[0], indices[1]));
+           res = new Context(((Matrix)con.getValue()).get(indices[0], indices[1]), t.getLine(), t.getCharPositionInLine(), ex);
        } else {
            //anything else is an error.
            throw new IllegalArgumentException("an error occured attempting to access array.");
@@ -166,6 +168,8 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        //determine if we have an array or not.
        boolean isArray  = (ctx.array() != null);
        boolean isMatrix = (ctx.matrix() != null); 
+       String ex = this.getFullStatement(ctx);
+       Token s = ctx.start;
        Context r;
        
        //arrays and matrices can have values evaluated from expr.
@@ -181,7 +185,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
                }
                v.set(i, (Scalar)c.getValue());
            }
-           r = new Context(v);
+           r = new Context(v, s.getLine(), s.getCharPositionInLine(), ex);
        } else if (isMatrix) {
            MatrixContext mtx = ctx.matrix();
            //if we have more than one column.
@@ -216,10 +220,10 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            li.add(ire);
            
            Matrix m = new Matrix(li, mc);
-           r = new Context(m);
+           r = new Context(m, s.getLine(), s.getCharPositionInLine(), ex);
        } else {
             Type d = this.parseValue(ctx);
-            r = new Context(d);
+            r = new Context(d, s.getLine(), s.getCharPositionInLine(), ex);
        }
        return r;
    }
@@ -248,6 +252,8 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        //check to see that there is a function with that name, generate the params and 
        //return the result.
        String name = ctx.funcName().getText().toUpperCase(Locale.ROOT);
+       Token s = ctx.start;
+       String ex = this.getFullStatement(ctx);
        
        if(!this.functions.containsKey(name)) {
            throw new ArithmeticException("undefined function '"+name+"' called.");
@@ -280,7 +286,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         }
         
         try {
-            return new Context(f.eval(args));
+            return new Context(f.eval(args), s.getLine(), s.getCharPositionInLine(), ex);
         } catch(ClassCastException e) {
             throw new IllegalArgumentException("invalid parameter types provided for function: " + f.getName());
         }
@@ -289,13 +295,10 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    @Override
    public Context visitPrint(PrintContext ctx) {
        Context c = this.visit(ctx.expression());
-       Token t = ctx.PRI().getSymbol();
-       ParserRuleContext exp = ctx.expression();
-       String expression = this.getFullStatement(exp);
        if(listener == null) {
            listener = new ConsoleOutput();
        }
-       listener.print(c, t.getLine(), expression.substring(0, expression.length() - 1).trim(), t.getCharPositionInLine());
+       listener.print(c);
        return c;
    }
    

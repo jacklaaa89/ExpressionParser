@@ -403,7 +403,7 @@ public class Operator {
            v = this.defaultEvaluator.eval((Arithmetic)left.getValue(), (Arithmetic) right.getValue());
         }
         
-        return new Context(v);
+        return new Context(v, left.getLineNo(), left.getCharPositionInLine(), left.getExpression() + " " + this.sign + " " + right.getExpression());
     }
     
 }

@@ -8,7 +8,7 @@ import org.expression.Context;
  */
 public class ConsoleOutput implements OutputListener {
     @Override
-    public void print(Context context, int lineNo, String expression, int charPositionInLine) {
+    public void print(Context context) {
         System.out.println(context);
     }
 }
