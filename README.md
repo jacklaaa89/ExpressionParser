@@ -194,7 +194,7 @@ System.out.println(e.eval());
 //i + n = [3, 4, 5]
 ````
 
-**While Loop**
+**For Loop**
 
 ````
 var i = [1, 2, 3];
