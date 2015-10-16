@@ -102,6 +102,13 @@ Expression e = new Expression("var a = [1, 2, 3]; 1 + 1; a;");
 System.out.println(e.eval()); //prints [1, 2, 3]
 ````
 
+There are also scenarios in which the evaluated result of the expression can be nothing. An example of this is an `if` statement which no expressions to evaluate inside. In this case the Context returned is classed as 'empty' and contains a null result value.
+
+````java
+Expression e = new Expression("var x = 4; if(4 < 3){ /* empty context. */ }");
+System.out.println(e.eval()); //prints [Empty Context] as no return value was determined.
+````
+
 You can print out results from other expressions using the `print` keyword which prints the result to the output listener.
 
 ###### Output Listener
@@ -133,6 +140,31 @@ e.setExpression("var x = 1; var y = 2; print x; print y; print x + y;");
 ##### Commenting
 
 Expressions also support commenting in the form of `/* comment */` and `//comment` which are ignored by the parser.
+
+##### Control Statements
+
+###### If Statement
+
+The ExpressionParser also has the capability to handling simple if/else statements. For example:
+
+````
+var r = 2;
+
+if(r < 2 || r > -1) {
+	var a = 1;
+} elseif(r == 4) {
+	var a = 2;
+} else {
+	var a = 3;
+}
+
+print a;
+````
+
+````java
+Expression e = new Expression(new File("/path/to/source/file.ex"));
+System.out.println(e.eval()); //prints a = 1;
+````
 
 ### Operations
 
