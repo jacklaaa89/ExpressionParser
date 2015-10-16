@@ -31,7 +31,10 @@ import org.expression.parser.ExpressionParser.ArrayInnerContext;
 import org.expression.parser.ExpressionParser.AssignmentContext;
 import org.expression.parser.ExpressionParser.AtomValueContext;
 import org.expression.parser.ExpressionParser.ColumnContext;
+import org.expression.parser.ExpressionParser.ElseStatementContext;
+import org.expression.parser.ExpressionParser.ElseifStatementContext;
 import org.expression.parser.ExpressionParser.ExpressionContext;
+import org.expression.parser.ExpressionParser.IfStatementContext;
 import org.expression.parser.ExpressionParser.MatrixContext;
 import org.expression.parser.ExpressionParser.PrintContext;
 
@@ -154,6 +157,52 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            ints[i] = in;
        }
        return ints;
+   }
+   
+   @Override
+   public Context visitIfStatement(IfStatementContext ctx) {
+       Context e = new Context(null, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
+       Context<Scalar> ifExpression = this.visit(ctx.expr());
+       //it has to equate to boolean true or false (Scalar 1 or 0)
+       if(ifExpression == null) {
+           throw new IllegalArgumentException("if statement requires an expression to evaluate.");
+       }
+       if(!ifExpression.isScalar()) {
+           throw new IllegalArgumentException("if statement expression must equate to boolean true or false");
+       }
+       Scalar b = ifExpression.getValue();
+       if(b.equals(Scalar.ONE)) {
+           //return the evaluated result from the if.
+           if(ctx.start() != null) {
+                return this.visit(ctx.start());
+           }
+           return e;
+       }
+       //see if there is any elseif statements and return the first one which equates to true.
+       List<ElseifStatementContext> eifs = ctx.elseifStatement();
+       for(ElseifStatementContext eif : eifs) {
+           Context<Scalar> elseif = this.visit(eif.expr());
+           if(elseif == null) {
+               throw new IllegalArgumentException("elseif statement requires an expression to evaluate.");
+           }
+           if(!elseif.isScalar()) {
+              throw new IllegalArgumentException("elseif statement expression must equate to boolean true or false");
+           }
+           Scalar es = elseif.getValue();
+           if(es.equals(Scalar.ONE)) {
+               if(eif.start() != null) {
+                    return this.visit(eif.start());
+               }
+               return e;
+           }
+       }
+       ElseStatementContext elses = ctx.elseStatement();
+       if(elses != null) {
+           if(elses.start() != null) {
+                return this.visit(elses.start());
+           }
+       }
+       return e;
    }
    
    /**

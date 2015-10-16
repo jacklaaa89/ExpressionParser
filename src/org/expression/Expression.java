@@ -859,8 +859,9 @@ public class Expression {
         Visitor ve = new Visitor(functions, operators, variables, mc, listener);
         Context c = ve.visit(tree);
         
-        if(c == null || c.getValue() == null) {
-            throw new RuntimeException("a unexpected error occured.");
+        if(c == null) {
+            //return an empty context.
+            c = new Context(null, 1, 1, this.getExpression());
         }
         
         return c;

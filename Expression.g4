@@ -5,7 +5,7 @@ package org.expression.parser;
 }
 
 start 
-	: (expression|print|assignment) (expression|print|assignment)*
+	: (expression|print|assignment|controlStatement) (expression|print|assignment|controlStatement)*
 	;
 
 expression
@@ -30,6 +30,22 @@ atom
 	| variable         #atomValue
 	| array            #atomValue
 	| matrix           #atomValue
+	;
+
+controlStatement
+	: ifStatement
+	;
+
+ifStatement
+	: IF LPAREN expr RPAREN BLOCKLEFT start? BLOCKRIGHT elseifStatement* elseStatement?
+	;
+
+elseifStatement
+	: ELSEIF LPAREN expr RPAREN BLOCKLEFT start? BLOCKRIGHT
+	;
+
+elseStatement
+	: ELSE BLOCKLEFT start? BLOCKRIGHT
 	;
 
 arrayAccess
@@ -196,6 +212,18 @@ VAR
 	: 'var'
 	;
 
+IF
+	: 'if'
+	;
+
+ELSE
+	: 'else'
+	;
+
+ELSEIF
+	: 'elseif'
+	;
+
 LETTER
 	: ('a'..'z') | ('A'..'Z')
 	;
@@ -210,6 +238,14 @@ MODULO
 
 PRI
 	: 'print'
+	;
+
+BLOCKLEFT
+	: '{'
+	;
+
+BLOCKRIGHT
+	: '}'
 	;
 
 COMMENT

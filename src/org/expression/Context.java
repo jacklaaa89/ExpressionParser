@@ -8,6 +8,7 @@ import org.expression.structure.Vector;
  * the overall expression itself. 
  * i.e (1 + 1) - 3 would have two contexts, one for the (1 + 1) and one
  * for the 2 - 3 (the evaluated form of the previous context is on the left.)
+ * A context can have no evaluated result and in this case the context is classed as 'empty'.
  * @author Jack Timblin
  * @param <T> The expected result object.
  */
@@ -64,6 +65,14 @@ public class Context<T extends Type> {
     }
     
     /**
+     * Determines if this context is empty, i.e contains no evaluated result.
+     * @return <b>TRUE</b> if the evaluated result was empty, <b>FALSE</b> otherwise.
+     */
+    public boolean isEmptyContext() {
+        return value == null;
+    }
+    
+    /**
      * Determines if the result from this context was a Scalar.
      * @return <b>TRUE</b> if the evaluated result was a Scalar, <b>FALSE</b> otherwise.
      */
@@ -105,7 +114,7 @@ public class Context<T extends Type> {
     
     @Override
     public String toString() {
-        String v = this.value.toString();
+        String v = (value != null) ? this.value.toString() : "[Empty Context]";
         return this.expression + " = " + v;
     }
     

@@ -74,6 +74,30 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAtomValue(ExpressionParser.AtomValueContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#controlStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitControlStatement(ExpressionParser.ControlStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#ifStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfStatement(ExpressionParser.IfStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#elseifStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElseifStatement(ExpressionParser.ElseifStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#elseStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElseStatement(ExpressionParser.ElseStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ExpressionParser#arrayAccess}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
