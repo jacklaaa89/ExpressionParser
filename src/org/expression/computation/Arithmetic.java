@@ -25,6 +25,9 @@ public interface Arithmetic<T extends Arithmetic> extends Type<T>, Comparable<T>
      */
     public  <D extends Arithmetic> D negate();
     
+    public <D extends Arithmetic> D increment();
+    public <D extends Arithmetic> D decrement();
+    
     /**
      * Makes a value (or all values in a structure) positive.
      * @param <D> The data type to return.

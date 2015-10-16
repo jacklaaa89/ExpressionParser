@@ -21,6 +21,7 @@ import org.expression.computation.inverse.LinearSystemInverter;
 import org.expression.computation.linear.AbstractSolver;
 import org.expression.computation.linear.LinearSystemSolver;
 import org.expression.structure.function.MatrixFunction;
+import org.expression.structure.function.Vectors;
 
 /**
  * A representation of a Matrix.
@@ -1142,5 +1143,21 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     public void updateAt(Coordinate i, MatrixFunction f) {
         int m = i.x; int n = i.y;
         set(m, n, f.evaluate(m, n, get(m, n)));
+    }
+    
+    public Matrix increment() {
+        Matrix A = this.copy();
+        for(int i = 0; i < A.size(); i++) {
+            A.set(i, A.get(i).increment());
+        }
+        return A;
+    }
+
+    public Matrix decrement() {
+        Matrix A = this.copy();
+        for(int i = 0; i < A.size(); i++) {
+            A.set(i, A.get(i).decrement());
+        }
+        return A;
     }
 }

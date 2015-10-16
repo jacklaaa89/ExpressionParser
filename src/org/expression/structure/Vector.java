@@ -14,6 +14,7 @@ import org.expression.computation.Handler;
 import org.expression.Scalar;
 import org.expression.Type;
 import org.expression.structure.function.VectorFunction;
+import org.expression.structure.function.Vectors;
 
 /**
  * A complete implementation of a Vector.
@@ -574,9 +575,26 @@ public class Vector extends BaseStructure<Scalar, Vector, VectorFunction> {
      * @param n the index.
      * @param v the function to apply at the row/index.
      */
+    @Override
     public void updateAt(Coordinate n, VectorFunction v) {
         int i = n.x;
         set(i, v.evaluate(i, get(i)));
+    }
+
+    public Vector increment() {
+        Vector A = this.copy();
+        for(int i = 0; i < A.size(); i++) {
+            A.updateAt(new Coordinate(i), Vectors.INCREMENT());
+        }
+        return A;
+    }
+
+    public Vector decrement() {
+        Vector A = this.copy();
+        for(int i = 0; i < A.size(); i++) {
+            A.updateAt(new Coordinate(i), Vectors.DECREMENT());
+        }
+        return A;
     }
     
 }

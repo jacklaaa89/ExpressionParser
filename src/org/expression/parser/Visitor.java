@@ -16,6 +16,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.expression.Context;
 import org.expression.Scalar;
 import org.expression.Type;
+import org.expression.computation.Arithmetic;
 import org.expression.output.ConsoleOutput;
 import org.expression.output.OutputListener;
 import org.expression.parser.ExpressionParser.ArrayAccessContext;
@@ -29,14 +30,21 @@ import org.expression.parser.ExpressionParser.ParenExprContext;
 import org.expression.parser.ExpressionParser.ArrayContext;
 import org.expression.parser.ExpressionParser.ArrayInnerContext;
 import org.expression.parser.ExpressionParser.AssignmentContext;
+import org.expression.parser.ExpressionParser.AtomContext;
 import org.expression.parser.ExpressionParser.AtomValueContext;
 import org.expression.parser.ExpressionParser.ColumnContext;
 import org.expression.parser.ExpressionParser.ElseStatementContext;
 import org.expression.parser.ExpressionParser.ElseifStatementContext;
 import org.expression.parser.ExpressionParser.ExpressionContext;
+import org.expression.parser.ExpressionParser.ForLoopContext;
 import org.expression.parser.ExpressionParser.IfStatementContext;
+import org.expression.parser.ExpressionParser.IncDecExprContext;
+import org.expression.parser.ExpressionParser.IncDecExpressionContext;
 import org.expression.parser.ExpressionParser.MatrixContext;
 import org.expression.parser.ExpressionParser.PrintContext;
+import org.expression.parser.ExpressionParser.UpdateStatementContext;
+import org.expression.parser.ExpressionParser.VariableContext;
+import org.expression.parser.ExpressionParser.WhileLoopContext;
 
 /**
  *
@@ -105,8 +113,83 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    }
    
    @Override
-   public Context visitArrayAccessExpr(ArrayAccessExprContext ctx) {
+   public Context visitIncDecExpr(IncDecExprContext ctx) {
+       IncDecExpressionContext ce = ctx.incDecExpression();
        
+       boolean isFunc = ce.func() != null;
+       
+       Context c;
+       if(isFunc) {
+           c = this.visit(ce.func());
+       } else {
+           c = this.visit(ce.atom());
+       }
+       
+       Arithmetic t;
+       t = (ce.DECREMENT() != null) ? ((Arithmetic)c.getValue()).decrement() : ((Arithmetic)c.getValue()).increment();
+       return new Context(t, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
+   }
+   
+   @Override
+   public Context visitForLoop(ForLoopContext ctx) {
+       
+       AssignmentContext ac = ctx.assignment();
+       
+       //visit the assignment to add the variable to the variables.
+       this.visit(ac);
+       String varName = ac.variable().getText();
+       Type t = this.variables.get(varName);
+       
+       //sanity checks.
+       //1: check the assignment is for a scalar.
+       if(!(t instanceof Scalar)) {
+           throw new IllegalArgumentException("for loops only accept scalar assignments.");
+       }
+       
+       List<ExprContext> exprs = ctx.expr();
+       if(exprs.size() != 2) {
+           throw new IllegalArgumentException("not enough arguments supplied for for loop.");
+       }
+       
+       Context<Scalar> computed = this.visit(exprs.get(0));
+       if(computed == null || !computed.isScalar()) {
+           throw new IllegalArgumentException("invalid condition clause.");
+       }
+       
+       ExprContext exp = exprs.get(1);
+       while(computed.getValue().equals(Scalar.ONE)) {
+           this.visit(ctx.start());
+           Context ex = this.visit(exp);
+           this.variables.put(varName, ex.getValue());
+           computed = this.visit(exprs.get(0));
+       }
+       
+       this.variables.remove(varName);
+       return new Context(null, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
+   }
+   
+   @Override
+   public Context visitWhileLoop(WhileLoopContext ctx) {
+       Context computed = this.visit(ctx.expr());
+       while(computed.getValue().equals(Scalar.ONE)) {
+           this.visit(ctx.start());
+           computed = this.visit(ctx.expr());
+       }
+       return new Context(null, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
+   }
+   
+   @Override
+   public Context visitUpdateStatement(UpdateStatementContext ctx) {
+       Context res;
+       VariableContext v = ctx.variable();
+       String varName = v.getText();
+       res = this.visit(ctx.expression());
+       this.variables.put(varName, res.getValue());
+       return res;
+   }
+   
+   @Override
+   public Context visitArrayAccessExpr(ArrayAccessExprContext ctx) {
        ArrayAccessContext c = ctx.arrayAccess();
        boolean isFuncCall = c.func() != null;
        Token t = c.start;

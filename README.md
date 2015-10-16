@@ -141,6 +141,10 @@ e.setExpression("var x = 1; var y = 2; print x; print y; print x + y;");
 
 Expressions also support commenting in the form of `/* comment */` and `//comment` which are ignored by the parser.
 
+##### Updating variable values.
+
+You can also re-assign values to already defined values, for example `var i = [1, 2, 3]; i = [4, i[1], i[2]];` would print `[4, 2, 3]`.
+
 ##### Control Statements
 
 ###### If Statement
@@ -164,6 +168,48 @@ print a;
 ````java
 Expression e = new Expression(new File("/path/to/source/file.ex"));
 System.out.println(e.eval()); //prints a = 1;
+````
+
+###### For & While Loop
+
+ExpressionParser also supports simple for and while loops in its computation. Be aware however that infinite loops can occur from using loop control structures.
+
+**While Loop**
+
+````
+var i = [1, 2, 3];
+var n = 0;
+while(n < SIZE(i)) {
+	print i + n;
+	n = n++; //needed to stop infinite loops.
+}
+````
+
+````java
+Expression e = new Expression(new File("path/to/source/file.ex"));
+System.out.println(e.eval());
+//prints:
+//i + n = [1, 2, 3]
+//i + n = [2, 3, 4]
+//i + n = [3, 4, 5]
+````
+
+**While Loop**
+
+````
+var i = [1, 2, 3];
+for(var n = 0; n < SIZE(i); n++) {
+	print i + n;
+}
+````
+
+````java
+Expression e = new Expression(new File("path/to/source/file.ex"));
+System.out.println(e.eval());
+//prints:
+//i + n = [1, 2, 3]
+//i + n = [2, 3, 4]
+//i + n = [3, 4, 5]
 ````
 
 ### Operations

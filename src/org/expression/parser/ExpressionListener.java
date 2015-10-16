@@ -66,6 +66,18 @@ public interface ExpressionListener extends ParseTreeListener {
 	 */
 	void exitOpExpr(ExpressionParser.OpExprContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code incDecExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterIncDecExpr(ExpressionParser.IncDecExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code incDecExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitIncDecExpr(ExpressionParser.IncDecExprContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code atomExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
 	 * @param ctx the parse tree
@@ -114,6 +126,16 @@ public interface ExpressionListener extends ParseTreeListener {
 	 */
 	void exitAtomValue(ExpressionParser.AtomValueContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#incDecExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterIncDecExpression(ExpressionParser.IncDecExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#incDecExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitIncDecExpression(ExpressionParser.IncDecExpressionContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ExpressionParser#controlStatement}.
 	 * @param ctx the parse tree
 	 */
@@ -123,6 +145,36 @@ public interface ExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitControlStatement(ExpressionParser.ControlStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#updateStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterUpdateStatement(ExpressionParser.UpdateStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#updateStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitUpdateStatement(ExpressionParser.UpdateStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#forLoop}.
+	 * @param ctx the parse tree
+	 */
+	void enterForLoop(ExpressionParser.ForLoopContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#forLoop}.
+	 * @param ctx the parse tree
+	 */
+	void exitForLoop(ExpressionParser.ForLoopContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#whileLoop}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhileLoop(ExpressionParser.WhileLoopContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#whileLoop}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhileLoop(ExpressionParser.WhileLoopContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ExpressionParser#ifStatement}.
 	 * @param ctx the parse tree

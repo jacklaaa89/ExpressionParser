@@ -46,6 +46,13 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitOpExpr(ExpressionParser.OpExprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code incDecExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIncDecExpr(ExpressionParser.IncDecExprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code atomExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
 	 * @param ctx the parse tree
@@ -74,11 +81,35 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAtomValue(ExpressionParser.AtomValueContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#incDecExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIncDecExpression(ExpressionParser.IncDecExpressionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ExpressionParser#controlStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitControlStatement(ExpressionParser.ControlStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#updateStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUpdateStatement(ExpressionParser.UpdateStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#forLoop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForLoop(ExpressionParser.ForLoopContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#whileLoop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWhileLoop(ExpressionParser.WhileLoopContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ExpressionParser#ifStatement}.
 	 * @param ctx the parse tree

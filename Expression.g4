@@ -5,7 +5,7 @@ package org.expression.parser;
 }
 
 start 
-	: (expression|print|assignment|controlStatement) (expression|print|assignment|controlStatement)*
+	: (expression|print|assignment|controlStatement|updateStatement) (expression|print|assignment|controlStatement|updateStatement)*
 	;
 
 expression
@@ -13,7 +13,8 @@ expression
 	;
 
 expr
-	: arrayAccess                          #arrayAccessExpr
+    : incDecExpression                     #incDecExpr
+	| arrayAccess                          #arrayAccessExpr
 	| LPAREN expr RPAREN                   #parenExpr
 	| left=expr op=LOGICAL 		right=expr #boolExpr
 	| left=expr op=POW          right=expr #opExpr
@@ -32,8 +33,27 @@ atom
 	| matrix           #atomValue
 	;
 
+incDecExpression
+	: atom (INCREMENT|DECREMENT)
+	| func (INCREMENT|DECREMENT)
+	;
+
 controlStatement
 	: ifStatement
+	| forLoop
+	| whileLoop
+	;
+
+updateStatement
+	: (variable) ASSIGN expression
+	;
+
+forLoop
+	: FOR LPAREN assignment expr SEMI_COLON expr RPAREN BLOCKLEFT start BLOCKRIGHT
+	;
+
+whileLoop
+	: WHILE LPAREN expr RPAREN BLOCKLEFT start BLOCKRIGHT
 	;
 
 ifStatement
@@ -98,6 +118,14 @@ funcName
 
 variable
 	: MINUS? LETTER (LETTER|DIGIT)*
+	;
+
+INCREMENT
+	: PLUS PLUS
+	;
+
+DECREMENT
+	: MINUS MINUS
 	;
 
 LBRACE
@@ -222,6 +250,14 @@ ELSE
 
 ELSEIF
 	: 'elseif'
+	;
+
+FOR
+	: 'for'
+	;
+
+WHILE
+	: 'while'
 	;
 
 LETTER
