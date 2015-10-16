@@ -102,7 +102,7 @@ Expression e = new Expression("var a = [1, 2, 3]; 1 + 1; a;");
 System.out.println(e.eval()); //prints [1, 2, 3]
 ````
 
-There are also scenarios in which the evaluated result of the expression can be nothing. An example of this is an `if` statement which no expressions to evaluate inside. In this case the Context returned is classed as 'empty' and contains a null result value.
+There are also scenarios in which the evaluated result of the expression can be nothing. An example of this is an `if` statement which no expressions to evaluate inside or an empty expression or an expression only containing assignment operations. In this case the Context returned is classed as 'empty' and contains a null result value.
 
 ````java
 Expression e = new Expression("var x = 4; if(4 < 3){ /* empty context. */ }");
