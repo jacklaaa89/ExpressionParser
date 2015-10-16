@@ -79,7 +79,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     public Context visitAssignment(AssignmentContext ctx) {
         Context v = this.visit(ctx.expression().expr());
         this.variables.put(ctx.variable().getText(), v.getValue());
-        return null;
+        return v;
     }
     
     /**
@@ -183,6 +183,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Context res;
        VariableContext v = ctx.variable();
        String varName = v.getText();
+       if(!this.variables.containsKey(varName)) {
+           throw new NullPointerException("variable '" + varName + "' is not defined.");
+       }
        res = this.visit(ctx.expression());
        this.variables.put(varName, res.getValue());
        return res;
