@@ -141,9 +141,16 @@ e.setExpression("var x = 1; var y = 2; print x; print y; print x + y;");
 
 Expressions also support commenting in the form of `/* comment */` and `//comment` which are ignored by the parser.
 
-##### Updating variable values.
+##### Updating Variable Values
 
 You can also re-assign values to already defined values, for example `var i = [1, 2, 3]; i = [4, i[1], i[2]];` would print `[4, 2, 3]`.
+
+##### Incrementing/Decrementing Values
+
+You can apply the `++` or `--` operators after any Scalar, Vector & Matrix to increment or decrement all values in that type by one.
+However, because these operators are supported on values which don't nessacarily have a variable name (i.e `SIZE([1, 2, 3])++`), To store this incremented value as a variable you should use the `var` keyword (or just the variable name if using an existing variable).
+
+So for example: `var n = 0; n = n--;` and `var b = [1, 2, 3]++;` are both valid statements. 
 
 ##### Control Statements
 
