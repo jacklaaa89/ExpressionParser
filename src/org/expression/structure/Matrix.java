@@ -1145,6 +1145,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
         set(m, n, f.evaluate(m, n, get(m, n)));
     }
     
+    @Override
     public Matrix increment() {
         Matrix A = this.copy();
         for(int i = 0; i < A.size(); i++) {
@@ -1153,6 +1154,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
         return A;
     }
 
+    @Override
     public Matrix decrement() {
         Matrix A = this.copy();
         for(int i = 0; i < A.size(); i++) {

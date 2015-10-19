@@ -581,6 +581,7 @@ public class Vector extends BaseStructure<Scalar, Vector, VectorFunction> {
         set(i, v.evaluate(i, get(i)));
     }
 
+    @Override
     public Vector increment() {
         Vector A = this.copy();
         for(int i = 0; i < A.size(); i++) {
@@ -589,6 +590,7 @@ public class Vector extends BaseStructure<Scalar, Vector, VectorFunction> {
         return A;
     }
 
+    @Override
     public Vector decrement() {
         Vector A = this.copy();
         for(int i = 0; i < A.size(); i++) {

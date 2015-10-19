@@ -186,12 +186,6 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        String varName = ac.variable().getText();
        Type t = this.variables.get(varName);
        
-       //sanity checks.
-       //1: check the assignment is for a scalar.
-       if(!(t instanceof Scalar)) {
-           throw new IllegalArgumentException("for loops only accept scalar assignments.");
-       }
-       
        Context computed = this.visit(ctx.forcedLogicalOperation());
        
        while(computed.getValue().equals(Scalar.ONE)) {
