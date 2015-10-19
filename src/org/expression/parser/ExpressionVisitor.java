@@ -93,6 +93,18 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitControlStatement(ExpressionParser.ControlStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#logicalOperation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLogicalOperation(ExpressionParser.LogicalOperationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#forcedLogicalOperation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForcedLogicalOperation(ExpressionParser.ForcedLogicalOperationContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ExpressionParser#forLoop}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

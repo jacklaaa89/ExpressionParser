@@ -37,11 +37,14 @@ import org.expression.parser.ExpressionParser.ElseStatementContext;
 import org.expression.parser.ExpressionParser.ElseifStatementContext;
 import org.expression.parser.ExpressionParser.ExpressionContext;
 import org.expression.parser.ExpressionParser.ForLoopContext;
+import org.expression.parser.ExpressionParser.ForcedLogicalOperationContext;
 import org.expression.parser.ExpressionParser.IfStatementContext;
 import org.expression.parser.ExpressionParser.IncDecExprContext;
 import org.expression.parser.ExpressionParser.IncDecExpressionContext;
+import org.expression.parser.ExpressionParser.LogicalOperationContext;
 import org.expression.parser.ExpressionParser.MatrixContext;
 import org.expression.parser.ExpressionParser.PrintContext;
+import org.expression.parser.ExpressionParser.VariableContext;
 import org.expression.parser.ExpressionParser.WhileLoopContext;
 
 /**
@@ -169,6 +172,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    }
    
    @Override
+   public Context visitVariable(VariableContext ctx) {
+       return new Context(this.parseValue(ctx), ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
+   }
+   
+   @Override
    public Context visitForLoop(ForLoopContext ctx) {
        
        AssignmentContext ac = ctx.assignment();
@@ -184,22 +192,13 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            throw new IllegalArgumentException("for loops only accept scalar assignments.");
        }
        
-       List<ExprContext> exprs = ctx.expr();
-       if(exprs.size() != 2) {
-           throw new IllegalArgumentException("not enough arguments supplied for for loop.");
-       }
+       Context computed = this.visit(ctx.forcedLogicalOperation());
        
-       Context<Scalar> computed = this.visit(exprs.get(0));
-       if(computed == null || !computed.isScalar()) {
-           throw new IllegalArgumentException("invalid condition clause.");
-       }
-       
-       ExprContext exp = exprs.get(1);
        while(computed.getValue().equals(Scalar.ONE)) {
            this.visit(ctx.start());
-           Context ex = this.visit(exp);
-           this.variables.put(varName, ex.getValue());
-           computed = this.visit(exprs.get(0));
+           t = (ctx.DECREMENT() != null) ? ((Arithmetic)t).decrement() : ((Arithmetic)t).increment();
+           this.variables.put(varName, t);
+           computed = this.visit(ctx.forcedLogicalOperation());
        }
        
        this.variables.remove(varName);
@@ -208,12 +207,37 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    
    @Override
    public Context visitWhileLoop(WhileLoopContext ctx) {
-       Context computed = this.visit(ctx.expr());
+       Context computed = this.visit(ctx.forcedLogicalOperation());
+       
        while(computed.getValue().equals(Scalar.ONE)) {
            this.visit(ctx.start());
-           computed = this.visit(ctx.expr());
+           computed = this.visit(ctx.forcedLogicalOperation());
        }
        return new Context(null, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
+   }
+   
+   @Override
+   public Context visitForcedLogicalOperation(ForcedLogicalOperationContext ctx) {
+       boolean isFirst = ctx.variable().start.getCharPositionInLine() == ctx.start.getCharPositionInLine();
+       Context left = (isFirst) ? this.visit(ctx.variable()) : this.visit(ctx.expr());
+       Context right = (!isFirst) ? this.visit(ctx.variable()) : this.visit(ctx.expr());
+       if(!this.operators.containsKey(ctx.LOGICAL().getText())) {
+           throw new ArithmeticException("undefined operator '"+ctx.LOGICAL().getText()+"' found");
+       }
+       
+       return this.operators.get(ctx.LOGICAL().getText()).evaluate(left, right);
+   }
+   
+   @Override
+   public Context visitLogicalOperation(LogicalOperationContext ctx) {
+       Context left = this.visit(ctx.left);
+       Context right = this.visit(ctx.right);
+       
+       if(!this.operators.containsKey(ctx.op.getText())) {
+           throw new ArithmeticException("undefined operator '"+ctx.op.getText()+"' found");
+       }
+       
+       return this.operators.get(ctx.op.getText()).evaluate(left, right);
    }
    
    @Override
@@ -273,7 +297,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    @Override
    public Context visitIfStatement(IfStatementContext ctx) {
        Context e = new Context(null, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
-       Context<Scalar> ifExpression = this.visit(ctx.expr());
+       Context<Scalar> ifExpression = this.visit(ctx.logicalOperation());
        //it has to equate to boolean true or false (Scalar 1 or 0)
        if(ifExpression == null) {
            throw new IllegalArgumentException("if statement requires an expression to evaluate.");
@@ -292,7 +316,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        //see if there is any elseif statements and return the first one which equates to true.
        List<ElseifStatementContext> eifs = ctx.elseifStatement();
        for(ElseifStatementContext eif : eifs) {
-           Context<Scalar> elseif = this.visit(eif.expr());
+           Context<Scalar> elseif = this.visit(eif.logicalOperation());
            if(elseif == null) {
                throw new IllegalArgumentException("elseif statement requires an expression to evaluate.");
            }

@@ -44,20 +44,29 @@ controlStatement
 	| whileLoop
 	;
 
+logicalOperation
+	: left=expr op=LOGICAL right=expr
+	;
+
+forcedLogicalOperation
+	: variable LOGICAL expr
+	| expr LOGICAL variable
+	;
+
 forLoop
-	: FOR LPAREN assignment expr SEMI_COLON expr RPAREN BLOCKLEFT start BLOCKRIGHT
+	: FOR LPAREN assignment forcedLogicalOperation SEMI_COLON (variable (INCREMENT|DECREMENT)) RPAREN BLOCKLEFT start BLOCKRIGHT
 	;
 
 whileLoop
-	: WHILE LPAREN expr RPAREN BLOCKLEFT start BLOCKRIGHT
+	: WHILE LPAREN forcedLogicalOperation RPAREN BLOCKLEFT start BLOCKRIGHT
 	;
 
 ifStatement
-	: IF LPAREN expr RPAREN BLOCKLEFT start? BLOCKRIGHT elseifStatement* elseStatement?
+	: IF LPAREN logicalOperation RPAREN BLOCKLEFT start? BLOCKRIGHT elseifStatement* elseStatement?
 	;
 
 elseifStatement
-	: ELSEIF LPAREN expr RPAREN BLOCKLEFT start? BLOCKRIGHT
+	: ELSEIF LPAREN logicalOperation RPAREN BLOCKLEFT start? BLOCKRIGHT
 	;
 
 elseStatement
