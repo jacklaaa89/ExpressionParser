@@ -42,8 +42,6 @@ import org.expression.parser.ExpressionParser.IncDecExprContext;
 import org.expression.parser.ExpressionParser.IncDecExpressionContext;
 import org.expression.parser.ExpressionParser.MatrixContext;
 import org.expression.parser.ExpressionParser.PrintContext;
-import org.expression.parser.ExpressionParser.UpdateStatementContext;
-import org.expression.parser.ExpressionParser.VariableContext;
 import org.expression.parser.ExpressionParser.WhileLoopContext;
 
 /**
@@ -77,7 +75,47 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     
     @Override
     public Context visitAssignment(AssignmentContext ctx) {
+        boolean isUpdate = ctx.VAR() == null;
+        String varName = ctx.variable().getText();
+        if(isUpdate && !this.variables.containsKey(varName)) {
+            throw new NullPointerException("can only update initialized variables.");
+        }
         Context v = this.visit(ctx.expression().expr());
+        
+        //determine if we are also attempting to update a value at a certain index.
+        List<TerminalNode> i = ctx.DIGIT();
+        if(i != null && !i.isEmpty()) {
+            Type t = this.variables.get(varName);
+            int[] indices = this.convertNodeToInt(i);
+            if(indices.length == 1 && t instanceof Vector) {
+                //we are attempting to update a value in a vector.
+                if(!v.isScalar()) {
+                    throw new IllegalArgumentException("invalid type found.");
+                }
+                ((Vector)t).set(indices[0], (Scalar)v.getValue());
+            } else if(indices.length >= 1) {
+                if(!(t instanceof Matrix) || v.isMatrix()) {
+                    throw new IllegalArgumentException("invalid type found.");
+                }
+                if(indices.length == 1) {
+                    //adding a vector to a matrix.
+                    if(!v.isArray()) {
+                        throw new IllegalArgumentException("invalid type found.");
+                    }
+                    ((Matrix)t).set(indices[0], (Vector)v.getValue());
+                } else {
+                    //adding a scalar to a n,m point in a matrix.
+                    if(!v.isScalar()) {
+                        throw new IllegalArgumentException("invalid type found.");
+                    }
+                    ((Matrix)t).set(indices[0], indices[1], (Scalar)v.getValue());
+                }
+            } else {
+                throw new IllegalArgumentException("invalid amount of indices defined.");
+            }
+            v = new Context(t, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
+        }
+        
         this.variables.put(ctx.variable().getText(), v.getValue());
         return v;
     }
@@ -176,19 +214,6 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            computed = this.visit(ctx.expr());
        }
        return new Context(null, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
-   }
-   
-   @Override
-   public Context visitUpdateStatement(UpdateStatementContext ctx) {
-       Context res;
-       VariableContext v = ctx.variable();
-       String varName = v.getText();
-       if(!this.variables.containsKey(varName)) {
-           throw new NullPointerException("variable '" + varName + "' is not defined.");
-       }
-       res = this.visit(ctx.expression());
-       this.variables.put(varName, res.getValue());
-       return res;
    }
    
    @Override

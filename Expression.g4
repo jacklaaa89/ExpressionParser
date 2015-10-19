@@ -5,7 +5,7 @@ package org.expression.parser;
 }
 
 start 
-	: (expression|print|assignment|controlStatement|updateStatement) (expression|print|assignment|controlStatement|updateStatement)*
+	: (expression|print|assignment|controlStatement) (expression|print|assignment|controlStatement)*
 	;
 
 expression
@@ -44,10 +44,6 @@ controlStatement
 	| whileLoop
 	;
 
-updateStatement
-	: (variable) ASSIGN expression
-	;
-
 forLoop
 	: FOR LPAREN assignment expr SEMI_COLON expr RPAREN BLOCKLEFT start BLOCKRIGHT
 	;
@@ -78,6 +74,7 @@ print
 
 assignment
 	: VAR variable ASSIGN expression
+	| variable (LBRACE DIGIT (COMMA DIGIT)? RBRACE)? ASSIGN expression
 	;
 
 number
