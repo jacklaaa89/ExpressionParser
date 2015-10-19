@@ -143,7 +143,7 @@ Expressions also support commenting in the form of `/* comment */` and `//commen
 
 ##### Updating Variable Values
 
-You can also re-assign values to already defined values, for example `var i = [1, 2, 3]; i = [4, i[1], i[2]];` would print `[4, 2, 3]`.
+You can also re-assign values to already defined values, for example `var i = [1, 2, 3]; i = [4, i[1], i[2]];` would print `[4, 2, 3]`. We can also update certain values in data structures using array access notation, for example: `var i = [1, 2, 3]; i[0] = 4;` would also print `[4, 2, 3]`.
 
 ##### Incrementing/Decrementing Values
 
