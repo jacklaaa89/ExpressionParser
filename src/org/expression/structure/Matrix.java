@@ -750,47 +750,6 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     }
 
     @Override
-    public int compareTo(Arithmetic O) {
-        
-        if(!(O instanceof Matrix)) throw new ArithmeticException("must compare a matrix to a matrix");
-        
-        Matrix o = (Matrix) O;
-        
-        if(!this.sizeOf(o)) throw new ArithmeticException("Matrices need to be the same length");
-        
-        if(this.equals(o)) return 0;
-        
-        HashMap<Integer, Integer> in = new HashMap<>();
-        List<Vector> t = this;
-        List<Vector> ot = o;
-        for(int j = 0; j < t.size(); j++) {
-            Vector et = t.get(j);
-            Vector oe = ot.get(j);
-            //run compareTo on the values in the vector.
-            for(int i = 0; i < et.size(); i++) {
-                int e = et.get(i).compareTo(oe.get(i));
-                if(e != 0) {
-                    if(!in.containsKey(e)) {
-                        in.put(e, 0);
-                    }
-                    int ei = in.get(e);
-                    ei++;
-                    in.put(e, ei);
-                }
-            }
-        }
-        
-        List<Map.Entry<Integer, Integer>> list = new LinkedList(in.entrySet());
-        Collections.sort(list, (Object o1, Object o2) -> {
-            Map.Entry<Integer, Integer> e1 = (Map.Entry) o1;
-            Map.Entry<Integer, Integer> e2 = (Map.Entry) o2;
-            return e2.getValue().compareTo(e1.getValue());
-        });
-        
-        return list.get(0).getKey();
-    }
-
-    @Override
     public Matrix remainder(Type data) {
         if(data instanceof Scalar) return this.mod((Scalar)data);
         Matrix A = this;

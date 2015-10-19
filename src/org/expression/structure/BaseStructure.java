@@ -124,4 +124,11 @@ public abstract class BaseStructure<T, O extends Type, F extends Function> exten
         return this.apply(handle.get());
     }
     
+    @Override
+    public int compareTo(Arithmetic O) {
+        if(!this.sizeOf(O)) throw new ArithmeticException("structures need to have the same dimensions.");
+        if(this.equals(O)) return 0;
+        return this.sum().compareTo(O.sum());
+    }
+    
 }

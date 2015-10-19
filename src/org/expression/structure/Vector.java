@@ -435,41 +435,6 @@ public class Vector extends BaseStructure<Scalar, Vector, VectorFunction> {
     }
 
     @Override
-    public int compareTo(Arithmetic O) {
-        
-        if(!(O instanceof Vector)) throw new RuntimeException("can only compare a vector to a vector.");
-        
-        Vector o = (Vector) O;
-        if(this.size() != o.size()) throw new RuntimeException("Vectors must be the same size");
-        
-        if(this.equals(o)) return 0;
-        
-        HashMap<Integer, Integer> in = new HashMap<>();
-        //run compareTo on the values in the vector.
-        for(int i = 0; i < this.size(); i++) {
-            int e = this.get(i).compareTo(o.get(i));
-            if(e != 0) {
-                if(!in.containsKey(e)) {
-                    in.put(e, 0);
-                }
-                int ei = in.get(e);
-                ei++;
-                in.put(e, ei);
-            }
-        }
-        
-        List<Map.Entry<Integer, Integer>> list = new LinkedList(in.entrySet());
-        Collections.sort(list, (Object o1, Object o2) -> {
-            Map.Entry<Integer, Integer> e1 = (Map.Entry) o1;
-            Map.Entry<Integer, Integer> e2 = (Map.Entry) o2;
-            return e2.getValue().compareTo(e1.getValue());
-        });
-        
-        return list.get(0).getKey();
-        
-    }
-
-    @Override
     public boolean sizeOf(Object object) {
         if(!(object instanceof Vector)) return false;
         Vector v = (Vector) object;         
