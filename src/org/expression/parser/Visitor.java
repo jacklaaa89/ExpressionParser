@@ -80,7 +80,6 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     public Context visitAssignment(AssignmentContext ctx) {
         boolean isUpdate = ctx.VAR() == null;
         String varName = ctx.variable(0).getText();
-        System.out.println(varName);
         if(isUpdate && !this.variables.containsKey(varName)) {
             throw new NullPointerException("can only update initialized variables.");
         }
@@ -297,6 +296,12 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        
    }
    
+   /**
+    * converts a list of terminal nodes which represent a DIGIT
+    * into an array of their int representations.
+    * @param nodes the list of terminal nodes.
+    * @return an array of its int representations.
+    */
    private int[] convertNodeToInt(List<TerminalNode> nodes) {
        int[] ints = new int[nodes.size()];
        for(int i = 0; i < nodes.size(); i++) {
