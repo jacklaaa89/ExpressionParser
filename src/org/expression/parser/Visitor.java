@@ -83,6 +83,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         if(isUpdate && !this.variables.containsKey(varName)) {
             throw new NullPointerException("can only update initialized variables.");
         }
+        
         Context v = this.visit(ctx.expression());
         
         //determine if we are also attempting to update a value at a certain index.

@@ -565,4 +565,5 @@ There is some functionality that is in the works of being implemented. These are
 - [x] Add support for comments in expressions.
 - [x] Expressions can be parsed from files as well as strings.
 - [x] Ability to change where the `PRINT(expression)` prints its output.
-- [ ] Optimize the while/for loops to have a stricter grammar in order to reduce the amount of invalid input.
+- [x] Optimize the while/for loops to have a stricter grammar in order to reduce the amount of invalid input.
+- [ ] `(-)name` should be treated as a minus of the variable `name` rather than a completely different variable.
