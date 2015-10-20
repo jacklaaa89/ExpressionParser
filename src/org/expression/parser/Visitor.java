@@ -79,17 +79,27 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     @Override
     public Context visitAssignment(AssignmentContext ctx) {
         boolean isUpdate = ctx.VAR() == null;
-        String varName = ctx.variable().getText();
+        String varName = ctx.variable(0).getText();
+        System.out.println(varName);
         if(isUpdate && !this.variables.containsKey(varName)) {
             throw new NullPointerException("can only update initialized variables.");
         }
-        Context v = this.visit(ctx.expression().expr());
+        Context v = this.visit(ctx.expression());
         
         //determine if we are also attempting to update a value at a certain index.
         List<TerminalNode> i = ctx.DIGIT();
-        if(i != null && !i.isEmpty()) {
-            Type t = this.variables.get(varName);
-            int[] indices = this.convertNodeToInt(i);
+        
+        int[] indices;
+        
+        if(i.isEmpty() && isUpdate && ctx.varIndex != null) {
+            indices = new int[] { ((Scalar)this.parseValue(ctx.varIndex)).intValue() };
+        } else {
+            indices = this.convertNodeToInt(i);
+        }
+        
+        Type t = this.variables.get(varName);
+        
+        if(indices.length > 0) {
             if(indices.length == 1 && t instanceof Vector) {
                 //we are attempting to update a value in a vector.
                 if(!v.isScalar()) {
@@ -119,7 +129,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
             v = new Context(t, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
         }
         
-        this.variables.put(ctx.variable().getText(), v.getValue());
+        this.variables.put(varName, v.getValue());
         return v;
     }
     
@@ -183,7 +193,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        
        //visit the assignment to add the variable to the variables.
        this.visit(ac);
-       String varName = ac.variable().getText();
+       String varName = ac.variable(0).getText();
        Type t = this.variables.get(varName);
        
        Context computed = this.visit(ctx.forcedLogicalOperation());
@@ -256,7 +266,15 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        
        //determine the index to access.
        List<TerminalNode> nodes = c.DIGIT();
-       int[] indices = this.convertNodeToInt(nodes);
+       int[] indices;
+       
+       if(nodes.isEmpty()) {
+           //we have a variable.
+           Context va = this.visit(c.variable());
+           indices = new int[] { ((Scalar)va.getValue()).intValue() };
+       } else {
+           indices = this.convertNodeToInt(nodes);
+       }
        
        Context res;
        if(con.isArray() && indices.length == 1) {

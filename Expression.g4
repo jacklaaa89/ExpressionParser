@@ -74,7 +74,7 @@ elseStatement
 	;
 
 arrayAccess
-	: (func | atom) LBRACE DIGIT (COMMA DIGIT)? RBRACE
+	: (func | atom) LBRACE (DIGIT (COMMA DIGIT)?|varIndex=variable) RBRACE
 	;
 
 print
@@ -83,7 +83,7 @@ print
 
 assignment
 	: VAR variable ASSIGN expression
-	| variable (LBRACE DIGIT (COMMA DIGIT)? RBRACE)? ASSIGN expression
+	| varName=variable (LBRACE (DIGIT (COMMA DIGIT)?|varIndex=variable) RBRACE)? ASSIGN expression
 	;
 
 number
