@@ -362,6 +362,7 @@ Function Name | Description
 **DIAGONALLY_DOMINANT(**_expression_**)** | Determines if a Matrix is diagonally dominant.
 **DET(**_expression_**)** | Determines the determinant of the evaluated matrix.
 **RANK(**_expression_**)** | Detemines the rank of the evaluated matrix.
+**SCALAR(**_m_, _n_**)** | Generates a Scalar _m_ by _m_ matrix with the _n_ value down the diagonal.
 
 ###### Functions which accept only Scalar values.
 

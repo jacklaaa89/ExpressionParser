@@ -253,6 +253,15 @@ public class Expression {
             }
         });
         
+        addFunction(new Function("scalar", 2) {
+            @Override
+            public Type eval(List<Type> args) throws ClassCastException {
+                Scalar m = (Scalar) args.get(0);
+                Scalar n = (Scalar) args.get(1);
+                return Matrix.scalar(m.intValue(), n);
+            }
+        });
+        
         addFunction(new Function("square", 1){
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
