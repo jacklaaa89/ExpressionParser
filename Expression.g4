@@ -103,7 +103,7 @@ funcParams
 	;
 
 array
-	: LBRACE (expr) (COMMA (expr))* RBRACE
+	: MINUS? LBRACE (expr) (COMMA (expr))* RBRACE
 	;
 
 column
@@ -115,7 +115,7 @@ arrayInner
 	;
 
 matrix
-	: LBRACE ((column (column)* arrayInner)|arrayInner) RBRACE
+	: MINUS? LBRACE ((column (column)* arrayInner)|arrayInner) RBRACE
 	;
 
 funcName

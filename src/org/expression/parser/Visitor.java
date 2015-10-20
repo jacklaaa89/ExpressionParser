@@ -377,6 +377,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        //arrays and matrices can have values evaluated from expr.
        if(isArray) {
            ArrayContext atx = ctx.array();
+           boolean isMinus = atx.MINUS() != null;
            List<ExprContext> l = atx.expr();
            Vector v = new Vector(l.size(), mc);
            for(int i = 0; i < l.size(); i++) {
@@ -387,9 +388,13 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
                }
                v.set(i, (Scalar)c.getValue());
            }
+           if(isMinus) {
+               v = (Vector) v.negate();
+           }
            r = new Context(v, s.getLine(), s.getCharPositionInLine(), ex);
        } else if (isMatrix) {
            MatrixContext mtx = ctx.matrix();
+           boolean isMinus = mtx.MINUS() != null;
            //if we have more than one column.
            List<ColumnContext> l = mtx.column();
            ArrayInnerContext end = mtx.arrayInner(); //always has.
@@ -422,6 +427,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            li.add(ire);
            
            Matrix m = new Matrix(li, mc);
+           if(isMinus) {
+               m = (Matrix) m.negate();
+           }
            r = new Context(m, s.getLine(), s.getCharPositionInLine(), ex);
        } else {
             Type d = this.parseValue(ctx);
