@@ -440,11 +440,24 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            double f = Double.parseDouble(ctx.getText());
            return new Scalar(f, mc);
        } catch (NumberFormatException e) {
-           //get the variable.   
-           if(!this.variables.containsKey(ctx.getText())) {
-               throw new ArithmeticException("variable '"+ctx.getText()+"' is not defined.");
+           //check that this is not a variablecontext.
+           String varName = ctx.getText(); //default.
+           boolean isMinus = false; //default.
+           VariableContext c = (!(ctx instanceof VariableContext)) 
+                   ? ((AtomValueContext)ctx).variable() : (VariableContext) ctx;
+           if(c != null) {
+               isMinus = c.MINUS() != null;
+               varName = (isMinus) ? varName.substring(1, varName.length()) : varName;
            }
-           Type v = this.variables.get(ctx.getText());
+           //get the variable.   
+           if(!this.variables.containsKey(varName)) {
+               throw new ArithmeticException("variable '"+varName+"' is not defined.");
+           }
+           Type v = this.variables.get(varName);
+           //negate this value if we have a minus.
+           if(isMinus) {
+               v = (Type) ((Arithmetic)v).negate();
+           }
            return v;
        }
    }
