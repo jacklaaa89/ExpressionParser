@@ -51,6 +51,8 @@ Again, for example `[1, 2, 3; 4, 5, 6][0]` would return the row vector `[1, 2, 3
 
 As stated above, accessing values using this notation can also be achieved from function results and evaluated variables, so, for example, `SIZE([1,2,3; 4,5,6])[0,1]`, `SIZE(A)[0,1]` and `A[0]` are all valid. 
 
+> Scalar, Vector & Matrix values can all be negated. i.e `var e = -[1, 2, 3]; print e; //prints [-1.0, -2.0, -3.0]`.
+
 ### Variables
 
 Variables can be referenced in expressions and then added to the `Expression` class before evaluating the result. Variables can be of any `Type` (i.e a Scalar, Vector or Matrix) and be referenced by number of letters which are not used by any other keyword or function definition.
@@ -70,6 +72,8 @@ Context result = e.eval();
 
 System.out.println(result); //prints [10, 20, 30]
 ````
+
+Variables can also be negated using the `-` operator before the variable name. i.e `var e = [1, 2, 3]; print -e; //prints [-1.0, -2.0, -3.0]`.
 
 ### Syntax
 
@@ -566,4 +570,4 @@ There is some functionality that is in the works of being implemented. These are
 - [x] Expressions can be parsed from files as well as strings.
 - [x] Ability to change where the `PRINT(expression)` prints its output.
 - [x] Optimize the while/for loops to have a stricter grammar in order to reduce the amount of invalid input.
-- [ ] `(-)name` should be treated as a minus of the variable `name` rather than a completely different variable.
+- [x] `(-)name` should be treated as a minus of the variable `name` rather than a completely different variable.
