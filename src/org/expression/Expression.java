@@ -73,6 +73,7 @@ public class Expression {
     /**
      * The currently defined MathContext.
      * Sets the precision and rounding mode to use during calculation.
+     * @deprecated 
      */
     private MathContext mc;
     
@@ -914,7 +915,7 @@ public class Expression {
         
         State s = this.parse();
         
-        Visitor ve = new Visitor(functions, operators, variables, mc, listener);
+        Visitor ve = new Visitor(functions, operators, variables, mc, listener, (ExpressionParser) s.parser);
         Context c = ve.visit(s.tree);
         
         if(c == null) {

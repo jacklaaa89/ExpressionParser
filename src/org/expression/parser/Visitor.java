@@ -12,11 +12,13 @@ import java.util.Locale;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.expression.Context;
 import org.expression.Scalar;
 import org.expression.Type;
 import org.expression.computation.Arithmetic;
+import org.expression.computation.Procedure;
 import org.expression.output.ConsoleOutput;
 import org.expression.output.OutputListener;
 import org.expression.parser.ExpressionParser.ArrayAccessContext;
@@ -30,7 +32,6 @@ import org.expression.parser.ExpressionParser.ParenExprContext;
 import org.expression.parser.ExpressionParser.ArrayContext;
 import org.expression.parser.ExpressionParser.ArrayInnerContext;
 import org.expression.parser.ExpressionParser.AssignmentContext;
-import org.expression.parser.ExpressionParser.AtomContext;
 import org.expression.parser.ExpressionParser.AtomValueContext;
 import org.expression.parser.ExpressionParser.ColumnContext;
 import org.expression.parser.ExpressionParser.ElseStatementContext;
@@ -44,38 +45,90 @@ import org.expression.parser.ExpressionParser.IncDecExpressionContext;
 import org.expression.parser.ExpressionParser.LogicalOperationContext;
 import org.expression.parser.ExpressionParser.MatrixContext;
 import org.expression.parser.ExpressionParser.PrintContext;
+import org.expression.parser.ExpressionParser.ProcedureContext;
 import org.expression.parser.ExpressionParser.VariableContext;
 import org.expression.parser.ExpressionParser.WhileLoopContext;
 
 /**
- *
- * @author jacktimblin
+ * Visitor implementation used to evaluate parsed expressions.
+ * @author Jack Timblin
  */
 public class Visitor extends ExpressionBaseVisitor<Context> {
     
+    /**
+     * The MathContext to use.
+     * @deprecated 
+     */
     private MathContext mc = MathContext.DECIMAL32;
+    
+    /**
+     * The list of functions available to the parser.
+     */
     private final HashMap<String, Function> functions;
+    
+    /**
+     * The list of operators available to the parser.
+     */
     private final HashMap<String, Operator> operators;
+    
+    /**
+     * The list of defined/assigned variables.
+     */
     private final HashMap<String, Type> variables;
+    
+    private HashMap<String, Procedure> procedures;
+    
+    /**
+     * The output listener to to trigger when 'print' is called.
+     */
     private OutputListener listener;
     
+    private ExpressionParser parser;
+    
+    /**
+     * Initializes a Visitor with all the required variables.
+     * @param functions the list of functions.
+     * @param operators the list of operators.
+     * @param variables the list of assigned variables.
+     * @param listener  the output listener to notify when 'print' is called.
+     * @param parser the parser instance which generated the AST.
+     */
     public Visitor(HashMap<String, Function> functions, 
             HashMap<String, Operator> operators, 
-            HashMap<String, Type> variables, OutputListener listener) {
+            HashMap<String, Type> variables, OutputListener listener, ExpressionParser parser) {
         this.functions = functions;
         this.operators = operators;
         this.variables = variables;
         this.listener = listener;
+        this.procedures = new HashMap<>();
+        this.parser = parser;
     }
     
+    /**
+     * Initializes a Visitor with all the required variables.
+     * @param functions the list of functions.
+     * @param operators the list of operators.
+     * @param variables the list of assigned variables.
+     * @param mc the MathContext to use.
+     * @param listener  the output listener to notify when 'print' is called.
+     * @param parser an instance of the parer which generated the AST.
+     * @deprecated 
+     */
     public Visitor(HashMap<String, Function> functions, 
             HashMap<String, Operator> operators, 
             HashMap<String, Type> variables,
-            MathContext mc, OutputListener listener) {
-        this(functions, operators, variables, listener);
+            MathContext mc, OutputListener listener,
+            ExpressionParser parser) {
+        this(functions, operators, variables, listener, parser);
         this.mc = mc;
     }
     
+    /**
+     * Triggered when an assignment statement is visited in the parse tree.
+     * Assigns the new variable and stores it in the variables list.
+     * @param ctx the assignment context.
+     * @return a context containing the new assigned value.
+     */
     @Override
     public Context visitAssignment(AssignmentContext ctx) {
         boolean isUpdate = ctx.VAR() == null;
@@ -134,11 +187,10 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     }
     
     /**
-    * {@inheritDoc}
-    *
-    * <p>The default implementation returns the result of calling
-    * {@link #visitChildren} on {@code ctx}.</p>
-    */
+     * Triggered when an operator expression is visited in the parse tree.
+     * @param ctx the operator expression context.
+     * @return the context containing the evaluated operator expression result.
+     */
    @Override 
    public Context visitOpExpr(OpExprContext ctx) { 
        Context left = this.visit(ctx.left);
@@ -151,6 +203,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        return this.operators.get(ctx.op.getText()).evaluate(left, right);
    }
    
+   /**
+     * Triggered when an logical expression is visited in the parse tree.
+     * @param ctx the logical expression context.
+     * @return the context containing the evaluated logical expression result.
+     */
    @Override
    public Context visitBoolExpr(BoolExprContext ctx) {
        Context left = this.visit(ctx.left);
@@ -163,6 +220,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        return this.operators.get(ctx.op.getText()).evaluate(left, right);
    }
    
+   /**
+     * Triggered when an increment/decrement (++/--) expression is visited in the parse tree.
+     * @param ctx the increment/decrement expression context.
+     * @return the context containing the evaluated increment/decrement expression result.
+     */
    @Override
    public Context visitIncDecExpr(IncDecExprContext ctx) {
        IncDecExpressionContext ce = ctx.incDecExpression();
@@ -181,11 +243,23 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        return new Context(t, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
    }
    
+   /**
+    * Triggered when a variable is visited in the parse tree.
+    * Attempts to parse the variable into its {@code Type} value.
+    * @param ctx the variable context.
+    * @return the evaluated Type value context.
+    */
    @Override
    public Context visitVariable(VariableContext ctx) {
        return new Context(this.parseValue(ctx), ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
    }
    
+   /**
+    * Triggered when a for loop is visited in the parse tree.
+    * @param ctx the for loop context.
+    * @return an Empty Context as all of the expressions are evaluated in the scope of
+    * the loop.
+    */
    @Override
    public Context visitForLoop(ForLoopContext ctx) {
        
@@ -209,6 +283,12 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        return new Context(null, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
    }
    
+   /**
+    * Triggered when a while loop is visited in the parse tree.
+    * @param ctx the while loop context.
+    * @return an Empty Context as all of the expressions are evaluated in the scope of
+    * the loop.
+    */
    @Override
    public Context visitWhileLoop(WhileLoopContext ctx) {
        Context computed = this.visit(ctx.forcedLogicalOperation());
@@ -220,6 +300,12 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        return new Context(null, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
    }
    
+   /**
+    * Triggered when a forced logical operation is visited in the parse tree.
+    * A forced logical operation is an logical expression that starts or ends with a variable.
+    * @param ctx the forced logical operation context.
+    * @return the Context of the evaluated result from this logical operation.
+    */
    @Override
    public Context visitForcedLogicalOperation(ForcedLogicalOperationContext ctx) {
        boolean isFirst = ctx.variable().start.getCharPositionInLine() == ctx.start.getCharPositionInLine();
@@ -232,6 +318,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        return this.operators.get(ctx.LOGICAL().getText()).evaluate(left, right);
    }
    
+   /**
+    * Triggered when a logical operation is visited in the parse tree.
+    * @param ctx the logical operation.
+    * @return the evaluated logical operation.
+    */
    @Override
    public Context visitLogicalOperation(LogicalOperationContext ctx) {
        Context left = this.visit(ctx.left);
@@ -244,6 +335,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        return this.operators.get(ctx.op.getText()).evaluate(left, right);
    }
    
+   /**
+    * Triggered when array access is visited in the parse tree.
+    * @param ctx the array access context.
+    * @return the context of the value extracted from the array.
+    */
    @Override
    public Context visitArrayAccessExpr(ArrayAccessExprContext ctx) {
        ArrayAccessContext c = ctx.arrayAccess();
@@ -312,6 +408,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        return ints;
    }
    
+   /**
+    * 
+    * @param ctx
+    * @return 
+    */
    @Override
    public Context visitIfStatement(IfStatementContext ctx) {
        Context e = new Context(null, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
@@ -356,6 +457,31 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            }
        }
        return e;
+   }
+   
+   @Override
+   public Context visitProcedure(ProcedureContext ctx) {
+       //this is a procedure declaration, assign as new function
+       //throw an exception if the procedure already exists.
+       String name = ctx.funcName().getText();
+       if(this.procedures.containsKey(name.toUpperCase()) || this.functions.containsKey(name.toUpperCase())) {
+           throw new RuntimeException("function '" + name.toUpperCase() + "' already defined.");
+       }
+       
+       List<VariableContext> l = ctx.procedureParams().variable();
+       List<String> vn = new ArrayList<>();
+       if(!ctx.start().procedure().isEmpty()) {
+           System.out.println(ctx.start().procedure());
+           throw new RuntimeException("cannot define a function inside a function.");
+       }
+       
+       for(VariableContext ve : l) {
+           vn.add(ve.getText());
+       }
+       
+       Procedure p = new Procedure(name, vn, ctx.start());
+       this.procedures.put(name.toUpperCase(), p);
+       return null;
    }
    
    /**
@@ -478,14 +604,8 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Token s = ctx.start;
        String ex = this.getFullStatement(ctx);
        
-       if(!this.functions.containsKey(name)) {
-           throw new ArithmeticException("undefined function '"+name+"' called.");
-       }
-       
-       Function f = this.functions.get(name);
+       FuncParamsContext fp = ctx.funcParams();
        List<Type> args = new ArrayList<>();
-       
-        FuncParamsContext fp = ctx.funcParams();
         if(fp != null) {
             List<ExprContext> expr = fp.expr();
             ParserRuleContext[] ab = new ParserRuleContext[(expr.size())];
@@ -503,6 +623,27 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
              }
              
         }
+       
+       //first check for a procedure.
+       if(this.procedures.containsKey(name)) {
+           //we have a procedure.
+           Procedure p = this.procedures.get(name);
+           if(args.size() != p.getVariableNames().size()) {
+               throw new RuntimeException("invalid amount of parameters provided for function: " + p.getName());
+           }
+           HashMap<String, Type> sv = new HashMap<>();
+           for(int i = 0; i < args.size(); i++) {
+               sv.put(p.getVariableNames().get(i), args.get(i));
+           }
+           Visitor v = new Visitor(functions, operators, sv, listener, parser);
+           return p.run(v);
+       }
+       
+       if(!this.functions.containsKey(name)) {
+           throw new ArithmeticException("undefined function '"+name+"' called.");
+       }
+       
+       Function f = this.functions.get(name);
         
         if(args.size() < f.getAmountOfExpectedParameters()) {
             throw new RuntimeException("invalid amount of parameters provided for function: " + f.getName());

@@ -178,6 +178,18 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFuncParams(ExpressionParser.FuncParamsContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#procedureParams}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProcedureParams(ExpressionParser.ProcedureParamsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#procedure}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProcedure(ExpressionParser.ProcedureContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ExpressionParser#array}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

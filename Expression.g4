@@ -5,7 +5,7 @@ package org.expression.parser;
 }
 
 start 
-	: (expression|print|assignment|controlStatement) (expression|print|assignment|controlStatement)*
+	: (expression|print|assignment|controlStatement|procedure) (expression|print|assignment|controlStatement|procedure)*
 	;
 
 expression
@@ -102,6 +102,14 @@ funcParams
 	: (expr) (COMMA (expr))*
 	;
 
+procedureParams
+	: (variable) (COMMA (variable))*
+	;
+
+procedure
+	: FUNCTION funcName LPAREN procedureParams RPAREN BLOCKLEFT start? BLOCKRIGHT
+	;
+
 array
 	: MINUS? LBRACE (expr) (COMMA (expr))* RBRACE
 	;
@@ -124,6 +132,10 @@ funcName
 
 variable
 	: MINUS? (LETTER|E) (LETTER|DIGIT|E)*
+	;
+
+FUNCTION
+	: 'function'
 	;
 
 INCREMENT
