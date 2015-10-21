@@ -1,5 +1,6 @@
 package org.expression;
 
+import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 import org.expression.parser.Visitor;
@@ -21,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -862,12 +865,17 @@ public class Expression {
         JPanel panel = new JPanel();
         JFrame frame = new JFrame();
         TreeViewer viewer = new TreeViewer(Arrays.asList(s.parser.getRuleNames()), s.tree);
+        panel.setLayout(new BorderLayout());
+        
+        JScrollPane pane = new JScrollPane();
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(300, 300);
         frame.add(panel);
         
-        panel.add(viewer);
+        panel.add(pane);
+        pane.getViewport().add(viewer);
+        
         viewer.setScale(1.5);
         
         frame.setVisible(true);
