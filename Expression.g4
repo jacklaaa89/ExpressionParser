@@ -13,14 +13,16 @@ expression
 	;
 
 expr
-    : incDecExpression                     #incDecExpr
+	: newStructure						   #newExpr
+    | incDecExpression                     #incDecExpr
 	| arrayAccess                          #arrayAccessExpr
 	| LPAREN expr RPAREN                   #parenExpr
 	| left=expr op=LOGICAL 		right=expr #boolExpr
 	| left=expr op=POW          right=expr #opExpr
 	| left=expr op=(TIMES|DIV)  right=expr #opExpr
 	| left=expr op=(PLUS|MINUS) right=expr #opExpr
-	| left=expr op=OPERATOR     right=expr #opExpr						   
+	| left=expr op=OPERATOR     right=expr #opExpr
+	| ternary							   #ternaryExpr						   
 	| func                                 #funcExpr
 	| atom                                 #atomExpr
 	| left=expr op=POINT        right=expr #opExpr
@@ -51,6 +53,14 @@ logicalOperation
 forcedLogicalOperation
 	: variable LOGICAL expr
 	| expr LOGICAL variable
+	;
+
+newStructure
+	: NEW LBRACE index (COMMA index)? RBRACE
+	;
+
+ternary
+	: LPAREN logicalOperation RPAREN QMARK expr COLON expr 
 	;
 
 forLoop
@@ -292,6 +302,18 @@ WS
 
 MODULO
 	: '%'
+	;
+
+NEW
+	: 'new'
+	;
+
+QMARK
+	: '?'
+	;
+
+COLON
+	: ':'
 	;
 
 PRI

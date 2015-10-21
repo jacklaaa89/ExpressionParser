@@ -30,6 +30,18 @@ public interface ExpressionListener extends ParseTreeListener {
 	 */
 	void exitExpression(ExpressionParser.ExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code newExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterNewExpr(ExpressionParser.NewExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code newExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitNewExpr(ExpressionParser.NewExprContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code arrayAccessExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
 	 * @param ctx the parse tree
@@ -65,6 +77,18 @@ public interface ExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitOpExpr(ExpressionParser.OpExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ternaryExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterTernaryExpr(ExpressionParser.TernaryExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ternaryExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitTernaryExpr(ExpressionParser.TernaryExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code incDecExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
@@ -165,6 +189,26 @@ public interface ExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitForcedLogicalOperation(ExpressionParser.ForcedLogicalOperationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#newStructure}.
+	 * @param ctx the parse tree
+	 */
+	void enterNewStructure(ExpressionParser.NewStructureContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#newStructure}.
+	 * @param ctx the parse tree
+	 */
+	void exitNewStructure(ExpressionParser.NewStructureContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#ternary}.
+	 * @param ctx the parse tree
+	 */
+	void enterTernary(ExpressionParser.TernaryContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#ternary}.
+	 * @param ctx the parse tree
+	 */
+	void exitTernary(ExpressionParser.TernaryContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ExpressionParser#forLoop}.
 	 * @param ctx the parse tree

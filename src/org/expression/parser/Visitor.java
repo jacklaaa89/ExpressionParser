@@ -46,8 +46,12 @@ import org.expression.parser.ExpressionParser.IncDecExpressionContext;
 import org.expression.parser.ExpressionParser.IndexContext;
 import org.expression.parser.ExpressionParser.LogicalOperationContext;
 import org.expression.parser.ExpressionParser.MatrixContext;
+import org.expression.parser.ExpressionParser.NewExprContext;
+import org.expression.parser.ExpressionParser.NewStructureContext;
 import org.expression.parser.ExpressionParser.PrintContext;
 import org.expression.parser.ExpressionParser.ProcedureContext;
+import org.expression.parser.ExpressionParser.TernaryContext;
+import org.expression.parser.ExpressionParser.TernaryExprContext;
 import org.expression.parser.ExpressionParser.VariableContext;
 import org.expression.parser.ExpressionParser.WhileLoopContext;
 
@@ -125,6 +129,30 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         this.mc = mc;
     }
     
+    @Override
+    public Context visitNewExpr(NewExprContext ctx) {
+        //generate a new vector/matrix with zero values from a certain length.
+        //get the indices.
+        NewStructureContext c = ctx.newStructure();
+        
+        //determine the index to access.
+        List<IndexContext> in = c.index();
+
+        int[] indices = new int[in.size()];
+        for(int i = 0; i < in.size(); i++) {
+            Context<Scalar> ce = this.visit(in.get(i));
+            int v = ce.getValue().intValue();
+            if(v == 0) {
+                throw new RuntimeException("cannot initialize a new vector/matrix of zero length.");
+            }
+            indices[i] = v;
+        }
+        
+        Type t = (indices.length > 1) ? Matrix.zeroes(indices[0], indices[1]) : Vector.zeroes(indices[0]);
+        return new Context(t, c.start.getLine(), c.start.getCharPositionInLine(), this.getFullStatement(c));
+        
+    }
+    
     /**
      * Triggered when an assignment statement is visited in the parse tree.
      * Assigns the new variable and stores it in the variables list.
@@ -184,6 +212,15 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         
         this.variables.put(varName, v.getValue());
         return v;
+    }
+    
+    @Override
+    public Context visitTernaryExpr(TernaryExprContext ctx) {
+        TernaryContext c = ctx.ternary();
+        Context<Scalar> le = this.visit(c.logicalOperation());
+        Scalar lev = le.getValue();
+        boolean t = (lev.equals(Scalar.ONE));
+        return (t) ? this.visit(c.expr(0)) : this.visit(c.expr(1));
     }
     
     /**

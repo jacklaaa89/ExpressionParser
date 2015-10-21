@@ -42,6 +42,18 @@ public class ExpressionBaseListener implements ExpressionListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterNewExpr(ExpressionParser.NewExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNewExpr(ExpressionParser.NewExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterArrayAccessExpr(ExpressionParser.ArrayAccessExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -73,6 +85,18 @@ public class ExpressionBaseListener implements ExpressionListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitOpExpr(ExpressionParser.OpExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTernaryExpr(ExpressionParser.TernaryExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTernaryExpr(ExpressionParser.TernaryExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -181,6 +205,30 @@ public class ExpressionBaseListener implements ExpressionListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitForcedLogicalOperation(ExpressionParser.ForcedLogicalOperationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNewStructure(ExpressionParser.NewStructureContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNewStructure(ExpressionParser.NewStructureContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTernary(ExpressionParser.TernaryContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTernary(ExpressionParser.TernaryContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
