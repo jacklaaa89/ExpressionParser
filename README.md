@@ -181,9 +181,11 @@ Expression e = new Expression(new File("/path/to/source/file.ex"));
 System.out.println(e.eval()); //prints a = 1;
 ````
 
+> The ternary operator is also available to shorthand if statements. `var e = (b > 2) ? TRUE : FALSE`.
+
 ###### For & While Loop
 
-ExpressionParser also supports simple for and while loops in its computation. Be aware however that infinite loops can occur from using loop control structures.
+ExpressionParser also supports simple for and while loops in its computation. Be aware however that infinite loops can occur from using loop control structures. For and while loop have access to any variable which was defined before the loop declaration, but any variable defined inside the loop scope is only available inside that scope.
 
 **While Loop**
 
@@ -462,17 +464,9 @@ function zeros(a) {
 		var m = a[0];
 		if(SIZE(a) > 1) {
 			var n = a[1];
-			r = RANDOM([m,n]);
-			for(var i = 0; i < m; i++) {
-				for(var j = 0; j < n; j++) {
-					r[i,j] = 0;
-				}
-			}
+			r = new [m,n];
 		} else {
-			r = RANDOM(m);
-			for(var i = 0; i < m; i++) {
-				r[i] = 0;
-			}
+			r = new [m];
 		}		
 	}
 	r; //the last evaluated statement is returned.

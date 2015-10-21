@@ -1,15 +1,18 @@
-/* Attempt LU Factorization to solve for Ax = b */
+function zeros(a) {
+	//var 'a' should be a Vector.
+	var r = 0;
+	if(SIZE(a) > 0) {
+		var m = a[0];
+		if(SIZE(a) > 1) {
+			var n = a[1];
+			r = new [m,n];
+		} else {
+			r = new [m];
+		}		
+	}
+	r; //the last evaluated statement is returned.
+}
 
-//define A & b.
-var A = [
-	100, 2, 3; 
-	4, 5, 6; 
-	7, 8, 9
-];
-var b = [12, -10, 6];
+var z = zeros([2,2]);
 
-/* perform the computation. */
-var x = LU(A,b);
-
-//check that the result is valid.
-SUM(A[0] * x) == b[0]; //the last expression is returned.
+z;
