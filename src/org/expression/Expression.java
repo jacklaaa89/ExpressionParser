@@ -16,12 +16,17 @@ import org.expression.structure.Structure;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.expression.computation.linear.LinearSystemSolver;
 import org.expression.output.OutputListener;
@@ -116,6 +121,9 @@ public class Expression {
             throw new RuntimeException("source file must exist.");
         }
         //TODO - check file extension.
+        if(!this.validFileExtension(source)) {
+            throw new RuntimeException("invalid file extension.");
+        }
         try {
             this.expression = new ANTLRFileStream(source.getAbsolutePath());
         } catch (IOException e) {
@@ -845,12 +853,32 @@ public class Expression {
     }
     
     /**
-     * Attempts to evaluate the expression.
-     * @return the evaluated result to the defined MathContext's specification.
-     * @throws RuntimeException if an error is reported by the error handler, i.e a syntax error etc.
+     * Shows the generated Abstract Syntax Tree for the supplied expression.
      */
-    public Context eval() throws RuntimeException {
+    public final void showAST() {
         
+        State s = this.parse();
+        
+        JPanel panel = new JPanel();
+        JFrame frame = new JFrame();
+        TreeViewer viewer = new TreeViewer(Arrays.asList(s.parser.getRuleNames()), s.tree);
+        
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(300, 300);
+        frame.add(panel);
+        
+        panel.add(viewer);
+        viewer.setScale(1.5);
+        
+        frame.setVisible(true);
+        
+    }
+    
+    /**
+     * Attempts to parse the source expression.
+     * @return The generated parse tree and parser instances.
+     */
+    private State parse() {
         if(this.expression == null) {
             throw new IllegalArgumentException("no valid expression was defined");
         }
@@ -863,10 +891,23 @@ public class Expression {
         ExpressionParser parser = new ExpressionParser(tokens);
         parser.removeErrorListeners();
         parser.addErrorListener(handler);
-        ParseTree tree = parser.start();
+        State s = new State();
+        s.parser = parser;
+        s.tree = parser.start();
+        return s;
+    }
+    
+    /**
+     * Attempts to evaluate the expression.
+     * @return the evaluated result to the defined MathContext's specification.
+     * @throws RuntimeException if an error is reported by the error handler, i.e a syntax error etc.
+     */
+    public Context eval() throws RuntimeException {
+        
+        State s = this.parse();
         
         Visitor ve = new Visitor(functions, operators, variables, mc, listener);
-        Context c = ve.visit(tree);
+        Context c = ve.visit(s.tree);
         
         if(c == null) {
             //return an empty context.
@@ -874,6 +915,39 @@ public class Expression {
         }
         
         return c;
+    }
+    
+    /**
+     * Determines if the extension of a source file is valid.
+     * @param source the source file.
+     * @return TRUE if the extension of the file is valid, false otherwise.
+     */
+    private boolean validFileExtension(File source) {
+        String extension = "";
+        String fileName = source.getAbsolutePath();
+
+        int i = fileName.lastIndexOf('.');
+        int p = Math.max(fileName.lastIndexOf('/'), fileName.lastIndexOf('\\'));
+
+        if (i > p) {
+            extension = fileName.substring(i+1);
+        }
+        return extension.equalsIgnoreCase("ex");
+    }
+    
+    /**
+     * Container class for the parse tree and parser instances.
+     */
+    private class State {
+        /**
+         * The parser used to generate the parse tree.
+         */
+        public Parser parser;
+        
+        /**
+         * The generated AST.
+         */
+        public ParseTree tree;
     }
 
     
