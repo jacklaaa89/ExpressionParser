@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
@@ -307,18 +308,20 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        String varName = ac.variable().getText();
        Type t = this.variables.get(varName);
        
-       Context computed = this.visit(ctx.forcedLogicalOperation());
+       HashMap<String, Type> var = this.formatVariables(ctx);
+       Visitor v = new Visitor(functions, operators, var, listener, parser);
+       
+       Context computed = v.visit(ctx.forcedLogicalOperation());
        
        while(computed.getValue().equals(Scalar.ONE)) {
            if(ctx.start() != null) {
-                this.visit(ctx.start());
+                v.visit(ctx.start());
            }
            t = (ctx.DECREMENT() != null) ? ((Arithmetic)t).decrement() : ((Arithmetic)t).increment();
-           this.variables.put(varName, t);
-           computed = this.visit(ctx.forcedLogicalOperation());
+           var.put(varName, t);
+           computed = v.visit(ctx.forcedLogicalOperation());
        }
-       
-       this.variables.remove(varName);
+       this.updateExisingValues(var);
        return new Context(null, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
    }
    
@@ -330,13 +333,23 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     */
    @Override
    public Context visitWhileLoop(WhileLoopContext ctx) {
-       Context computed = this.visit(ctx.forcedLogicalOperation());
-       
+       HashMap<String, Type> var = this.formatVariables(ctx);
+       Visitor v = new Visitor(functions, operators, var, listener, parser);
+       Context computed = v.visit(ctx.forcedLogicalOperation());
        while(computed.getValue().equals(Scalar.ONE)) {
-           this.visit(ctx.start());
-           computed = this.visit(ctx.forcedLogicalOperation());
+           v.visit(ctx.start());
+           computed = v.visit(ctx.forcedLogicalOperation());
        }
+       this.updateExisingValues(var);
        return new Context(null, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
+   }
+   
+   private void updateExisingValues(HashMap<String, Type> vars) {
+       for(Map.Entry<String, Type> e: vars.entrySet()) {
+           if(this.variables.containsKey(e.getKey())) {
+               this.variables.put(e.getKey(), e.getValue());
+           }
+       }
    }
    
    /**
@@ -453,6 +466,21 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        return ints;
    }
    
+   private HashMap<String, Type> formatVariables(ParserRuleContext ctx) {
+       HashMap<String, Type> var = new HashMap<>();
+       var.put("TRUE", variables.get("TRUE"));
+       var.put("FALSE", variables.get("FALSE"));
+       var.put("PI", variables.get("PI"));
+       if(!(ctx instanceof FuncDefinitionContext)) {
+           for(Map.Entry<String, Type> e : this.variables.entrySet()) {
+               if(!var.containsKey(e.getKey())) {
+                   var.put(e.getKey(), e.getValue());
+               }
+           }
+       }
+       return var;
+   }
+   
    /**
     * 
     * @param ctx
@@ -462,6 +490,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    public Context visitIfStatement(IfStatementContext ctx) {
        Context e = new Context(null, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
        Context<Scalar> ifExpression = this.visit(ctx.logicalOperation());
+       
+       HashMap<String, Type> var = this.formatVariables(ctx);
+       Visitor v = new Visitor(functions, operators, var, listener, parser);
        //it has to equate to boolean true or false (Scalar 1 or 0)
        if(ifExpression == null) {
            throw new IllegalArgumentException("if statement requires an expression to evaluate.");
@@ -473,7 +504,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        if(b.equals(Scalar.ONE)) {
            //return the evaluated result from the if.
            if(ctx.start() != null) {
-                return this.visit(ctx.start());
+                Context res = v.visit(ctx.start());
+                this.updateExisingValues(var);
+                return res;
            }
            return e;
        }
@@ -490,7 +523,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            Scalar es = elseif.getValue();
            if(es.equals(Scalar.ONE)) {
                if(eif.start() != null) {
-                    return this.visit(eif.start());
+                    Context res = v.visit(eif.start());
+                    this.updateExisingValues(var);
+                    return res;
                }
                return e;
            }
@@ -498,7 +533,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        ElseStatementContext elses = ctx.elseStatement();
        if(elses != null) {
            if(elses.start() != null) {
-                return this.visit(elses.start());
+                Context res = v.visit(elses.start());
+                this.updateExisingValues(var);
+                return res;
            }
        }
        return e;
@@ -678,7 +715,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            if(args.size() != p.getVariableNames().size()) {
                throw new RuntimeException("invalid amount of parameters provided for function: " + p.getName());
            }
-           HashMap<String, Type> sv = new HashMap<>();
+           HashMap<String, Type> sv = this.formatVariables(ctx);
            for(int i = 0; i < args.size(); i++) {
                sv.put(p.getVariableNames().get(i), args.get(i));
            }
