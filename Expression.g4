@@ -54,11 +54,11 @@ forcedLogicalOperation
 	;
 
 forLoop
-	: FOR LPAREN assignment forcedLogicalOperation SEMI_COLON (variable (INCREMENT|DECREMENT)) RPAREN BLOCKLEFT start BLOCKRIGHT
+	: FOR LPAREN assignment forcedLogicalOperation SEMI_COLON (variable (INCREMENT|DECREMENT)) RPAREN BLOCKLEFT start? BLOCKRIGHT
 	;
 
 whileLoop
-	: WHILE LPAREN forcedLogicalOperation RPAREN BLOCKLEFT start BLOCKRIGHT
+	: WHILE LPAREN forcedLogicalOperation RPAREN BLOCKLEFT start? BLOCKRIGHT
 	;
 
 ifStatement
@@ -74,16 +74,20 @@ elseStatement
 	;
 
 arrayAccess
-	: (func | atom) LBRACE (DIGIT (COMMA DIGIT)?|varIndex=variable) RBRACE
+	: (func | atom) LBRACE (index (COMMA index)?) RBRACE
 	;
 
 print
 	: PRI expression 
 	;
 
+index
+	: DIGIT|variable
+	;
+
 assignment
 	: VAR variable ASSIGN expression
-	| varName=variable (LBRACE (DIGIT (COMMA DIGIT)?|varIndex=variable) RBRACE)? ASSIGN expression
+	| varName=variable (LBRACE ((index) (COMMA index)?) RBRACE)? ASSIGN expression
 	;
 
 number
@@ -111,7 +115,7 @@ procedure
 	;
 
 array
-	: MINUS? LBRACE (expr) (COMMA (expr))* RBRACE
+	: MINUS? LBRACE ((expr) (COMMA (expr))*)? RBRACE
 	;
 
 column

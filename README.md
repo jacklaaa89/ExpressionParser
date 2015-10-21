@@ -448,6 +448,48 @@ System.out.println(e.setExpression("ZEROS(1)").eval()); //prints [0]
 System.out.println(e.setExpression("ZEROS(3,3)").eval()); //prints [0,0,0; 0,0,0; 0,0,0] 
 ````
 
+#### Defining Functions in Script.
+
+Functions can also be defined in the actual expression script. Functions defined in the script cannot already be defined as a function so they cannot be used to override functions.
+
+To define a function we use the `function` keyword followed by a function definition. For example to define the same function `zeros` in script:
+
+````
+function zeros(a) {
+	//var 'a' should be a Vector.
+	var r = 0;
+	if(SIZE(a) > 0) {
+		var m = a[0];
+		if(SIZE(a) > 1) {
+			var n = a[1];
+			r = RANDOM([m,n]);
+			for(var i = 0; i < m; i++) {
+				for(var j = 0; j < n; j++) {
+					r[i,j] = 0;
+				}
+			}
+		} else {
+			r = RANDOM(m);
+			for(var i = 0; i < m; i++) {
+				r[i] = 0;
+			}
+		}		
+	}
+	r; //the last evaluated statement is returned.
+}
+
+var z = zeros([2,2]);
+
+z;
+````
+
+````java
+
+Expression e = new Expression(new File("path/to/source/file.ex"));
+e.eval(); //prints [0, 0; 0, 0]
+
+````
+
 ### Usage Examples
 
 ##### 1: Solving a system of linear equations using LU factorization and confirming that the generated `x` values are correct.

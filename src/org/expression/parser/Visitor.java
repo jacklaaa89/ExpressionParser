@@ -6,6 +6,7 @@ import org.expression.structure.Matrix;
 import org.expression.structure.Vector;
 import java.math.MathContext;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +43,7 @@ import org.expression.parser.ExpressionParser.ForcedLogicalOperationContext;
 import org.expression.parser.ExpressionParser.IfStatementContext;
 import org.expression.parser.ExpressionParser.IncDecExprContext;
 import org.expression.parser.ExpressionParser.IncDecExpressionContext;
+import org.expression.parser.ExpressionParser.IndexContext;
 import org.expression.parser.ExpressionParser.LogicalOperationContext;
 import org.expression.parser.ExpressionParser.MatrixContext;
 import org.expression.parser.ExpressionParser.PrintContext;
@@ -132,22 +134,20 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     @Override
     public Context visitAssignment(AssignmentContext ctx) {
         boolean isUpdate = ctx.VAR() == null;
-        String varName = ctx.variable(0).getText();
+        String varName = ctx.variable().getText();
         if(isUpdate && !this.variables.containsKey(varName)) {
             throw new NullPointerException("can only update initialized variables.");
         }
         
         Context v = this.visit(ctx.expression());
         
-        //determine if we are also attempting to update a value at a certain index.
-        List<TerminalNode> i = ctx.DIGIT();
-        
-        int[] indices;
-        
-        if(i.isEmpty() && isUpdate && ctx.varIndex != null) {
-            indices = new int[] { ((Scalar)this.parseValue(ctx.varIndex)).intValue() };
-        } else {
-            indices = this.convertNodeToInt(i);
+        //determine the index to access.
+        List<IndexContext> in = ctx.index();
+
+        int[] indices = new int[in.size()];
+        for(int i = 0; i < in.size(); i++) {
+            Context<Scalar> ce = this.visit(in.get(i));
+            indices[i] = ce.getValue().intValue();
         }
         
         Type t = this.variables.get(varName);
@@ -267,13 +267,15 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        
        //visit the assignment to add the variable to the variables.
        this.visit(ac);
-       String varName = ac.variable(0).getText();
+       String varName = ac.variable().getText();
        Type t = this.variables.get(varName);
        
        Context computed = this.visit(ctx.forcedLogicalOperation());
        
        while(computed.getValue().equals(Scalar.ONE)) {
-           this.visit(ctx.start());
+           if(ctx.start() != null) {
+                this.visit(ctx.start());
+           }
            t = (ctx.DECREMENT() != null) ? ((Arithmetic)t).decrement() : ((Arithmetic)t).increment();
            this.variables.put(varName, t);
            computed = this.visit(ctx.forcedLogicalOperation());
@@ -335,6 +337,15 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        return this.operators.get(ctx.op.getText()).evaluate(left, right);
    }
    
+   @Override
+   public Context visitIndex(IndexContext ctx) {
+       Context v = new Context(this.parseValue(ctx), ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
+       if(!v.isScalar()) {
+           throw new IllegalArgumentException("indices must be scalar");
+       }
+       return v;
+   }
+   
    /**
     * Triggered when array access is visited in the parse tree.
     * @param ctx the array access context.
@@ -361,15 +372,12 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        }
        
        //determine the index to access.
-       List<TerminalNode> nodes = c.DIGIT();
-       int[] indices;
+       List<IndexContext> in = c.index();
        
-       if(nodes.isEmpty()) {
-           //we have a variable.
-           Context va = this.visit(c.variable());
-           indices = new int[] { ((Scalar)va.getValue()).intValue() };
-       } else {
-           indices = this.convertNodeToInt(nodes);
+       int[] indices = new int[in.size()];
+       for(int i = 0; i < in.size(); i++) {
+           Context<Scalar> ce = this.visit(in.get(i));
+           indices[i] = ce.getValue().intValue();
        }
        
        Context res;
@@ -471,7 +479,6 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        List<VariableContext> l = ctx.procedureParams().variable();
        List<String> vn = new ArrayList<>();
        if(!ctx.start().procedure().isEmpty()) {
-           System.out.println(ctx.start().procedure());
            throw new RuntimeException("cannot define a function inside a function.");
        }
        
@@ -577,8 +584,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            //check that this is not a variablecontext.
            String varName = ctx.getText(); //default.
            boolean isMinus = false; //default.
-           VariableContext c = (!(ctx instanceof VariableContext)) 
-                   ? ((AtomValueContext)ctx).variable() : (VariableContext) ctx;
+           
+           VariableContext c = (!(ctx instanceof VariableContext))
+                   ? ( (!(ctx instanceof AtomValueContext)) ? ((IndexContext)ctx).variable() : ((AtomValueContext)ctx).variable()) 
+                   : (VariableContext) ctx;
+           
            if(c != null) {
                isMinus = c.MINUS() != null;
                varName = (isMinus) ? varName.substring(1, varName.length()) : varName;

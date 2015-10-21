@@ -147,6 +147,12 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPrint(ExpressionParser.PrintContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#index}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIndex(ExpressionParser.IndexContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ExpressionParser#assignment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

@@ -270,6 +270,18 @@ public class ExpressionBaseListener implements ExpressionListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterIndex(ExpressionParser.IndexContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIndex(ExpressionParser.IndexContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterAssignment(ExpressionParser.AssignmentContext ctx) { }
 	/**
 	 * {@inheritDoc}
