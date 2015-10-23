@@ -15,20 +15,19 @@ import org.expression.structure.Matrix;
 import org.expression.structure.Vector;
 import org.expression.structure.Structure;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.expression.computation.linear.LinearSystemSolver;
@@ -69,13 +68,6 @@ public class Expression {
      * i.e PI, TRUE, FALSE, x, y etc
      */
     private HashMap<String, Type> variables;
-    
-    /**
-     * The currently defined MathContext.
-     * Sets the precision and rounding mode to use during calculation.
-     * @deprecated 
-     */
-    private MathContext mc;
     
     /**
      * The output listener to use when outputting print statements.
@@ -144,9 +136,6 @@ public class Expression {
         this.functions = new HashMap<>();
         this.operators = new HashMap<>();
         this.variables = new HashMap<>();
-        
-        //set the default math context.
-        this.mc = MathContext.DECIMAL32;
         
         //Logarithm functions.
         addFunction("log", Functions.LOG);
@@ -232,9 +221,9 @@ public class Expression {
                     Scalar p = (Scalar) args.get(1);
                     
                     int precision = p.intValue();
-                    Handler hndlr = (Handler) (Scalar o1, MathContext mc) -> {
+                    Handler hndlr = (Handler) (Scalar o1) -> {
                         BigDecimal d = new BigDecimal(o1.value);
-                        return new Scalar(d.setScale(precision, mc.getRoundingMode()).doubleValue());
+                        return new Scalar(d.setScale(precision, RoundingMode.UNNECESSARY).doubleValue());
                     };
                     return r.apply(hndlr);
                 }
@@ -700,39 +689,6 @@ public class Expression {
         addVariable("PI", PI);
         addVariable("FALSE", FALSE);
         addVariable("TRUE", TRUE);
-        
-        //set the default precision and rounding mode.
-        setPrecision(14); setRoundingMode(RoundingMode.HALF_EVEN);
-    }
-    
-    /**
-     * Sets the precision to use.
-     * @param precision the precision to use.
-     * @return a reference to itself for method chaining.
-     * @deprecated 
-     */
-    public final Expression setPrecision(int precision) {
-        RoundingMode m = RoundingMode.HALF_EVEN;
-        if(this.mc != null) {
-            m = this.mc.getRoundingMode();
-        }
-        this.mc = new MathContext(precision, m);
-        return this;
-    }
-    
-    /**
-     * Sets the rounding mode to use.
-     * @param mode the rounding mode to use.
-     * @return a reference to itself for method chaining.
-     * @deprecated
-     */
-    public final Expression setRoundingMode(RoundingMode mode) {
-        int precision = 7;
-        if(this.mc != null) {
-            precision = this.mc.getPrecision();
-        }
-        this.mc = new MathContext(precision, mode);
-        return this;
     }
     
     /**
@@ -808,7 +764,7 @@ public class Expression {
      * @return a reference to itself for method chaining.
      */
     public final Expression addVariable(String variableName, double value) {
-        this.addVariable(variableName, new Scalar(value, mc));
+        this.addVariable(variableName, new Scalar(value));
         return this;
     }
     
@@ -903,6 +859,7 @@ public class Expression {
         State s = new State();
         s.parser = parser;
         s.tree = parser.start();
+        s.lexer = lexer;
         return s;
     }
     
@@ -915,7 +872,7 @@ public class Expression {
         
         State s = this.parse();
         
-        Visitor ve = new Visitor(functions, operators, variables, mc, listener, (ExpressionParser) s.parser);
+        Visitor ve = new Visitor(functions, operators, variables, listener, s);
         Context c = ve.visit(s.tree);
         
         if(c == null) {
@@ -947,7 +904,7 @@ public class Expression {
     /**
      * Container class for the parse tree and parser instances.
      */
-    private class State {
+    public static class State {
         /**
          * The parser used to generate the parse tree.
          */
@@ -957,6 +914,12 @@ public class Expression {
          * The generated AST.
          */
         public ParseTree tree;
+        
+        /**
+         * The lexer used to generate the parse tree.
+         */
+        public Lexer lexer;
+        
     }
 
     

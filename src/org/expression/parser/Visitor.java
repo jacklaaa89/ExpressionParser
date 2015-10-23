@@ -6,7 +6,6 @@ import org.expression.structure.Matrix;
 import org.expression.structure.Vector;
 import java.math.MathContext;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -14,9 +13,10 @@ import java.util.Map;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.expression.Context;
+import org.expression.Expression;
+import org.expression.Expression.State;
 import org.expression.Scalar;
 import org.expression.Type;
 import org.expression.computation.Arithmetic;
@@ -63,12 +63,6 @@ import org.expression.parser.ExpressionParser.WhileLoopContext;
 public class Visitor extends ExpressionBaseVisitor<Context> {
     
     /**
-     * The MathContext to use.
-     * @deprecated 
-     */
-    private MathContext mc = MathContext.DECIMAL32;
-    
-    /**
      * The list of functions available to the parser.
      */
     private final HashMap<String, Function> functions;
@@ -90,7 +84,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
      */
     private OutputListener listener;
     
-    private ExpressionParser parser;
+    private Expression.State state;
     
     /**
      * Initializes a Visitor with all the required variables.
@@ -98,36 +92,17 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
      * @param operators the list of operators.
      * @param variables the list of assigned variables.
      * @param listener  the output listener to notify when 'print' is called.
-     * @param parser the parser instance which generated the AST.
+     * @param state
      */
     public Visitor(HashMap<String, Function> functions, 
             HashMap<String, Operator> operators, 
-            HashMap<String, Type> variables, OutputListener listener, ExpressionParser parser) {
+            HashMap<String, Type> variables, OutputListener listener, State state) {
         this.functions = functions;
         this.operators = operators;
         this.variables = variables;
         this.listener = listener;
         this.procedures = new HashMap<>();
-        this.parser = parser;
-    }
-    
-    /**
-     * Initializes a Visitor with all the required variables.
-     * @param functions the list of functions.
-     * @param operators the list of operators.
-     * @param variables the list of assigned variables.
-     * @param mc the MathContext to use.
-     * @param listener  the output listener to notify when 'print' is called.
-     * @param parser an instance of the parer which generated the AST.
-     * @deprecated 
-     */
-    public Visitor(HashMap<String, Function> functions, 
-            HashMap<String, Operator> operators, 
-            HashMap<String, Type> variables,
-            MathContext mc, OutputListener listener,
-            ExpressionParser parser) {
-        this(functions, operators, variables, listener, parser);
-        this.mc = mc;
+        this.state = state;
     }
     
     @Override
@@ -309,7 +284,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Type t = this.variables.get(varName);
        
        HashMap<String, Type> var = this.formatVariables(ctx);
-       Visitor v = new Visitor(functions, operators, var, listener, parser);
+       Visitor v = new Visitor(functions, operators, var, listener, state);
        
        Context computed = v.visit(ctx.forcedLogicalOperation());
        
@@ -334,7 +309,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    @Override
    public Context visitWhileLoop(WhileLoopContext ctx) {
        HashMap<String, Type> var = this.formatVariables(ctx);
-       Visitor v = new Visitor(functions, operators, var, listener, parser);
+       Visitor v = new Visitor(functions, operators, var, listener, state);
        Context computed = v.visit(ctx.forcedLogicalOperation());
        while(computed.getValue().equals(Scalar.ONE)) {
            v.visit(ctx.start());
@@ -492,7 +467,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Context<Scalar> ifExpression = this.visit(ctx.logicalOperation());
        
        HashMap<String, Type> var = this.formatVariables(ctx);
-       Visitor v = new Visitor(functions, operators, var, listener, parser);
+       Visitor v = new Visitor(functions, operators, var, listener, state);
        //it has to equate to boolean true or false (Scalar 1 or 0)
        if(ifExpression == null) {
            throw new IllegalArgumentException("if statement requires an expression to evaluate.");
@@ -586,7 +561,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            ArrayContext atx = ctx.array();
            boolean isMinus = atx.MINUS() != null;
            List<ExprContext> l = atx.expr();
-           Vector v = new Vector(l.size(), mc);
+           Vector v = new Vector(l.size());
            for(int i = 0; i < l.size(); i++) {
                ExprContext re = l.get(i);
                Context c = this.visit(re);
@@ -609,7 +584,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            if(!l.isEmpty()) {
                for(ColumnContext ct : l) {
                    List<ExprContext> ac = ct.arrayInner().expr();
-                   Vector v = new Vector(ac.size(), mc);
+                   Vector v = new Vector(ac.size());
                    for(int i = 0; i < ac.size(); i++) {
                        ExprContext ec = ac.get(i);
                        Context ecc = this.visit(ec);
@@ -621,7 +596,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
                    li.add(v);
                }
            }
-           Vector ire = new Vector(end.expr().size(), mc);
+           Vector ire = new Vector(end.expr().size());
            for(int i = 0; i < end.expr().size(); i++) {
                ExprContext acx = end.expr().get(i);
                Context acxc = this.visit(acx);
@@ -633,7 +608,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            }
            li.add(ire);
            
-           Matrix m = new Matrix(li, mc);
+           Matrix m = new Matrix(li);
            if(isMinus) {
                m = (Matrix) m.negate();
            }
@@ -653,7 +628,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    private Type parseValue(ParserRuleContext ctx) {
        try{ 
            double f = Double.parseDouble(ctx.getText());
-           return new Scalar(f, mc);
+           return new Scalar(f);
        } catch (NumberFormatException e) {
            //check that this is not a variablecontext.
            String varName = ctx.getText(); //default.
@@ -678,6 +653,10 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            }
            return v;
        }
+   }
+   
+   public State getState() {
+       return this.state;
    }
    
    @Override
@@ -719,7 +698,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            for(int i = 0; i < args.size(); i++) {
                sv.put(p.getVariableNames().get(i), args.get(i));
            }
-           Visitor v = new Visitor(functions, operators, sv, listener, parser);
+           Visitor v = new Visitor(functions, operators, sv, listener, state);
            return p.run(v);
        }
        

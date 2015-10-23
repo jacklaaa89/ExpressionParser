@@ -29,11 +29,6 @@ public class Scalar implements Arithmetic<Arithmetic>  {
     public static final Scalar TWO  = new Scalar(2d); 
     
     /**
-     * The MathContext to use.
-     */
-    private final MathContext mc;
-    
-    /**
      * The value of this Scalar.
      */
     public final double value;
@@ -45,7 +40,6 @@ public class Scalar implements Arithmetic<Arithmetic>  {
      */
     public Scalar(double val) {
         this.value = val;
-        this.mc = MathContext.DECIMAL32;
     }
     
     /**
@@ -57,31 +51,12 @@ public class Scalar implements Arithmetic<Arithmetic>  {
     }
     
     /**
-     * Initializes a Scalar value using a given MathContext.
-     * @param val the initial value of this scalar.
-     * @param mc A MathContext to use.
-     */
-    public Scalar(double val, MathContext mc) {
-        this.value = val;
-        this.mc = mc;
-    }
-    
-    /**
      * Generates a Scalar with a random value between 0 and 1, 
      * using a DECIMAL32 MathContext.
      * @return the random Scalar value.
      */
     public static Scalar random() {
-        return Scalar.random(MathContext.DECIMAL32);
-    }
-    
-    /**
-     * Generates a Scalar with a random value between 0 and 1.
-     * @param mc A MathContext to use.
-     * @return the random Scalar value.
-     */
-    public static Scalar random(MathContext mc) {
-        return new Scalar(Math.random(), mc);
+        return new Scalar(Math.random());
     }
     
     /**
@@ -139,13 +114,13 @@ public class Scalar implements Arithmetic<Arithmetic>  {
     
     @Override
     public Scalar apply(Handler handler) {
-        return (Scalar) handler.handle(this, mc);
+        return (Scalar) handler.handle(this);
     }
 
     @Override
     public Arithmetic multiply(Type data) {
         if(data instanceof Scalar) return this.multiply((Scalar)data);
-        Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
+        Handler h = (Handler) (Scalar o1) -> {
             return (Scalar) this.multiply(o1);
         };
         return (Arithmetic) data.apply(h);
@@ -157,13 +132,13 @@ public class Scalar implements Arithmetic<Arithmetic>  {
      * @return the computed data structure.
      */
     public Scalar multiply(Scalar value) {
-        return new Scalar(((Scalar)value).value*this.value, mc);
+        return new Scalar(((Scalar)value).value*this.value);
     }
 
     @Override
     public Arithmetic divide(Type data) {
         if(data instanceof Scalar) return this.divide((Scalar)data);
-        Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
+        Handler h = (Handler) (Scalar o1) -> {
             return (Scalar) this.divide(o1);
         };
         return (Arithmetic) data.apply(h);
@@ -175,13 +150,13 @@ public class Scalar implements Arithmetic<Arithmetic>  {
      * @return the computed data structure.
      */
     public Scalar divide(Scalar data) {
-        return new Scalar(this.value/((Scalar)data).value, mc);
+        return new Scalar(this.value/((Scalar)data).value);
     }
 
     @Override
     public Arithmetic add(Type data) {
         if(data instanceof Scalar) return this.add((Scalar)data);
-        Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
+        Handler h = (Handler) (Scalar o1) -> {
             return (Scalar) this.add(o1);
         };
         return (Arithmetic) data.apply(h);
@@ -193,13 +168,13 @@ public class Scalar implements Arithmetic<Arithmetic>  {
      * @return the computed data structure.
      */
     public Scalar add(Scalar data) {
-        return new Scalar(this.value+((Scalar)data).value, mc);
+        return new Scalar(this.value+((Scalar)data).value);
     }
 
     @Override
     public Arithmetic subtract(Type data) {
         if(data instanceof Scalar) return this.subtract((Scalar)data);
-        Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
+        Handler h = (Handler) (Scalar o1) -> {
             return (Scalar) this.subtract(o1);
         };
         return (Arithmetic) data.apply(h);
@@ -211,13 +186,13 @@ public class Scalar implements Arithmetic<Arithmetic>  {
      * @return the computed data structure.
      */
     public Scalar subtract(Scalar value) {
-        return new Scalar(this.value-((Scalar)value).value, mc);
+        return new Scalar(this.value-((Scalar)value).value);
     }
 
     @Override
     public Arithmetic remainder(Type data) {
         if(data instanceof Scalar) return this.remainder((Scalar)data);
-        Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
+        Handler h = (Handler) (Scalar o1) -> {
             return (Scalar) this.remainder(o1);
         };
         return (Arithmetic) data.apply(h);
@@ -297,17 +272,17 @@ public class Scalar implements Arithmetic<Arithmetic>  {
 
     @Override
     public Scalar negate() {
-        return new Scalar(-value, mc);
+        return new Scalar(-value);
     }
 
     @Override
     public Scalar plus() {
-        return new Scalar(+value, mc);
+        return new Scalar(+value);
     }
 
     @Override
     public Scalar abs() {
-        return new Scalar(Math.abs(value), mc);
+        return new Scalar(Math.abs(value));
     }
 
     @Override
@@ -345,6 +320,7 @@ public class Scalar implements Arithmetic<Arithmetic>  {
      * Increments the value of this Scalar by one.
      * @return this value incremented by one.
      */
+    @Override
     public Scalar increment() {
         return this.add(Scalar.ONE);
     }
@@ -353,6 +329,7 @@ public class Scalar implements Arithmetic<Arithmetic>  {
      * Decrements the value of this Scalar by one.
      * @return this value decremented by one.
      */
+    @Override
     public Scalar decrement() {
         return this.subtract(Scalar.ONE);
     }

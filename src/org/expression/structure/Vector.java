@@ -1,12 +1,7 @@
 package org.expression.structure;
 
-import java.math.MathContext;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import org.expression.computation.Arithmetic;
 import org.expression.Coordinate;
@@ -34,30 +29,15 @@ public class Vector extends BaseStructure<Scalar, Vector, VectorFunction> {
     private final int limit;
     
     /**
-     * The MathContext to apply to elements and computations in this Vector.
-     */
-    private final MathContext mc;
-    
-    /**
      * Initializes a Vector of a given size.
      * @param capacity the maximum size of this Vector.
-     * @param context a given MathContext to use in computation.
      */
-    public Vector(int capacity, MathContext context) {
+    public Vector(int capacity) {
         super(capacity);
         this.limit = capacity;
         for(int i = 0; i < limit; i++) {
             this.add(i, new Scalar(0d));
         }
-        this.mc = context;
-    }
-    
-    /**
-     * Initializes a Vector of a given size.
-     * @param capacity the maximum size of this Vector.
-     */
-    public Vector(int capacity) {
-        this(capacity, MathContext.DECIMAL32);
     }
     
     public Vector(Scalar[] data) {
@@ -175,69 +155,46 @@ public class Vector extends BaseStructure<Scalar, Vector, VectorFunction> {
     public int hashCode() {
         int hash = 7;
         hash = 17 * hash + this.limit;
-        hash = 17 * hash + Objects.hashCode(this.mc);
         return hash;
     }
     
     /**
-     * Generates a Vector with all zero values, using a DECIMAL32
-     * MathContext.
+     * Generates a Vector with all zero values.
      * @param n the size of the vector.
      * @return the generated vector
      */
     public static Vector zeroes(int n) {
-        return Vector.zeroes(n, MathContext.DECIMAL32);
-    }
-    
-    /**
-     * Generates a Vector with all zero values, using a provided
-     * MathContext.
-     * @param n the size of the vector.
-     * @param context the provided math context to use.
-     * @return the generated vector
-     */
-    public static Vector zeroes(int n, MathContext context) {
-        Vector v = new Vector(n, context);
+        Vector v = new Vector(n);
         return v;
     }
     
-    public static Vector zeroes(Scalar n, MathContext mc) {
-        return Vector.random(n.intValue(), mc);
-    }
-    
+    /**
+     * Generates a Vector with all zero values.
+     * @param n the size of the vector.
+     * @return the generated vector
+     */
     public static Vector zeroes(Scalar n) {
-        return Vector.zeroes(n.intValue());
+        return Vector.random(n.intValue());
     }
     
     /**
-     * Generates a Vector with all random values between 0 and 1,
-     * using a provided MathContext.
+     * Generates a Vector with all random values between 0 and 1.
      * @param n the size of the vector.
-     * @param context the provided math context to use.
      * @return the generated vector
      */
-    public static Vector random(int n, MathContext context) {
-        Vector v = new Vector(n, context);
+    public static Vector random(int n) {
+        Vector v = new Vector(n);
         for(int i = 0; i < n; i++) {
-            v.set(i, new Scalar(Math.random(), context));
+            v.set(i, new Scalar(Math.random()));
         }
         return v;
     }
     
     /**
-     * Generates a Vector with all random values between 0 and 1,
-     * using a DECIMAL32 MathContext.
+     * Generates a Vector with all random values between 0 and 1.
      * @param n the size of the vector.
      * @return the generated vector
      */
-    public static Vector random(int n) {
-        return Vector.random(n, MathContext.DECIMAL32);
-    }
-    
-    public static Vector random(Scalar n, MathContext mc) {
-        return Vector.random(n.intValue(), mc);
-    }
-    
     public static Vector random(Scalar n) {
         return Vector.random(n.intValue());
     }
@@ -443,7 +400,7 @@ public class Vector extends BaseStructure<Scalar, Vector, VectorFunction> {
 
     @Override
     public Arithmetic remainder(Type data) {
-        Handler h = (Handler) (Scalar o1, MathContext mcon) -> {
+        Handler h = (Handler) (Scalar o1) -> {
             return (Scalar) o1.remainder(data);
         };
         return this.apply(h);
@@ -463,7 +420,7 @@ public class Vector extends BaseStructure<Scalar, Vector, VectorFunction> {
         Vector A = this;
         Vector C = new Vector(A.size());
         for(int i = 0; i < this.size(); i++) {
-            Scalar item = handler.handle(A.get(i), mc);
+            Scalar item = handler.handle(A.get(i));
             C.set(i, item);
         }
         return C;

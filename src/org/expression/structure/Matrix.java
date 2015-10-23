@@ -1,12 +1,7 @@
 package org.expression.structure;
 
-import java.math.MathContext;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import org.expression.computation.Arithmetic;
 import org.expression.Coordinate;
 import org.expression.computation.Functions;
 import org.expression.computation.Handler;
@@ -21,7 +16,6 @@ import org.expression.computation.inverse.LinearSystemInverter;
 import org.expression.computation.linear.AbstractSolver;
 import org.expression.computation.linear.LinearSystemSolver;
 import org.expression.structure.function.MatrixFunction;
-import org.expression.structure.function.Vectors;
 
 /**
  * A representation of a Matrix.
@@ -40,43 +34,26 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     private final int N;
     
     /**
-     * An instance of a MathContext to use in computation.
-     */
-    private final MathContext mc;
-    
-    /**
      * Initializes an empty matrix with zero values.
      * @param m the column size
      * @param n the row size.
      * @param mc A MathContext to use in computation.
      */
-    public Matrix(int m, int n, MathContext mc) {
+    public Matrix(int m, int n) {
         super(m); //set the row capacity.
         this.M = m;
         this.N = n;
-        this.mc = mc;
         for(int i = 0; i < m; i++) {
-            Vector v = Vector.zeroes(n, mc);
+            Vector v = Vector.zeroes(n);
             this.add(v);
         }
     }
     
     /**
-     * Initializes a new Matrix with zero values, 
-     * using a DECIMAL32 MathContext
-     * @param m the column size
-     * @param n the row size.
-     */
-    public Matrix(int m, int n) {
-        this(m, n, MathContext.DECIMAL32);
-    }
-    
-    /**
      * Initializes a Matrix from a list of Vectors.
      * @param columns the list of vectors.
-     * @param mc a MathContext to use in computation.
      */
-    public Matrix(List<Vector> columns, MathContext mc) {
+    public Matrix(List<Vector> columns) {
         super(columns.size());
         int i = 0; boolean first = true;
         if(columns.isEmpty()) {
@@ -86,7 +63,6 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
         int size = columns.get(0).size();
         this.M = columns.size();
         this.N = size;
-        this.mc = mc;
         for(int j = 0; j < columns.size(); j++) {
             Vector e = columns.get(j);
             if(!first) {
@@ -99,36 +75,16 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     }
     
     /**
-     * Initializes a Matrix from a list of Vectors,
-     * using a DECIMAL32 MathContext.
-     * @param columns the list of Vectors.
-     */
-    public Matrix(List<Vector> columns) {
-        this(columns, MathContext.DECIMAL32);
-    }
-    
-    /**
-     * Initializes a Matrix from a 2D array of Scalar values, 
-     * using a DECIMAL32 MathContext.
-     * @param data the data to populate the Matrix with.
-     */
-    public Matrix(Scalar[][] data) {
-        this(data, MathContext.DECIMAL32);
-    }
-    
-    /**
      * Initializes a matrix from a 2d array.
      * @param data the array to copy data from.
-     * @param mc the MathContext to use in computation.
      */
-    public Matrix(Scalar[][] data, MathContext mc) {
+    public Matrix(Scalar[][] data) {
         super(data.length);
         if(data.length == 0) {
             throw new ArithmeticException("invalid amount of rows");
         }
         M = data.length;
         N = data[0].length;
-        this.mc = mc;
         for(int i = 0; i < M; i++) {
             Vector v = Vector.zeroes(N);
             for(int j = 0; j < N; j++) {
@@ -141,13 +97,11 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     /**
      * Initializes a Matrix from a 2D array of double values.
      * @param data the 2D array of double values.
-     * @param mc the MathContext to use in the computation.
      */
-    public Matrix(double[][] data, MathContext mc) {
+    public Matrix(double[][] data) {
         super(data.length);
         M = data.length;
         N = data[0].length;
-        this.mc = mc;
         for(int i = 0; i < M; i++) {
             Vector v = Vector.zeroes(N);
             for(int j = 0; j < N; j++) {
@@ -158,54 +112,29 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     }
     
     /**
-     * Initializes a Matrix from a 2D array of double values, 
-     * using a DECIMAL32 MathContext.
-     * @param data the 2D array of double values.
-     */
-    public Matrix(double[][] data) {
-        this(data, MathContext.DECIMAL32);
-    }
-    
-    /**
-     * Initializes an Matrix with zero values with the same
-     * dimensions as Matrix A.
-     * @param A the matrix to provide a zero value Matrix from.
-     * @param mc the MathContext to use in the computation.
-     * @return A new zero value Matrix with the same dimensions as A.
-     */
-    public static Matrix from(Matrix A, MathContext mc) {
-        return Matrix.zeroes(A.M, A.N, mc);
-    }
-    
-    /**
      * Initializes an Matrix with zero values with the same
      * dimensions as Matrix A, using a DECIMAL32 MathContext.
      * @param A the matrix to provide a zero value Matrix from.
      * @return A new zero value Matrix with the same dimensions as A.
      */
     public static Matrix from(Matrix A) {
-        return Matrix.zeroes(A.M, A.N, MathContext.DECIMAL32);
+        return Matrix.zeroes(A.M, A.N);
     }
     
     /**
      * generates a M-by-N matrix with random values between 0 and 1.
      * @param m the column size
      * @param n the row size.
-     * @param mc the MathContext to use in computation.
      * @return the matrix with m,n random values.
      */
-    public static Matrix random(int m, int n, MathContext mc) {
-        Matrix C = new Matrix(m, n, mc);
+    public static Matrix random(int m, int n) {
+        Matrix C = new Matrix(m, n);
         for(int i = 0; i < m; i++) {
             for(int j = 0; j < n; j++) {
                C.set(i, j, new Scalar(Math.random()));
             }
         }
         return C;
-    }
-    
-    public static Matrix random(Scalar m, Scalar n, MathContext mc) {
-        return Matrix.random(m.intValue(), n.intValue(), mc);
     }
     
     public static Matrix random(Scalar m, Scalar n) {
@@ -217,50 +146,23 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     }
     
     /**
-     * generates a M-by-N matrix with random values between 0 and 1,
-     * using a DECIMAL32 MathContext.
-     * @param m the column size
-     * @param n the row size.
-     * @return the matrix with m,n random values.
-     */
-    public static Matrix random(int m, int n) {
-        return Matrix.random(m, n, MathContext.DECIMAL32);
-    }
-    
-    /**
      * generates a M-by-M square matrix with random values between 0 and 1.
-     * @param n the column and row size.
-     * @param mc the MathContext to use in computation.
-     * @return the matrix with m,n random values.
-     */
-    public static Matrix random(int n, MathContext mc) {
-        return Matrix.random(n, n, mc);
-    }
-    
-    /**
-     * generates a M-by-M square matrix with random values between 0 and 1,
-     * using a DECIMAL32 MathContext.
      * @param n the column and row size.
      * @return the matrix with m,n random values.
      */
     public static Matrix random(int n) {
-        return Matrix.random(n, MathContext.DECIMAL32);
+        return Matrix.random(n, n);
     }
     
     /**
      * generates a new M-by-N matrix full of zero values.
      * @param m the column size
      * @param n the row size.
-     * @param mc the MathContext to use in computation.
      * @return the matrix with m,n zeroes.
      */
-    public static Matrix zeroes(int m, int n, MathContext mc) {
-        Matrix C = new Matrix(m, n, mc);
+    public static Matrix zeroes(int m, int n) {
+        Matrix C = new Matrix(m, n);
         return C;
-    }
-    
-    public static Matrix zeroes(Scalar m, Scalar n, MathContext mc) {
-        return Matrix.zeroes(m.intValue(), n.intValue(), mc);
     }
     
     public static Matrix zeroes(Scalar m, Scalar n) {
@@ -272,54 +174,21 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     }
     
     /**
-     * generates a new M-by-N matrix full of zero values,
-     * using a DECIMAL32 MathContext.
-     * @param m the column size
-     * @param n the row size.
-     * @return the matrix with m,n zeroes.
-     */
-    public static Matrix zeroes(int m, int n) {
-        return Matrix.zeroes(m, n, MathContext.DECIMAL32);
-    }
-    
-    /**
      * generates a new square matrix full of zero values.
-     * @param n the column and row size.
-     * @param mc the MathContext to use in computation.
-     * @return the matrix with n,n zeroes.
-     */
-    public static Matrix zeroes(int n, MathContext mc) {
-        return Matrix.zeroes(n, n, mc);
-    }
-    
-    /**
-     * generates a new square matrix full of zero values,
-     * using a DECIMAL32 MathContext.
      * @param n the column and row size.
      * @return the matrix with n,n zeroes.
      */
     public static Matrix zeroes(int n) {
-        return Matrix.zeroes(n, MathContext.DECIMAL32);
-    }
-    
-    /**
-     * generates a N-by-N identity matrix,
-     * using a DECIMAL32 MathContext.
-     * @param n the size matrix to generate.
-     * @return the generated identity matrix.
-     */
-    public static Matrix identity(int n) {
-        return Matrix.identity(n, MathContext.DECIMAL32);
+        return Matrix.zeroes(n, n);
     }
     
     /**
      * generates a N-by-N identity matrix.
      * @param n the size matrix to generate.
-     * @param mc a MathContext to use in computation.
      * @return the generated identity matrix.
      */
-    public static Matrix identity(int n, MathContext mc) {
-        Matrix C = new Matrix(n, n, mc);
+    public static Matrix identity(int n) {
+        Matrix C = new Matrix(n, n);
         for(int i = 0; i < n; i++)
             C.set(i, i, new Scalar(1d));
         return C;
@@ -327,25 +196,13 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     
     /**
      * Generates a square scalar matrix with a particular scalar value 
-     * down the diagonal, using a DECIMAL32 MathContext.
+     * down the diagonal.
      * @param n the column and row size.
      * @param scalar the scalar value to put down the diagonal.
      * @return the generated scalar matrix.
      */
     public static  Matrix scalar(int n, Scalar scalar) {
-        return Matrix.scalar(n, scalar, MathContext.DECIMAL32);
-    }
-    
-    /**
-     * Generates a square scalar matrix with a particular scalar value 
-     * down the diagonal.
-     * @param n the column and row size.
-     * @param scalar the scalar value to put down the diagonal.
-     * @param mc a MathContext to use in computation.
-     * @return the generated scalar matrix.
-     */
-    public static  Matrix scalar(int n, Scalar scalar, MathContext mc) {
-        Matrix C = new Matrix(n, n, mc);
+        Matrix C = new Matrix(n, n);
         for(int i = 0; i < n; i++) {
             C.set(i, i, scalar);
         }
@@ -373,7 +230,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
      * @return the transpose matrix.
      */
     public Matrix transpose() {
-        Matrix A = new Matrix(this.M, this.N, mc);
+        Matrix A = new Matrix(this.M, this.N);
         for(int i = 0; i < M; i++) {
             for(int j = 0; j < N; j++) {
                 A.set(j, i, this.get(i, j));
@@ -446,7 +303,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
         Matrix b = (Matrix) B;
         Matrix A = this;
         if(b.M != A.M || b.N != A.N) throw new RuntimeException("Illegal matrix dimensions");
-        Matrix C = new Matrix(M, N, mc);
+        Matrix C = new Matrix(M, N);
         for(int i = 0; i < M; i++) {
             for(int j = 0; j < N; j++) {
                 Scalar n = A.get(i, j).add(b.get(i, j));
@@ -511,7 +368,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
         Matrix A = this;
         Matrix b = (Matrix) B;
         if(b.M != A.M || b.N != A.N) throw new RuntimeException("Illegal matrix dimensions");
-        Matrix C = new Matrix(M, N, mc);
+        Matrix C = new Matrix(M, N);
         for(int i = 0; i < M; i++) {
             for(int j = 0; j < N; j++) {
                 Scalar n =  A.get(i, j).subtract(b.get(i, j));
@@ -533,7 +390,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
         Matrix A = this;
         Matrix b = (Matrix) B;
         if(A.N != b.M) throw new RuntimeException("Illegal matrix dimensions");
-        Matrix C = new Matrix(A.M, b.N, mc);
+        Matrix C = new Matrix(A.M, b.N);
         for(int i = 0; i < C.M; i++) {
             for(int j = 0; j < C.N; j++) {
                 for(int k = 0; k < A.N; k++) {
@@ -555,13 +412,13 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
      * @return the result of the computation.
      */
     private Matrix multiply(Vector B) {
-        Matrix m = new Matrix(this.M, B.size(), mc);
+        Matrix m = new Matrix(this.M, B.size());
         for(int i = 0; i < B.size(); i++) {
             m.set(0, i, B.get(i));
         }
         m = m.transpose();
         //create a new matrix from the first entry in row.
-        Matrix m1 = new Matrix(B.size(), 1, mc);
+        Matrix m1 = new Matrix(B.size(), 1);
         for(int i = 0; i < m.M; i++) {
             Vector c = this.get(i);
             m1.set(i, 0, c.get(0));
@@ -598,7 +455,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
      */
     public Matrix power(int n) {
         if(!this.is(Predicate.SQUARE)) throw new ArithmeticException("can only power square matrices");
-        Matrix I = Matrix.identity(this.N, mc);
+        Matrix I = Matrix.identity(this.N);
         Matrix A = this;
         
         while(n > 0) {
@@ -657,11 +514,11 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
      */
     private Matrix multiply(Scalar scalar) {
         Matrix A = this;
-        Matrix C = new Matrix(A.M, A.N, mc);
+        Matrix C = new Matrix(A.M, A.N);
         for(int i = 0; i < A.M; i++) {
             for(int j = 0; i < A.N; j++) {
                 Scalar d = A.get(i, j).multiply(scalar);
-                C.set(i, j, new Scalar(d.doubleValue(), mc));
+                C.set(i, j, new Scalar(d.doubleValue()));
             }
         }
         return C;
@@ -680,7 +537,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
      */
     private Matrix divide(Scalar scalar) {
         Matrix A = this;
-        Matrix C = new Matrix(A.M, A.N, mc);
+        Matrix C = new Matrix(A.M, A.N);
         for(int i = 0; i < A.M; i++) {
             for(int j = 0; j < A.N; j++) {
                 Scalar n = A.get(i, j).divide(scalar);
@@ -696,7 +553,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
      * @return the result of A + B = C.
      */
     private Matrix add(Scalar scalar) {
-        Matrix B = Matrix.scalar(this.N, scalar, mc);
+        Matrix B = Matrix.scalar(this.N, scalar);
         return this.add(B);
     }
     
@@ -706,7 +563,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
      * @return the result of A - B = C.
      */
     private Matrix subtract(Scalar scalar) {
-        Matrix B = Matrix.scalar(this.N, scalar, mc);
+        Matrix B = Matrix.scalar(this.N, scalar);
         return this.subtract(B);
     }
 
@@ -756,7 +613,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
         Matrix B = (Matrix) data;
         if((A.M != B.M) || A.N != B.N) throw new ArithmeticException("invalid matrix dimensions");
         
-        Matrix C = Matrix.from(A, mc);
+        Matrix C = Matrix.from(A);
         for(int i = 0; i < A.M; i++) {
             for(int j = 0; j < A.N; j++) {
                Scalar n = A.get(i,j).remainder(B.get(i,j));
@@ -774,7 +631,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     private Matrix mod(Scalar scalar) {
         Matrix A = this;
         
-        Matrix C = Matrix.from(A, mc);
+        Matrix C = Matrix.from(A);
         for(int i = 0; i < A.M; i++) {
             for(int j = 0; j < A.N; j++) {
                Scalar n = A.get(i,j).remainder(scalar);
@@ -796,10 +653,10 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     @Override
     public Matrix apply(Handler handler) {
         Matrix A = this;
-        Matrix B = Matrix.from(A, mc);
+        Matrix B = Matrix.from(A);
         for(int i = 0; i < A.M; i++) {
             for(int j = 0; j < A.N; j++) {
-                Scalar s = handler.handle(A.get(i, j), mc);
+                Scalar s = handler.handle(A.get(i, j));
                 B.set(i, j, s);
             }
         }
@@ -820,7 +677,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
             end.x = this.M; end.y = this.N;
         }
         
-        Matrix m = Matrix.zeroes(end.x - start.x, end.y - start.y, mc);
+        Matrix m = Matrix.zeroes(end.x - start.x, end.y - start.y);
         for(int i = start.x; i < end.x; i++) {
             for(int j = start.y; j < end.y; j++) {
                 m.set(i - start.x, j - start.y, this.get(i, j));
@@ -858,7 +715,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
         if(index < 0 || index > M) throw new ArrayIndexOutOfBoundsException("invalid index defined.");
         Vector v = (Vector) type;
         if(v.size() != N) throw new ArithmeticException("vectors dimensions do not match that of the matrix.");
-        Matrix m = Matrix.zeroes(M + 1, N, mc);
+        Matrix m = Matrix.zeroes(M + 1, N);
         for(int i = 0; i < index; i++) {
             for(int j = 0; j < this.N; j++) {
                 m.set(i, j, this.get(i, j));
@@ -896,7 +753,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
             throw new ArithmeticException("invalid row index.");
         }
         Matrix A = this;
-        Matrix B = Matrix.from(A, mc);
+        Matrix B = Matrix.from(A);
         for(int i = 0; i < M; i++) {
            Vector v = this.get(i);
            if(i == m) {
@@ -928,10 +785,10 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
             throw new ArithmeticException("invalid column index.");
         }
         Matrix A = this;
-        Matrix B = Matrix.from(A, mc);
+        Matrix B = Matrix.from(A);
         for(int i = 0; i < M; i++) {
             Vector v = A.get(i);
-            v.set(n, handler.handle(v.get(n), mc));
+            v.set(n, handler.handle(v.get(n)));
             B.set(i, v);
         }
         return B;
@@ -949,7 +806,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     
     @Override
     public Matrix copy() {
-        Matrix m = Matrix.from(this, mc);
+        Matrix m = Matrix.from(this);
         for(int i = 0; i < this.M; i++) {
             Vector v = this.get(i).copy();
             m.set(i, v);

@@ -68,7 +68,7 @@ public abstract class BaseStructure<T, O extends Type, F extends Function> exten
      */
     @Override
     public Arithmetic bitwiseLeft(Scalar value) {
-        Handler h = (Scalar o1, MathContext mc1) -> {
+        Handler h = (Scalar o1) -> {
             return (Scalar) o1.bitwiseLeft(value);
         };
         return this.apply(h);
@@ -81,7 +81,7 @@ public abstract class BaseStructure<T, O extends Type, F extends Function> exten
      */
     @Override
     public Arithmetic bitwiseRight(Scalar value) {
-        Handler h = (Scalar o1, MathContext mc1) -> {
+        Handler h = (Scalar o1) -> {
             return (Scalar) o1.bitwiseRight(value);
         };
         return this.apply(h);

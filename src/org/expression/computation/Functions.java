@@ -18,7 +18,7 @@ public enum Functions {
     LOG {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
+            return (Handler) (Scalar o1) -> {
                 return new Scalar(Math.log(o1.doubleValue()));
             };
         }
@@ -29,8 +29,8 @@ public enum Functions {
     LOG10 {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(Math.log10(o1.doubleValue()), mc);
+            return (Handler) (Scalar o1) -> {
+                return new Scalar(Math.log10(o1.doubleValue()));
             };
         }
     },
@@ -40,8 +40,8 @@ public enum Functions {
     LOG1P {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(Math.log1p(o1.doubleValue()), mc);
+            return (Handler) (Scalar o1) -> {
+                return new Scalar(Math.log1p(o1.doubleValue()));
             };
         }
     },
@@ -53,7 +53,7 @@ public enum Functions {
         public Handler get() {
             return (Handler) new Handler() {
                 @Override
-                public Scalar handle(Scalar o1, MathContext mc) {
+                public Scalar handle(Scalar o1) {
                     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
             };
@@ -65,7 +65,7 @@ public enum Functions {
     COS {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
+            return (Handler) (Scalar o1) -> {
                 return new Scalar(Math.cos(Math.toRadians(o1.doubleValue())));
             };
         }
@@ -76,8 +76,8 @@ public enum Functions {
     TAN {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(Math.tan(Math.toRadians(o1.doubleValue())), mc);
+            return (Handler) (Scalar o1) -> {
+                return new Scalar(Math.tan(Math.toRadians(o1.doubleValue())));
             };
         }
     },
@@ -87,8 +87,8 @@ public enum Functions {
     ASIN {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(Math.asin(Math.toDegrees(o1.doubleValue())), mc);
+            return (Handler) (Scalar o1) -> {
+                return new Scalar(Math.asin(Math.toDegrees(o1.doubleValue())));
             };
         }
     },
@@ -98,8 +98,8 @@ public enum Functions {
     ATAN {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(Math.atan(Math.toDegrees(o1.doubleValue())), mc);
+            return (Handler) (Scalar o1) -> {
+                return new Scalar(Math.atan(Math.toDegrees(o1.doubleValue())));
             };
         }
     },
@@ -109,8 +109,8 @@ public enum Functions {
     ACOS {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(Math.acos(Math.toDegrees(o1.doubleValue())), mc);
+            return (Handler) (Scalar o1) -> {
+                return new Scalar(Math.acos(Math.toDegrees(o1.doubleValue())));
             };
         }
     },
@@ -120,8 +120,8 @@ public enum Functions {
     SINH {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(Math.sinh(o1.doubleValue()), mc);
+            return (Handler) (Scalar o1) -> {
+                return new Scalar(Math.sinh(o1.doubleValue()));
             };
         }
     },
@@ -131,8 +131,8 @@ public enum Functions {
     COSH {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(Math.cosh(o1.doubleValue()), mc);
+            return (Handler) (Scalar o1) -> {
+                return new Scalar(Math.cosh(o1.doubleValue()));
             };
         }
     },
@@ -142,8 +142,8 @@ public enum Functions {
     TANH {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(Math.tanh(o1.doubleValue()), mc);
+            return (Handler) (Scalar o1) -> {
+                return new Scalar(Math.tanh(o1.doubleValue()));
             };
         }
     },
@@ -153,8 +153,8 @@ public enum Functions {
     RAD {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(Math.toRadians(o1.doubleValue()), mc);
+            return (Handler) (Scalar o1) -> {
+                return new Scalar(Math.toRadians(o1.doubleValue()));
             };
         }
     },
@@ -164,8 +164,8 @@ public enum Functions {
     DEG {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(Math.toDegrees(o1.doubleValue()), mc);
+            return (Handler) (Scalar o1) -> {
+                return new Scalar(Math.toDegrees(o1.doubleValue()));
             };
         }
     },
@@ -175,8 +175,8 @@ public enum Functions {
     ABS {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(o1.abs().value, mc);
+            return (Handler) (Scalar o1) -> {
+                return o1.abs();
             };
         }
     },
@@ -186,7 +186,7 @@ public enum Functions {
     FLOOR {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
+            return (Handler) (Scalar o1) -> {
                 return new Scalar(Math.floor(o1.value));
             };
         }
@@ -197,7 +197,7 @@ public enum Functions {
     CEILING {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
+            return (Handler) (Scalar o1) -> {
                 return new Scalar(Math.ceil(o1.value));
             };
         }
@@ -208,8 +208,8 @@ public enum Functions {
     NEGATE {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(o1.negate().value, mc);
+            return (Handler) (Scalar o1) -> {
+                return o1.negate();
             };
         }
     },
@@ -219,8 +219,8 @@ public enum Functions {
     PLUS {
         @Override
         public Handler get() {
-            return (Handler) (Scalar o1, MathContext mc) -> {
-                return new Scalar(o1.abs().value, mc);
+            return (Handler) (Scalar o1) -> {
+                return o1.abs();
             };
         }
     };

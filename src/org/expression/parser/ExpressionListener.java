@@ -342,6 +342,16 @@ public interface ExpressionListener extends ParseTreeListener {
 	 */
 	void exitFuncParams(ExpressionParser.FuncParamsContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#returnStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturnStatement(ExpressionParser.ReturnStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#returnStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturnStatement(ExpressionParser.ReturnStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ExpressionParser#procedureParams}.
 	 * @param ctx the parse tree
 	 */

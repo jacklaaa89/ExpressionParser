@@ -5,7 +5,7 @@ package org.expression.parser;
 }
 
 start 
-	: (expression|print|assignment|controlStatement|procedure) (expression|print|assignment|controlStatement|procedure)*
+	: (expression|print|assignment|controlStatement|procedure|returnStatement) (expression|print|assignment|controlStatement|procedure|returnStatement)*
 	;
 
 expression
@@ -116,6 +116,10 @@ funcParams
 	: (expr) (COMMA (expr))*
 	;
 
+returnStatement
+	: RETURN expression
+	;
+
 procedureParams
 	: (variable) (COMMA (variable))*
 	;
@@ -146,6 +150,10 @@ funcName
 
 variable
 	: MINUS? (LETTER|E) (LETTER|DIGIT|E)*
+	;
+
+RETURN
+	: 'return'
 	;
 
 FUNCTION
