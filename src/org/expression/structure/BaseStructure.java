@@ -1,6 +1,5 @@
 package org.expression.structure;
 
-import java.math.MathContext;
 import java.util.ArrayList;
 import org.expression.computation.Arithmetic;
 import org.expression.computation.Functions;
