@@ -31,7 +31,9 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.expression.computation.linear.LinearSystemSolver;
+import org.expression.output.ConsoleOutput;
 import org.expression.output.OutputListener;
+import org.expression.parser.ExpressionException;
 import org.expression.parser.ExpressionLexer;
 import org.expression.parser.ExpressionParser;
 import org.expression.structure.Predicate;
@@ -136,6 +138,7 @@ public class Expression {
         this.functions = new HashMap<>();
         this.operators = new HashMap<>();
         this.variables = new HashMap<>();
+        this.listener = new ConsoleOutput();
         
         //Logarithm functions.
         addFunction("log", Functions.LOG);
@@ -873,7 +876,16 @@ public class Expression {
         State s = this.parse();
         
         Visitor ve = new Visitor(functions, operators, variables, listener, s);
-        Context c = ve.visit(s.tree);
+        Context c = null;
+        try {
+            c = ve.visit(s.tree);
+        } catch (ExpressionException e) {
+            if(listener != null) {
+                if(listener.exceptionThrown(e, c)) {;
+                    throw e;
+                }
+            }
+        }
         
         if(c == null) {
             //return an empty context.

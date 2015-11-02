@@ -12,7 +12,6 @@ import org.expression.computation.decomposition.LUDecompositor;
 import org.expression.computation.decomposition.LinearSystemDecompositor;
 import org.expression.computation.decomposition.SingleValueDecomposition;
 import org.expression.computation.inverse.AbstractInverter;
-import org.expression.computation.inverse.LinearSystemInverter;
 import org.expression.computation.linear.AbstractSolver;
 import org.expression.computation.linear.LinearSystemSolver;
 import org.expression.structure.function.MatrixFunction;
@@ -345,16 +344,6 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
         D d = (D) decompositor.get(this);
         d.decompose();
         return d;
-    }
-    
-    /**
-     * Attempts to calculate the inverse of this Matrix.
-     * @param inverter the inverter to use.
-     * @return the inverse matrix if one was able to be calculated.
-     */
-    public  Matrix invert(LinearSystemInverter inverter) {
-        AbstractInverter i = inverter.get(this);
-        return i.inverse();
     }
     
     /**

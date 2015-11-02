@@ -1,4 +1,4 @@
-// Generated from /Users/jacktimblin/ExpressionParser/Expression.g4 by ANTLR 4.5.1
+// Generated from ExpressionParser/Expression.g4 by ANTLR 4.5.1
 
 package org.expression.parser;
 
@@ -25,26 +25,12 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpression(ExpressionParser.ExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code newExpr}
+	 * Visit a parse tree produced by the {@code incDecExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitNewExpr(ExpressionParser.NewExprContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code arrayAccessExpr}
-	 * labeled alternative in {@link ExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArrayAccessExpr(ExpressionParser.ArrayAccessExprContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code funcExpr}
-	 * labeled alternative in {@link ExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFuncExpr(ExpressionParser.FuncExprContext ctx);
+	T visitIncDecExpr(ExpressionParser.IncDecExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code opExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
@@ -53,19 +39,12 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitOpExpr(ExpressionParser.OpExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code ternaryExpr}
+	 * Visit a parse tree produced by the {@code newExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTernaryExpr(ExpressionParser.TernaryExprContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code incDecExpr}
-	 * labeled alternative in {@link ExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitIncDecExpr(ExpressionParser.IncDecExprContext ctx);
+	T visitNewExpr(ExpressionParser.NewExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code atomExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
@@ -81,12 +60,40 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBoolExpr(ExpressionParser.BoolExprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code funcExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFuncExpr(ExpressionParser.FuncExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ternaryExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTernaryExpr(ExpressionParser.TernaryExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code instanceofExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInstanceofExpr(ExpressionParser.InstanceofExprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code parenExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitParenExpr(ExpressionParser.ParenExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code arrayAccessExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayAccessExpr(ExpressionParser.ArrayAccessExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code atomValue}
 	 * labeled alternative in {@link ExpressionParser#atom}.
@@ -100,6 +107,12 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIncDecExpression(ExpressionParser.IncDecExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#instanceOfExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInstanceOfExpression(ExpressionParser.InstanceOfExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ExpressionParser#controlStatement}.
 	 * @param ctx the parse tree
@@ -215,6 +228,18 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitReturnStatement(ExpressionParser.ReturnStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#exceptionStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExceptionStatement(ExpressionParser.ExceptionStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#message}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMessage(ExpressionParser.MessageContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ExpressionParser#procedureParams}.
 	 * @param ctx the parse tree

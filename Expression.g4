@@ -5,7 +5,7 @@ package org.expression.parser;
 }
 
 start 
-	: (expression|print|assignment|controlStatement|procedure|returnStatement) (expression|print|assignment|controlStatement|procedure|returnStatement)*
+	: (expression|print|assignment|controlStatement|procedure|returnStatement|exceptionStatement) (expression|print|assignment|controlStatement|procedure|returnStatement|exceptionStatement)*
 	;
 
 expression
@@ -17,6 +17,7 @@ expr
     | incDecExpression                     #incDecExpr
 	| arrayAccess                          #arrayAccessExpr
 	| LPAREN expr RPAREN                   #parenExpr
+	| instanceOfExpression      		   #instanceofExpr
 	| left=expr op=LOGICAL 		right=expr #boolExpr
 	| left=expr op=POW          right=expr #opExpr
 	| left=expr op=(TIMES|DIV)  right=expr #opExpr
@@ -40,6 +41,11 @@ incDecExpression
 	| func (INCREMENT|DECREMENT)
 	;
 
+instanceOfExpression
+	: NOT LPAREN variable INSTANCE_OF (SCALAR_TYPE|MATRIX_TYPE|ARRAY_TYPE) RPAREN
+	| variable INSTANCE_OF (SCALAR_TYPE|MATRIX_TYPE|ARRAY_TYPE)
+	;
+
 controlStatement
 	: ifStatement
 	| forLoop
@@ -48,11 +54,13 @@ controlStatement
 
 logicalOperation
 	: left=expr op=LOGICAL right=expr
+	| instanceOfExpression
 	;
 
 forcedLogicalOperation
 	: variable LOGICAL expr
 	| expr LOGICAL variable
+	| instanceOfExpression
 	;
 
 newStructure
@@ -120,12 +128,20 @@ returnStatement
 	: RETURN expression
 	;
 
+exceptionStatement
+	: THROWS EXCEPTION LPAREN message RPAREN SEMI_COLON
+	;
+
+message
+	: QUOTE ~('\r'|'\n'|QUOTE)* QUOTE
+	;
+
 procedureParams
 	: (variable) (COMMA (variable))*
 	;
 
 procedure
-	: FUNCTION funcName LPAREN procedureParams RPAREN BLOCKLEFT start? BLOCKRIGHT
+	: FUNCTION funcName LPAREN procedureParams? RPAREN BLOCKLEFT start? BLOCKRIGHT
 	;
 
 array
@@ -152,6 +168,22 @@ variable
 	: MINUS? (LETTER|E) (LETTER|DIGIT|E)*
 	;
 
+INSTANCE_OF
+	: 'instanceof'
+	;
+
+SCALAR_TYPE
+	: 'Scalar'
+	;
+
+MATRIX_TYPE
+	: 'Matrix'
+	;
+
+ARRAY_TYPE
+	: 'Vector'
+	;
+
 RETURN
 	: 'return'
 	;
@@ -162,6 +194,14 @@ FUNCTION
 
 INCREMENT
 	: PLUS PLUS
+	;
+
+THROWS
+	: 'throws'
+	;
+
+EXCEPTION
+	: 'exception'
 	;
 
 DECREMENT
@@ -328,8 +368,16 @@ PRI
 	: 'print'
 	;
 
+NOT
+ 	: '!'
+ 	;
+
 BLOCKLEFT
 	: '{'
+	;
+
+QUOTE
+	: '"'
 	;
 
 BLOCKRIGHT

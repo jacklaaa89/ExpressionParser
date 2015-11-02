@@ -38,6 +38,7 @@ import org.expression.parser.ExpressionParser.AtomValueContext;
 import org.expression.parser.ExpressionParser.ColumnContext;
 import org.expression.parser.ExpressionParser.ElseStatementContext;
 import org.expression.parser.ExpressionParser.ElseifStatementContext;
+import org.expression.parser.ExpressionParser.ExceptionStatementContext;
 import org.expression.parser.ExpressionParser.ExpressionContext;
 import org.expression.parser.ExpressionParser.ForLoopContext;
 import org.expression.parser.ExpressionParser.ForcedLogicalOperationContext;
@@ -45,6 +46,7 @@ import org.expression.parser.ExpressionParser.IfStatementContext;
 import org.expression.parser.ExpressionParser.IncDecExprContext;
 import org.expression.parser.ExpressionParser.IncDecExpressionContext;
 import org.expression.parser.ExpressionParser.IndexContext;
+import org.expression.parser.ExpressionParser.InstanceOfExpressionContext;
 import org.expression.parser.ExpressionParser.LogicalOperationContext;
 import org.expression.parser.ExpressionParser.MatrixContext;
 import org.expression.parser.ExpressionParser.NewExprContext;
@@ -129,6 +131,23 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         
     }
     
+    @Override
+    public Context visitInstanceOfExpression(InstanceOfExpressionContext ctx) {
+        boolean negated = ctx.NOT() != null;
+        Class<?> type = (ctx.ARRAY_TYPE() != null) ? Vector.class : ((ctx.MATRIX_TYPE() != null) ? Matrix.class : Scalar.class);
+        Context c = this.visit(ctx.variable());
+        boolean is = (!negated) ? c.getValue().getClass().equals(type) : !c.getValue().getClass().equals(type);
+        Scalar result = is ? Scalar.ONE : Scalar.ZERO;
+        Token s = ctx.start;
+        return new Context(result, s.getLine(), s.getCharPositionInLine(), this.getFullStatement(ctx));
+    }
+    
+    @Override
+    public Context visitExceptionStatement(ExceptionStatementContext ctx) {
+        String message = this.getFullStatement(ctx.message());
+        throw new ExpressionException(message.trim().substring(1, message.length() - 1));
+    }
+    
     /**
      * Triggered when an assignment statement is visited in the parse tree.
      * Assigns the new variable and stores it in the variables list.
@@ -144,6 +163,10 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         }
         
         Context v = this.visit(ctx.expression());
+        
+        if(v == null || v.isEmptyContext()) {
+            throw new RuntimeException("cannot assign null values as a variable.");
+        }
         
         //determine the index to access.
         List<IndexContext> in = ctx.index();
@@ -290,7 +313,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        
        while(computed.getValue().equals(Scalar.ONE)) {
            if(ctx.start() != null) {
-                v.visit(ctx.start());
+                try {
+                    v.visit(ctx.start());
+                } catch (ExpressionException ex) {
+                    throw ex;
+                }
            }
            t = (ctx.DECREMENT() != null) ? ((Arithmetic)t).decrement() : ((Arithmetic)t).increment();
            var.put(varName, t);
@@ -312,7 +339,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Visitor v = new Visitor(functions, operators, var, listener, state);
        Context computed = v.visit(ctx.forcedLogicalOperation());
        while(computed.getValue().equals(Scalar.ONE)) {
-           v.visit(ctx.start());
+            try {
+                v.visit(ctx.start());
+            } catch (ExpressionException ex) {
+                throw ex;
+            }
            computed = v.visit(ctx.forcedLogicalOperation());
        }
        this.updateExisingValues(var);
@@ -335,6 +366,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     */
    @Override
    public Context visitForcedLogicalOperation(ForcedLogicalOperationContext ctx) {
+       if(ctx.instanceOfExpression() != null) {
+           return this.visit(ctx.instanceOfExpression());
+       }
        boolean isFirst = ctx.variable().start.getCharPositionInLine() == ctx.start.getCharPositionInLine();
        Context left = (isFirst) ? this.visit(ctx.variable()) : this.visit(ctx.expr());
        Context right = (!isFirst) ? this.visit(ctx.variable()) : this.visit(ctx.expr());
@@ -352,6 +386,12 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     */
    @Override
    public Context visitLogicalOperation(LogicalOperationContext ctx) {
+       if(ctx.instanceOfExpression() != null) {
+           return this.visit(ctx.instanceOfExpression());
+       }
+       if(ctx.left == null) {
+           return visitChildren(ctx);
+       }
        Context left = this.visit(ctx.left);
        Context right = this.visit(ctx.right);
        
@@ -426,21 +466,6 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        
    }
    
-   /**
-    * converts a list of terminal nodes which represent a DIGIT
-    * into an array of their int representations.
-    * @param nodes the list of terminal nodes.
-    * @return an array of its int representations.
-    */
-   private int[] convertNodeToInt(List<TerminalNode> nodes) {
-       int[] ints = new int[nodes.size()];
-       for(int i = 0; i < nodes.size(); i++) {
-           Integer in = Integer.parseInt(nodes.get(i).getText());
-           ints[i] = in;
-       }
-       return ints;
-   }
-   
    private HashMap<String, Type> formatVariables(ParserRuleContext ctx) {
        HashMap<String, Type> var = new HashMap<>();
        var.put("TRUE", variables.get("TRUE"));
@@ -479,8 +504,13 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        if(b.equals(Scalar.ONE)) {
            //return the evaluated result from the if.
            if(ctx.start() != null) {
-                Context res = v.visit(ctx.start());
-                this.updateExisingValues(var);
+                Context res = null;
+                try {
+                    res = v.visit(ctx.start());
+                    this.updateExisingValues(var);
+                } catch (ExpressionException ex) {
+                    throw ex;
+                }
                 return res;
            }
            return e;
@@ -498,8 +528,13 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            Scalar es = elseif.getValue();
            if(es.equals(Scalar.ONE)) {
                if(eif.start() != null) {
-                    Context res = v.visit(eif.start());
-                    this.updateExisingValues(var);
+                    Context res = null;
+                    try {
+                        res = v.visit(eif.start());
+                        this.updateExisingValues(var);
+                    } catch (ExpressionException ex) {
+                        throw ex;
+                    }
                     return res;
                }
                return e;
@@ -508,8 +543,13 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        ElseStatementContext elses = ctx.elseStatement();
        if(elses != null) {
            if(elses.start() != null) {
-                Context res = v.visit(elses.start());
-                this.updateExisingValues(var);
+                Context res = null;
+                try {
+                    res = v.visit(elses.start());
+                    this.updateExisingValues(var);
+                } catch (ExpressionException ex) {
+                    throw ex;
+                }
                 return res;
            }
        }
@@ -746,6 +786,8 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     *
     * <p>The default implementation returns the result of calling
     * {@link #visitChildren} on {@code ctx}.</p>
+     * @param ctx
+     * @return 
     */
    @Override 
    public Context visitParenExpr(ParenExprContext ctx) {

@@ -1,4 +1,4 @@
-// Generated from /Users/jacktimblin/ExpressionParser/Expression.g4 by ANTLR 4.5.1
+// Generated from ExpressionParser/Expression.g4 by ANTLR 4.5.1
 
 package org.expression.parser;
 
@@ -30,41 +30,17 @@ public interface ExpressionListener extends ParseTreeListener {
 	 */
 	void exitExpression(ExpressionParser.ExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code newExpr}
+	 * Enter a parse tree produced by the {@code incDecExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterNewExpr(ExpressionParser.NewExprContext ctx);
+	void enterIncDecExpr(ExpressionParser.IncDecExprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code newExpr}
+	 * Exit a parse tree produced by the {@code incDecExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitNewExpr(ExpressionParser.NewExprContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code arrayAccessExpr}
-	 * labeled alternative in {@link ExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterArrayAccessExpr(ExpressionParser.ArrayAccessExprContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code arrayAccessExpr}
-	 * labeled alternative in {@link ExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitArrayAccessExpr(ExpressionParser.ArrayAccessExprContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code funcExpr}
-	 * labeled alternative in {@link ExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterFuncExpr(ExpressionParser.FuncExprContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code funcExpr}
-	 * labeled alternative in {@link ExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitFuncExpr(ExpressionParser.FuncExprContext ctx);
+	void exitIncDecExpr(ExpressionParser.IncDecExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code opExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
@@ -78,29 +54,17 @@ public interface ExpressionListener extends ParseTreeListener {
 	 */
 	void exitOpExpr(ExpressionParser.OpExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code ternaryExpr}
+	 * Enter a parse tree produced by the {@code newExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterTernaryExpr(ExpressionParser.TernaryExprContext ctx);
+	void enterNewExpr(ExpressionParser.NewExprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code ternaryExpr}
+	 * Exit a parse tree produced by the {@code newExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitTernaryExpr(ExpressionParser.TernaryExprContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code incDecExpr}
-	 * labeled alternative in {@link ExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterIncDecExpr(ExpressionParser.IncDecExprContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code incDecExpr}
-	 * labeled alternative in {@link ExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitIncDecExpr(ExpressionParser.IncDecExprContext ctx);
+	void exitNewExpr(ExpressionParser.NewExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code atomExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
@@ -126,6 +90,42 @@ public interface ExpressionListener extends ParseTreeListener {
 	 */
 	void exitBoolExpr(ExpressionParser.BoolExprContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code funcExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterFuncExpr(ExpressionParser.FuncExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code funcExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitFuncExpr(ExpressionParser.FuncExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ternaryExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterTernaryExpr(ExpressionParser.TernaryExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ternaryExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitTernaryExpr(ExpressionParser.TernaryExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code instanceofExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterInstanceofExpr(ExpressionParser.InstanceofExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code instanceofExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitInstanceofExpr(ExpressionParser.InstanceofExprContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code parenExpr}
 	 * labeled alternative in {@link ExpressionParser#expr}.
 	 * @param ctx the parse tree
@@ -137,6 +137,18 @@ public interface ExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitParenExpr(ExpressionParser.ParenExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code arrayAccessExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayAccessExpr(ExpressionParser.ArrayAccessExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code arrayAccessExpr}
+	 * labeled alternative in {@link ExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayAccessExpr(ExpressionParser.ArrayAccessExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code atomValue}
 	 * labeled alternative in {@link ExpressionParser#atom}.
@@ -159,6 +171,16 @@ public interface ExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIncDecExpression(ExpressionParser.IncDecExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#instanceOfExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterInstanceOfExpression(ExpressionParser.InstanceOfExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#instanceOfExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitInstanceOfExpression(ExpressionParser.InstanceOfExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ExpressionParser#controlStatement}.
 	 * @param ctx the parse tree
@@ -351,6 +373,26 @@ public interface ExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitReturnStatement(ExpressionParser.ReturnStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#exceptionStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterExceptionStatement(ExpressionParser.ExceptionStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#exceptionStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitExceptionStatement(ExpressionParser.ExceptionStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#message}.
+	 * @param ctx the parse tree
+	 */
+	void enterMessage(ExpressionParser.MessageContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#message}.
+	 * @param ctx the parse tree
+	 */
+	void exitMessage(ExpressionParser.MessageContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ExpressionParser#procedureParams}.
 	 * @param ctx the parse tree
