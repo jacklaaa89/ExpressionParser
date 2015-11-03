@@ -75,6 +75,10 @@ System.out.println(result); //prints [10, 20, 30]
 
 Variables can also be negated using the `-` operator before the variable name. i.e `var e = [1, 2, 3]; print -e; //prints [-1.0, -2.0, -3.0]`.
 
+#### Variable type checking
+
+Defined variables can have their type checked as a logical expression (where the evaluated result will be a 1 or 0). This can be done using the `instanceof` keyword. So for example: `var a = [1,2,3]; (a instanceof Scalar);` would return 0. As stated above there are 3 different types. `Scalar`, `Vector` & `Matrix`.
+
 ### Syntax
 
 The syntax conventions copy that of other traditional programming languages so it should be quite familiar to use. An expression script can contain one or more expressions terminated with a ';' (semi-colon).

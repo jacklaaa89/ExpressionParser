@@ -2,16 +2,9 @@ package org.expression.computation;
 
 import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.misc.MultiMap;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.antlr.v4.runtime.tree.pattern.ParseTreeMatch;
-import org.antlr.v4.runtime.tree.pattern.ParseTreePattern;
 import org.expression.Context;
 import org.expression.Expression.State;
-import org.expression.parser.ExpressionBaseListener;
-import org.expression.parser.ExpressionParser;
-import org.expression.parser.ExpressionParser.ReturnStatementContext;
+import org.expression.parser.ExpressionException;
 import org.expression.parser.Visitor;
 
 /**
@@ -41,8 +34,12 @@ public class Procedure {
     }
     
     public Context run(final Visitor scope) {
-        Context res = scope.visit(ctx);
-        State s = scope.getState();
+        Context res;
+        try {
+            res = scope.visit(ctx);
+        } catch (ExpressionException ex) {
+            res = ex.getContext();
+        }
         return res;
     }
     

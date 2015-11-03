@@ -229,18 +229,6 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitReturnStatement(ExpressionParser.ReturnStatementContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ExpressionParser#exceptionStatement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitExceptionStatement(ExpressionParser.ExceptionStatementContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ExpressionParser#message}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMessage(ExpressionParser.MessageContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link ExpressionParser#procedureParams}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

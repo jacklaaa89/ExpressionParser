@@ -38,7 +38,6 @@ import org.expression.parser.ExpressionParser.AtomValueContext;
 import org.expression.parser.ExpressionParser.ColumnContext;
 import org.expression.parser.ExpressionParser.ElseStatementContext;
 import org.expression.parser.ExpressionParser.ElseifStatementContext;
-import org.expression.parser.ExpressionParser.ExceptionStatementContext;
 import org.expression.parser.ExpressionParser.ExpressionContext;
 import org.expression.parser.ExpressionParser.ForLoopContext;
 import org.expression.parser.ExpressionParser.ForcedLogicalOperationContext;
@@ -53,6 +52,7 @@ import org.expression.parser.ExpressionParser.NewExprContext;
 import org.expression.parser.ExpressionParser.NewStructureContext;
 import org.expression.parser.ExpressionParser.PrintContext;
 import org.expression.parser.ExpressionParser.ProcedureContext;
+import org.expression.parser.ExpressionParser.ReturnStatementContext;
 import org.expression.parser.ExpressionParser.TernaryContext;
 import org.expression.parser.ExpressionParser.TernaryExprContext;
 import org.expression.parser.ExpressionParser.VariableContext;
@@ -143,9 +143,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     }
     
     @Override
-    public Context visitExceptionStatement(ExceptionStatementContext ctx) {
-        String message = this.getFullStatement(ctx.message());
-        throw new ExpressionException(message.trim().substring(1, message.length() - 1));
+    public Context visitReturnStatement(ReturnStatementContext ctx) {
+        Context c = visit(ctx.expression());
+        throw new ExpressionException(c);
     }
     
     /**
@@ -504,7 +504,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        if(b.equals(Scalar.ONE)) {
            //return the evaluated result from the if.
            if(ctx.start() != null) {
-                Context res = null;
+                Context res;
                 try {
                     res = v.visit(ctx.start());
                     this.updateExisingValues(var);
@@ -565,14 +565,16 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            throw new RuntimeException("function '" + name.toUpperCase() + "' already defined.");
        }
        
-       List<VariableContext> l = ctx.procedureParams().variable();
        List<String> vn = new ArrayList<>();
-       if(!ctx.start().procedure().isEmpty()) {
-           throw new RuntimeException("cannot define a function inside a function.");
-       }
-       
-       for(VariableContext ve : l) {
-           vn.add(ve.getText());
+       if(ctx.procedureParams() != null && !ctx.procedureParams().variable().isEmpty()) {
+            List<VariableContext> l = ctx.procedureParams().variable();
+            if(!ctx.start().procedure().isEmpty()) {
+                throw new RuntimeException("cannot define a function inside a function.");
+            }
+
+            for(VariableContext ve : l) {
+                vn.add(ve.getText());
+            }
        }
        
        Procedure p = new Procedure(name, vn, ctx.start());
@@ -693,10 +695,6 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            }
            return v;
        }
-   }
-   
-   public State getState() {
-       return this.state;
    }
    
    @Override

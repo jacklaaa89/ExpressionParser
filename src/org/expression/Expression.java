@@ -876,14 +876,13 @@ public class Expression {
         State s = this.parse();
         
         Visitor ve = new Visitor(functions, operators, variables, listener, s);
-        Context c = null;
+        Context c;
         try {
             c = ve.visit(s.tree);
         } catch (ExpressionException e) {
+            c = e.getContext();
             if(listener != null) {
-                if(listener.exceptionThrown(e, c)) {;
-                    throw e;
-                }
+                listener.onReturn(c);
             }
         }
         

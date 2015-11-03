@@ -1,7 +1,6 @@
 package org.expression.output;
 
 import org.expression.Context;
-import org.expression.parser.ExpressionException;
 
 /**
  * The default output. Prints the context to the console.
@@ -14,8 +13,7 @@ public class ConsoleOutput implements OutputListener {
     }
 
     @Override
-    public boolean exceptionThrown(ExpressionException e, Context context) {
-        System.err.println(e.getMessage());
-        return true;
+    public void onReturn(Context context) {
+        System.err.println(context);
     }
 }

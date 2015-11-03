@@ -5,7 +5,7 @@ package org.expression.parser;
 }
 
 start 
-	: (expression|print|assignment|controlStatement|procedure|returnStatement|exceptionStatement) (expression|print|assignment|controlStatement|procedure|returnStatement|exceptionStatement)*
+	: (expression|print|assignment|controlStatement|procedure|returnStatement) (expression|print|assignment|controlStatement|procedure|returnStatement)*
 	;
 
 expression
@@ -128,20 +128,12 @@ returnStatement
 	: RETURN expression
 	;
 
-exceptionStatement
-	: THROWS EXCEPTION LPAREN message RPAREN SEMI_COLON
-	;
-
-message
-	: QUOTE ~('\r'|'\n'|QUOTE)* QUOTE
-	;
-
 procedureParams
 	: (variable) (COMMA (variable))*
 	;
 
 procedure
-	: FUNCTION funcName LPAREN procedureParams? RPAREN BLOCKLEFT start? BLOCKRIGHT
+	: FUNCTION funcName LPAREN (procedureParams)? RPAREN BLOCKLEFT start? BLOCKRIGHT
 	;
 
 array

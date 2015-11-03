@@ -16,9 +16,7 @@ public interface OutputListener {
     
     /**
      * Triggered when an exception is thrown in the script.
-     * @param e the exception that was thrown.
      * @param context the context up to the point of the exception.
-     * @return whether the exception should be thrown after this point.
      */
-    public boolean exceptionThrown(ExpressionException e, Context context);
+    public void onReturn(Context context);
 }

@@ -5,12 +5,18 @@
  */
 package org.expression.parser;
 
+import org.expression.Context;
+
 /**
  *
  * @author Jack
  */
 public class ExpressionException extends RuntimeException {
-    public ExpressionException(String message) {
-        super(message);
+    private final Context context;
+    public ExpressionException(Context c) {
+        this.context = c;
+    }
+    public Context getContext() {
+        return context;
     }
 }
