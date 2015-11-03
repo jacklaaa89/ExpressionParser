@@ -1,5 +1,5 @@
 function zeros() {
-	var a = 0;
+	var a = [2,2];
 	//var 'a' should be a Vector.
 	if(!(a instanceof Vector)) {
 		return 0;

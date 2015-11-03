@@ -587,6 +587,8 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     *
     * <p>The default implementation returns the result of calling
     * {@link #visitChildren} on {@code ctx}.</p>
+     * @param ctx
+     * @return 
     */
    @Override 
    public Context visitAtomValue(AtomValueContext ctx) {

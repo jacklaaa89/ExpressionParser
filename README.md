@@ -229,6 +229,29 @@ System.out.println(e.eval());
 //i + n = [3, 4, 5]
 ````
 
+#### Return Statement
+
+Return statements are supported in script and can be used with the `return` keyword. When using a return statement a value has to be returned. For example:
+
+````
+function helloWorld(a) {
+	if(!(a instanceof Scalar)) {
+		return [1,2,3];
+	}
+	[4,5,6]; //the last evaluated statement is returned.
+}
+
+var a = helloWorld(1); //prints [1,2,3];
+var b = helloWorld([1]); //prints [4,5,6];
+
+````
+
+````java
+Expression e = new Expression(new File("/path/to/source/file.ex"));
+System.out.println(e.eval());
+
+````
+
 ### Operations
 
 The core operations that are included are as follows: (Also be aware that these are in the order that the operator takes precedence in the operation.)
