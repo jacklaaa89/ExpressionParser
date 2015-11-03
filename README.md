@@ -241,8 +241,8 @@ function helloWorld(a) {
 	[4,5,6]; //the last evaluated statement is returned.
 }
 
-var a = helloWorld(1); //prints [1,2,3];
-var b = helloWorld([1]); //prints [4,5,6];
+var a = helloWorld(1); //prints [4,5,6];
+var b = helloWorld([1]); //prints [1,2,3];
 
 ````
 

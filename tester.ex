@@ -17,6 +17,15 @@ function zeros() {
 	r; //the last evaluated statement is returned.
 }
 
-var z = zeros();
+function helloWorld(a) {
+    if(!(a instanceof Scalar)) {
+        return [1,2,3];
+    }
+    [4,5,6]; //the last evaluated statement is returned.
+}
 
-z;
+var a = helloWorld(1); //prints [4,5,6];
+var b = helloWorld([1]); //prints [1,2,3];
+
+print a;
+b;
