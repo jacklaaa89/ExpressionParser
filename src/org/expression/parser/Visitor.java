@@ -1,15 +1,20 @@
 package org.expression.parser;
 
+import java.io.File;
+import java.io.IOException;
 import org.expression.computation.Function;
 import org.expression.computation.Operator;
 import org.expression.structure.Matrix;
 import org.expression.structure.Vector;
 import java.math.MathContext;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.antlr.v4.runtime.ANTLRFileStream;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
@@ -42,6 +47,7 @@ import org.expression.parser.ExpressionParser.ExpressionContext;
 import org.expression.parser.ExpressionParser.ForLoopContext;
 import org.expression.parser.ExpressionParser.ForcedLogicalOperationContext;
 import org.expression.parser.ExpressionParser.IfStatementContext;
+import org.expression.parser.ExpressionParser.ImportStatementContext;
 import org.expression.parser.ExpressionParser.IncDecExprContext;
 import org.expression.parser.ExpressionParser.IncDecExpressionContext;
 import org.expression.parser.ExpressionParser.IndexContext;
@@ -53,6 +59,7 @@ import org.expression.parser.ExpressionParser.NewStructureContext;
 import org.expression.parser.ExpressionParser.PrintContext;
 import org.expression.parser.ExpressionParser.ProcedureContext;
 import org.expression.parser.ExpressionParser.ReturnStatementContext;
+import org.expression.parser.ExpressionParser.StartContext;
 import org.expression.parser.ExpressionParser.TernaryContext;
 import org.expression.parser.ExpressionParser.TernaryExprContext;
 import org.expression.parser.ExpressionParser.VariableContext;
@@ -107,6 +114,14 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         this.state = state;
     }
     
+    public Visitor(HashMap<String, Function> functions, 
+            HashMap<String, Operator> operators, 
+            HashMap<String, Type> variables, OutputListener listener, State state,
+            HashMap<String, Procedure> procedures) {
+        this(functions, operators, variables, listener, state);
+        this.procedures = procedures;
+    }
+    
     @Override
     public Context visitNewExpr(NewExprContext ctx) {
         //generate a new vector/matrix with zero values from a certain length.
@@ -146,6 +161,55 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     public Context visitReturnStatement(ReturnStatementContext ctx) {
         Context c = visit(ctx.expression());
         throw new ExpressionException(c);
+    }
+    
+    @Override
+    public Context visitStart(StartContext ctx) {
+        //run any import statements.
+        List<ImportStatementContext> imports = ctx.importStatement();
+        for(ImportStatementContext c : imports) {
+            //get the file.
+            //mutate the file name based on its structure.
+            //if the name starts with a leading '/' it is an absolute location.
+            //if the file has more than one entry ('/more/than/one') and the first entry is
+            //a single letter then that is assumed to be a drive name if we are on windows.
+            String fileName = c.file().getText();
+            boolean isAbsolute = fileName.startsWith("/");
+            String[] fne = (isAbsolute) ? fileName.substring(1).split("/") : fileName.split("/");
+            boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+            if(fne.length > 1 && isWindows && fne[0].length() == 1) {
+                fne[0] = fne[0].toUpperCase()+":";
+                fileName = String.join("/", fne);
+            }
+            
+            File f = new File(File.separator+fileName+".ex");
+            if(!f.exists() || f.isDirectory()) {
+                throw new RuntimeException("cannot located file import: " + f.getAbsolutePath());
+            }
+            try {
+                ANTLRFileStream af = new ANTLRFileStream(f.getAbsolutePath());
+                ExpressionLexer lexer = new ExpressionLexer(af);
+                lexer.removeErrorListeners();
+                lexer.addErrorListener(state.handler);
+                CommonTokenStream tokens = new CommonTokenStream(lexer);
+                ExpressionParser parser = new ExpressionParser(tokens);
+                parser.removeErrorListeners();
+                parser.addErrorListener(state.handler);
+                
+                Visitor v = new Visitor(functions, operators, variables, listener, state, procedures);
+                v.visit(parser.start());
+                
+            } catch (IOException e) {
+                throw new RuntimeException(e.getMessage());
+            }
+        }
+        
+        //run the context of this script.
+        Context c = null;
+        if(ctx.ex() != null) {
+            c = visit(ctx.ex());
+        }
+        return c;
     }
     
     /**
@@ -312,9 +376,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Context computed = v.visit(ctx.forcedLogicalOperation());
        
        while(computed.getValue().equals(Scalar.ONE)) {
-           if(ctx.start() != null) {
+           if(ctx.ex() != null) {
                 try {
-                    v.visit(ctx.start());
+                    v.visit(ctx.ex());
                 } catch (ExpressionException ex) {
                     throw ex;
                 }
@@ -340,7 +404,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Context computed = v.visit(ctx.forcedLogicalOperation());
        while(computed.getValue().equals(Scalar.ONE)) {
             try {
-                v.visit(ctx.start());
+                v.visit(ctx.ex());
             } catch (ExpressionException ex) {
                 throw ex;
             }
@@ -503,10 +567,10 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Scalar b = ifExpression.getValue();
        if(b.equals(Scalar.ONE)) {
            //return the evaluated result from the if.
-           if(ctx.start() != null) {
+           if(ctx.ex() != null) {
                 Context res;
                 try {
-                    res = v.visit(ctx.start());
+                    res = v.visit(ctx.ex());
                     this.updateExisingValues(var);
                 } catch (ExpressionException ex) {
                     throw ex;
@@ -527,10 +591,10 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            }
            Scalar es = elseif.getValue();
            if(es.equals(Scalar.ONE)) {
-               if(eif.start() != null) {
+               if(eif.ex() != null) {
                     Context res = null;
                     try {
-                        res = v.visit(eif.start());
+                        res = v.visit(eif.ex());
                         this.updateExisingValues(var);
                     } catch (ExpressionException ex) {
                         throw ex;
@@ -542,10 +606,10 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        }
        ElseStatementContext elses = ctx.elseStatement();
        if(elses != null) {
-           if(elses.start() != null) {
+           if(elses.ex() != null) {
                 Context res = null;
                 try {
-                    res = v.visit(elses.start());
+                    res = v.visit(elses.ex());
                     this.updateExisingValues(var);
                 } catch (ExpressionException ex) {
                     throw ex;
@@ -568,7 +632,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        List<String> vn = new ArrayList<>();
        if(ctx.procedureParams() != null && !ctx.procedureParams().variable().isEmpty()) {
             List<VariableContext> l = ctx.procedureParams().variable();
-            if(!ctx.start().procedure().isEmpty()) {
+            if(!ctx.ex().procedure().isEmpty()) {
                 throw new RuntimeException("cannot define a function inside a function.");
             }
 
@@ -577,7 +641,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
             }
        }
        
-       Procedure p = new Procedure(name, vn, ctx.start());
+       Procedure p = new Procedure(name, vn, ctx.ex());
        this.procedures.put(name.toUpperCase(), p);
        return null;
    }

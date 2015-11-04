@@ -4,8 +4,21 @@ grammar Expression;
 package org.expression.parser;
 }
 
-start 
+start
+	: importStatement* ex?
+	;
+
+ex 
 	: (expression|print|assignment|controlStatement|procedure|returnStatement) (expression|print|assignment|controlStatement|procedure|returnStatement)*
+	;
+
+
+importStatement
+	: IMPORT file SEMI_COLON
+	;
+
+file
+	: (LETTER|DIGIT|E|'/'|'_'|'-')*
 	;
 
 expression
@@ -72,23 +85,23 @@ ternary
 	;
 
 forLoop
-	: FOR LPAREN assignment forcedLogicalOperation SEMI_COLON (variable (INCREMENT|DECREMENT)) RPAREN BLOCKLEFT start? BLOCKRIGHT
+	: FOR LPAREN assignment forcedLogicalOperation SEMI_COLON (variable (INCREMENT|DECREMENT)) RPAREN BLOCKLEFT ex? BLOCKRIGHT
 	;
 
 whileLoop
-	: WHILE LPAREN forcedLogicalOperation RPAREN BLOCKLEFT start? BLOCKRIGHT
+	: WHILE LPAREN forcedLogicalOperation RPAREN BLOCKLEFT ex? BLOCKRIGHT
 	;
 
 ifStatement
-	: IF LPAREN logicalOperation RPAREN BLOCKLEFT start? BLOCKRIGHT elseifStatement* elseStatement?
+	: IF LPAREN logicalOperation RPAREN BLOCKLEFT ex? BLOCKRIGHT elseifStatement* elseStatement?
 	;
 
 elseifStatement
-	: ELSEIF LPAREN logicalOperation RPAREN BLOCKLEFT start? BLOCKRIGHT
+	: ELSEIF LPAREN logicalOperation RPAREN BLOCKLEFT ex? BLOCKRIGHT
 	;
 
 elseStatement
-	: ELSE BLOCKLEFT start? BLOCKRIGHT
+	: ELSE BLOCKLEFT ex? BLOCKRIGHT
 	;
 
 arrayAccess
@@ -133,7 +146,7 @@ procedureParams
 	;
 
 procedure
-	: FUNCTION funcName LPAREN (procedureParams)? RPAREN BLOCKLEFT start? BLOCKRIGHT
+	: FUNCTION funcName LPAREN (procedureParams)? RPAREN BLOCKLEFT ex? BLOCKRIGHT
 	;
 
 array
@@ -314,6 +327,10 @@ VAR
 
 IF
 	: 'if'
+	;
+
+IMPORT
+	: 'import'
 	;
 
 ELSE

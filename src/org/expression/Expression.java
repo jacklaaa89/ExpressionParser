@@ -863,6 +863,7 @@ public class Expression {
         s.parser = parser;
         s.tree = parser.start();
         s.lexer = lexer;
+        s.handler = handler;
         return s;
     }
     
@@ -930,6 +931,11 @@ public class Expression {
          * The lexer used to generate the parse tree.
          */
         public Lexer lexer;
+        
+        /**
+         * The error handler attached to the lexer and parser.
+         */
+        public ErrorHandler handler;
         
     }
 

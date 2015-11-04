@@ -1,3 +1,5 @@
+import /c/ExpressionParser/hello;
+
 function zeros() {
 	var a = [2,2];
 	//var 'a' should be a Vector.
@@ -15,13 +17,6 @@ function zeros() {
 		}		
 	}
 	r; //the last evaluated statement is returned.
-}
-
-function helloWorld(a) {
-    if(!(a instanceof Scalar)) {
-        return [1,2,3];
-    }
-    [4,5,6]; //the last evaluated statement is returned.
 }
 
 var a = helloWorld(1); //prints [4,5,6];
