@@ -83,6 +83,18 @@ Defined variables can have their type checked as a logical expression (where the
 
 The syntax conventions copy that of other traditional programming languages so it should be quite familiar to use. An expression script can contain one or more expressions terminated with a ';' (semi-colon).
 
+##### Import Statements.
+
+We can use import statements in a script to split up functionality across multiple files. Import statements have to be defined at the start of an script. They are essentially the location of the file without the file extension (which is assumed .ex) with the directory seperator as '/'. if the import starts with a leading '/' it is assumed to be an absolute directory path and if the OS is windows and the first directory is the path is a single letter on an absolute path, this is determined to be a drive letter and is suffixed with a trailing ':'.
+
+For example, for a file located at C:/example/file.ex on a windows machine we would have:
+
+````
+import /c/example/file;
+
+.... rest of script file ....
+````
+
 ##### Assigning Variables.
 
 Variables can be assigned during expression evaluation using the 'var' keyword. Variables can be assigned from any valid expression, i.e a function return, evaluated expression or from another variable. For example:
@@ -623,6 +635,30 @@ Vector v = (Vector) e.eval().getValue();
 System.out.println(v); //prints [12.0, 894.0, 8.260880967445882, 1.0]
 ````
 
+##### 5: Importing a function using an import statement.
+
+````
+//file stored at 'an/example/location.ex'
+function helloWorld(a) {
+	if(a instanceof Scalar) {
+		return [1,2,3];
+	}
+	[4,5,6] //last expression is returned.
+}
+````
+
+````
+import an/example/location;
+
+var a = helloWorld(2); 
+a; //prints [1,2,3];
+````
+
+````java
+Expression e = new Expression(new File("another/source/file.ex"));
+System.out.println(e.eval()); //prints [1,2,3];
+````
+
 ### TODO
 
 There is some functionality that is in the works of being implemented. These are:
@@ -635,3 +671,6 @@ There is some functionality that is in the works of being implemented. These are
 - [x] Ability to change where the `PRINT(expression)` prints its output.
 - [x] Optimize the while/for loops to have a stricter grammar in order to reduce the amount of invalid input.
 - [x] `(-)name` should be treated as a minus of the variable `name` rather than a completely different variable.
+- [x] Allow type checking using instanceof.
+- [x] Implement return statements in scripts.
+- [x] Implement import statements in scripts.
