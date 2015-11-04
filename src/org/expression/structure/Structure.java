@@ -11,7 +11,7 @@ import org.expression.structure.function.Function;
  * @param <F> Type type of function which is applied to this structures elements.
  * @param <E> The entry which this structure accepts when adding columns and rows.
  */
-public interface Structure<T extends Type, F extends Function, E> {
+public interface Structure<T extends Type, F extends Function, E extends Type> {
     /**
      * returns a segment of the current structure.
      * @param start the start dimensions of the segment

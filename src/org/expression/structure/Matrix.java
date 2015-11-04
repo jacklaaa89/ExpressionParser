@@ -11,7 +11,6 @@ import org.expression.computation.decomposition.AbstractDecompositor;
 import org.expression.computation.decomposition.LUDecompositor;
 import org.expression.computation.decomposition.LinearSystemDecompositor;
 import org.expression.computation.decomposition.SingleValueDecomposition;
-import org.expression.computation.inverse.AbstractInverter;
 import org.expression.computation.linear.AbstractSolver;
 import org.expression.computation.linear.LinearSystemSolver;
 import org.expression.structure.function.MatrixFunction;

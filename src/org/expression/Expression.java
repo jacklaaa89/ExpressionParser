@@ -30,6 +30,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.expression.computation.Procedure;
 import org.expression.computation.linear.LinearSystemSolver;
 import org.expression.output.ConsoleOutput;
 import org.expression.output.OutputListener;
@@ -864,6 +865,10 @@ public class Expression {
         s.tree = parser.start();
         s.lexer = lexer;
         s.handler = handler;
+        s.functions = functions;
+        s.listener = listener;
+        s.operators = operators;
+        s.variables = variables;
         return s;
     }
     
@@ -876,7 +881,7 @@ public class Expression {
         
         State s = this.parse();
         
-        Visitor ve = new Visitor(functions, operators, variables, listener, s);
+        Visitor ve = new Visitor(s);
         Context c;
         try {
             c = ve.visit(s.tree);
@@ -914,7 +919,8 @@ public class Expression {
     }
     
     /**
-     * Container class for the parse tree and parser instances.
+     * Container class for the parse tree and parser instances and other variables for 
+     * the current expression.
      */
     public static class State {
         /**
@@ -936,6 +942,50 @@ public class Expression {
          * The error handler attached to the lexer and parser.
          */
         public ErrorHandler handler;
+        
+        /**
+         * The variables in the current scope.
+         */
+        public HashMap<String, Type> variables;
+        
+        /**
+         * The functions in the current scope.
+         */
+        public HashMap<String, Function> functions;
+        
+        /**
+         * The operators in the current scope.
+         */
+        public HashMap<String, Operator> operators;
+        
+        /**
+         * The procedures in the current scope.
+         */
+        public HashMap<String, Procedure> procedures = new HashMap<>();
+        
+        /**
+         * The defined output listener which is triggered on certain parse events.
+         */
+        public OutputListener listener;
+        
+        /**
+         * Copies a new state object from an existing state.
+         * @param state the state object to copy from.
+         * @return the new state object copied from {@code state}
+         */
+        public static State from(State state) {
+            State s = new State();
+            s.functions = state.functions;
+            s.handler = state.handler;
+            s.lexer = state.lexer;
+            s.listener = state.listener;
+            s.operators = state.operators;
+            s.parser = state.parser;
+            s.procedures = state.procedures;
+            s.tree = state.tree;
+            s.variables = state.variables;
+            return s;
+        }
         
     }
 

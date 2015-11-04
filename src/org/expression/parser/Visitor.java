@@ -6,9 +6,7 @@ import org.expression.computation.Function;
 import org.expression.computation.Operator;
 import org.expression.structure.Matrix;
 import org.expression.structure.Vector;
-import java.math.MathContext;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -18,7 +16,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
-import org.antlr.v4.runtime.tree.TerminalNode;
 import org.expression.Context;
 import org.expression.Expression;
 import org.expression.Expression.State;
@@ -86,42 +83,39 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
      */
     private final HashMap<String, Type> variables;
     
-    private HashMap<String, Procedure> procedures;
+    /**
+     * the list of script defined procedures.
+     */
+    private final HashMap<String, Procedure> procedures;
     
     /**
      * The output listener to to trigger when 'print' is called.
      */
     private OutputListener listener;
     
-    private Expression.State state;
+    /**
+     * the current state of the expression variables.
+     */
+    private final Expression.State state;
     
     /**
-     * Initializes a Visitor with all the required variables.
-     * @param functions the list of functions.
-     * @param operators the list of operators.
-     * @param variables the list of assigned variables.
-     * @param listener  the output listener to notify when 'print' is called.
-     * @param state
+     * Initialises a Visitor with all the required variables.
+     * @param state the current state of the expression variables.
      */
-    public Visitor(HashMap<String, Function> functions, 
-            HashMap<String, Operator> operators, 
-            HashMap<String, Type> variables, OutputListener listener, State state) {
-        this.functions = functions;
-        this.operators = operators;
-        this.variables = variables;
-        this.listener = listener;
-        this.procedures = new HashMap<>();
+    public Visitor(State state) {
+        this.functions = state.functions;
+        this.operators = state.operators;
+        this.variables = state.variables;
+        this.listener = state.listener;
+        this.procedures = state.procedures;
         this.state = state;
     }
     
-    public Visitor(HashMap<String, Function> functions, 
-            HashMap<String, Operator> operators, 
-            HashMap<String, Type> variables, OutputListener listener, State state,
-            HashMap<String, Procedure> procedures) {
-        this(functions, operators, variables, listener, state);
-        this.procedures = procedures;
-    }
-    
+    /**
+     * Triggers when a new structure statement is visited in the parse tree.
+     * @param ctx the current context.
+     * @return the evaluated result of the context.
+     */
     @Override
     public Context visitNewExpr(NewExprContext ctx) {
         //generate a new vector/matrix with zero values from a certain length.
@@ -146,6 +140,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         
     }
     
+    /**
+     * Triggers when a 'instanceof' statement is visited in the parse tree.
+     * @param ctx the current context.
+     * @return the evaluated result of the context.
+     */
     @Override
     public Context visitInstanceOfExpression(InstanceOfExpressionContext ctx) {
         boolean negated = ctx.NOT() != null;
@@ -157,12 +156,22 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         return new Context(result, s.getLine(), s.getCharPositionInLine(), this.getFullStatement(ctx));
     }
     
+    /**
+     * Triggers when a return statement is visited in the parse tree.
+     * @param ctx the current context.
+     * @return the evaluated result of the context.
+     */
     @Override
     public Context visitReturnStatement(ReturnStatementContext ctx) {
         Context c = visit(ctx.expression());
         throw new ExpressionException(c);
     }
     
+    /**
+     * Triggers when a 'start' statement is visited in the parse tree.
+     * @param ctx the current context.
+     * @return the evaluated result of the context.
+     */
     @Override
     public Context visitStart(StartContext ctx) {
         //run any import statements.
@@ -195,8 +204,8 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
                 ExpressionParser parser = new ExpressionParser(tokens);
                 parser.removeErrorListeners();
                 parser.addErrorListener(state.handler);
-                
-                Visitor v = new Visitor(functions, operators, variables, listener, state, procedures);
+                state.procedures = procedures;
+                Visitor v = new Visitor(state);
                 v.visit(parser.start());
                 
             } catch (IOException e) {
@@ -277,6 +286,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         return v;
     }
     
+    /**
+     * Triggers when a 'ternary' statement is visited in the parse tree.
+     * @param ctx the current context.
+     * @return the evaluated result of the context.
+     */
     @Override
     public Context visitTernaryExpr(TernaryExprContext ctx) {
         TernaryContext c = ctx.ternary();
@@ -371,7 +385,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Type t = this.variables.get(varName);
        
        HashMap<String, Type> var = this.formatVariables(ctx);
-       Visitor v = new Visitor(functions, operators, var, listener, state);
+       Expression.State s = Expression.State.from(state);
+       s.variables = var;
+       Visitor v = new Visitor(s);
        
        Context computed = v.visit(ctx.forcedLogicalOperation());
        
@@ -400,7 +416,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    @Override
    public Context visitWhileLoop(WhileLoopContext ctx) {
        HashMap<String, Type> var = this.formatVariables(ctx);
-       Visitor v = new Visitor(functions, operators, var, listener, state);
+       Expression.State s = Expression.State.from(state);
+       s.variables = var;
+       Visitor v = new Visitor(s);
        Context computed = v.visit(ctx.forcedLogicalOperation());
        while(computed.getValue().equals(Scalar.ONE)) {
             try {
@@ -530,6 +548,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        
    }
    
+   /**
+    * formats the variables to use in different scopes.
+    * @param ctx the current context.
+    * @return the formatted variables.
+    */
    private HashMap<String, Type> formatVariables(ParserRuleContext ctx) {
        HashMap<String, Type> var = new HashMap<>();
        var.put("TRUE", variables.get("TRUE"));
@@ -546,17 +569,19 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    }
    
    /**
-    * 
-    * @param ctx
-    * @return 
-    */
+     * Triggers when a if/else statement is visited in the parse tree.
+     * @param ctx the current context.
+     * @return the evaluated result of the context.
+     */
    @Override
    public Context visitIfStatement(IfStatementContext ctx) {
        Context e = new Context(null, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
        Context<Scalar> ifExpression = this.visit(ctx.logicalOperation());
        
        HashMap<String, Type> var = this.formatVariables(ctx);
-       Visitor v = new Visitor(functions, operators, var, listener, state);
+       Expression.State s = Expression.State.from(state);
+       s.variables = var;
+       Visitor v = new Visitor(s);
        //it has to equate to boolean true or false (Scalar 1 or 0)
        if(ifExpression == null) {
            throw new IllegalArgumentException("if statement requires an expression to evaluate.");
@@ -620,6 +645,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        return e;
    }
    
+   /**
+     * Triggers when a 'procedure' statement is visited in the parse tree.
+     * @param ctx the current context.
+     * @return the evaluated result of the context.
+     */
    @Override
    public Context visitProcedure(ProcedureContext ctx) {
        //this is a procedure declaration, assign as new function
@@ -647,13 +677,10 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    }
    
    /**
-    * {@inheritDoc}
-    *
-    * <p>The default implementation returns the result of calling
-    * {@link #visitChildren} on {@code ctx}.</p>
-     * @param ctx
-     * @return 
-    */
+     * Triggers when a 'atomValue' statement is visited in the parse tree.
+     * @param ctx the current context.
+     * @return the evaluated result of the context.
+     */
    @Override 
    public Context visitAtomValue(AtomValueContext ctx) {
        
@@ -763,6 +790,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        }
    }
    
+   /**
+     * Triggers when a function definition statement is visited in the parse tree.
+     * @param ctx the current context.
+     * @return the evaluated result of the context.
+     */
    @Override
    public Context visitFuncDefinition(FuncDefinitionContext ctx) {
        //check to see that there is a function with that name, generate the params and 
@@ -802,7 +834,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            for(int i = 0; i < args.size(); i++) {
                sv.put(p.getVariableNames().get(i), args.get(i));
            }
-           Visitor v = new Visitor(functions, operators, sv, listener, state);
+           Expression.State se = Expression.State.from(state);
+           se.variables = sv;
+           Visitor v = new Visitor(se);
            return p.run(v);
        }
        
@@ -823,6 +857,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         }
    }
    
+   /**
+     * Triggers when a 'print' statement is visited in the parse tree.
+     * @param ctx the current context.
+     * @return the evaluated result of the context.
+     */
    @Override
    public Context visitPrint(PrintContext ctx) {
        Context c = this.visit(ctx.expression());
@@ -846,18 +885,20 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    }
    
    /**
-    * {@inheritDoc}
-    *
-    * <p>The default implementation returns the result of calling
-    * {@link #visitChildren} on {@code ctx}.</p>
-     * @param ctx
-     * @return 
-    */
+     * Triggers when a statement is wrapped in parentheses is visited in the parse tree.
+     * @param ctx the current context.
+     * @return the evaluated result of the context.
+     */
    @Override 
    public Context visitParenExpr(ParenExprContext ctx) {
        return this.visit(ctx.expr()); 
    }
    
+   /**
+     * Triggers when a statement is visited in the parse tree.
+     * @param ctx the current context.
+     * @return the evaluated result of the context.
+     */
    @Override
    public Context visitExpression(ExpressionContext ctx) {
        return this.visit(ctx.expr());

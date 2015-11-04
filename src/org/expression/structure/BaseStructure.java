@@ -15,7 +15,7 @@ import org.expression.structure.function.Function;
  * @param <O> The type of Object that will be returned when manipulating the structure.
  * @param <F> The type of Function this Structure will apply to its elements.
  */
-public abstract class BaseStructure<T, O extends Type, F extends Function> extends ArrayList<T> 
+public abstract class BaseStructure<T extends Type, O extends Type, F extends Function> extends ArrayList<T> 
         implements Structure<O, F, T>, Arithmetic<Arithmetic> {
     
     /**

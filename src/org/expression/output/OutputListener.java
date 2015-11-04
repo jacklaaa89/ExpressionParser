@@ -1,7 +1,6 @@
 package org.expression.output;
 
 import org.expression.Context;
-import org.expression.parser.ExpressionException;
 
 /**
  * Interface used to get output from when the 'print' keyword is used.
@@ -15,8 +14,8 @@ public interface OutputListener {
     public void print(Context context);
     
     /**
-     * Triggered when an exception is thrown in the script.
-     * @param context the context up to the point of the exception.
+     * Triggered when an return statement is used in the script.
+     * @param context the returned context.
      */
     public void onReturn(Context context);
 }
