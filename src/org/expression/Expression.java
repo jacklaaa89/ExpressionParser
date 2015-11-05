@@ -132,7 +132,7 @@ public class Expression {
     }
     
     /**
-     * Initializes the Expression class, adding all of the core operations, variables and functions.
+     * Initialises the Expression class, adding all of the core operations, variables and functions.
      */
     private void initialize() {
         //Initialize the data collections.
@@ -853,7 +853,7 @@ public class Expression {
         }
         
         ExpressionLexer lexer = new ExpressionLexer(expression);
-        ErrorHandler handler = new ErrorHandler();
+        ErrorHandler handler = new ErrorHandler(listener);
         lexer.removeErrorListeners();
         lexer.addErrorListener(handler);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -917,77 +917,5 @@ public class Expression {
         }
         return extension.equalsIgnoreCase("ex");
     }
-    
-    /**
-     * Container class for the parse tree and parser instances and other variables for 
-     * the current expression.
-     */
-    public static class State {
-        /**
-         * The parser used to generate the parse tree.
-         */
-        public Parser parser;
-        
-        /**
-         * The generated AST.
-         */
-        public ParseTree tree;
-        
-        /**
-         * The lexer used to generate the parse tree.
-         */
-        public Lexer lexer;
-        
-        /**
-         * The error handler attached to the lexer and parser.
-         */
-        public ErrorHandler handler;
-        
-        /**
-         * The variables in the current scope.
-         */
-        public HashMap<String, Type> variables;
-        
-        /**
-         * The functions in the current scope.
-         */
-        public HashMap<String, Function> functions;
-        
-        /**
-         * The operators in the current scope.
-         */
-        public HashMap<String, Operator> operators;
-        
-        /**
-         * The procedures in the current scope.
-         */
-        public HashMap<String, Procedure> procedures = new HashMap<>();
-        
-        /**
-         * The defined output listener which is triggered on certain parse events.
-         */
-        public OutputListener listener;
-        
-        /**
-         * Copies a new state object from an existing state.
-         * @param state the state object to copy from.
-         * @return the new state object copied from {@code state}
-         */
-        public static State from(State state) {
-            State s = new State();
-            s.functions = state.functions;
-            s.handler = state.handler;
-            s.lexer = state.lexer;
-            s.listener = state.listener;
-            s.operators = state.operators;
-            s.parser = state.parser;
-            s.procedures = state.procedures;
-            s.tree = state.tree;
-            s.variables = state.variables;
-            return s;
-        }
-        
-    }
-
     
 }

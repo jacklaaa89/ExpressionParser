@@ -3,28 +3,24 @@ package org.expression.parser;
 import java.io.File;
 import java.io.IOException;
 import org.expression.computation.Function;
-import org.expression.computation.Operator;
 import org.expression.structure.Matrix;
 import org.expression.structure.Vector;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.expression.Context;
-import org.expression.Expression;
-import org.expression.Expression.State;
+import org.expression.State;
 import org.expression.Scalar;
 import org.expression.Type;
 import org.expression.computation.Arithmetic;
 import org.expression.computation.Procedure;
 import org.expression.output.ConsoleOutput;
-import org.expression.output.OutputListener;
 import org.expression.parser.ExpressionParser.ArrayAccessContext;
 import org.expression.parser.ExpressionParser.ArrayAccessExprContext;
 import org.expression.parser.ExpressionParser.BoolExprContext;
@@ -67,47 +63,16 @@ import org.expression.parser.ExpressionParser.WhileLoopContext;
  * @author Jack Timblin
  */
 public class Visitor extends ExpressionBaseVisitor<Context> {
-    
-    /**
-     * The list of functions available to the parser.
-     */
-    private final HashMap<String, Function> functions;
-    
-    /**
-     * The list of operators available to the parser.
-     */
-    private final HashMap<String, Operator> operators;
-    
-    /**
-     * The list of defined/assigned variables.
-     */
-    private final HashMap<String, Type> variables;
-    
-    /**
-     * the list of script defined procedures.
-     */
-    private final HashMap<String, Procedure> procedures;
-    
-    /**
-     * The output listener to to trigger when 'print' is called.
-     */
-    private OutputListener listener;
-    
     /**
      * the current state of the expression variables.
      */
-    private final Expression.State state;
+    private final State state;
     
     /**
      * Initialises a Visitor with all the required variables.
      * @param state the current state of the expression variables.
      */
     public Visitor(State state) {
-        this.functions = state.functions;
-        this.operators = state.operators;
-        this.variables = state.variables;
-        this.listener = state.listener;
-        this.procedures = state.procedures;
         this.state = state;
     }
     
@@ -204,7 +169,6 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
                 ExpressionParser parser = new ExpressionParser(tokens);
                 parser.removeErrorListeners();
                 parser.addErrorListener(state.handler);
-                state.procedures = procedures;
                 Visitor v = new Visitor(state);
                 v.visit(parser.start());
                 
@@ -231,7 +195,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     public Context visitAssignment(AssignmentContext ctx) {
         boolean isUpdate = ctx.VAR() == null;
         String varName = ctx.variable().getText();
-        if(isUpdate && !this.variables.containsKey(varName)) {
+        if(isUpdate && !state.variables.containsKey(varName)) {
             throw new NullPointerException("can only update initialized variables.");
         }
         
@@ -250,7 +214,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
             indices[i] = ce.getValue().intValue();
         }
         
-        Type t = this.variables.get(varName);
+        Type t = state.variables.get(varName);
         
         if(indices.length > 0) {
             if(indices.length == 1 && t instanceof Vector) {
@@ -282,7 +246,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
             v = new Context(t, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
         }
         
-        this.variables.put(varName, v.getValue());
+        state.variables.put(varName, v.getValue());
         return v;
     }
     
@@ -310,11 +274,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Context left = this.visit(ctx.left);
        Context right = this.visit(ctx.right);
        
-       if(!this.operators.containsKey(ctx.op.getText())) {
+       if(!state.operators.containsKey(ctx.op.getText())) {
            throw new ArithmeticException("undefined operator '"+ctx.op.getText()+"' found");
        }
        
-       return this.operators.get(ctx.op.getText()).evaluate(left, right);
+       return state.operators.get(ctx.op.getText()).evaluate(left, right);
    }
    
    /**
@@ -327,11 +291,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Context left = this.visit(ctx.left);
        Context right = this.visit(ctx.right);
        
-       if(!this.operators.containsKey(ctx.op.getText())) {
+       if(!state.operators.containsKey(ctx.op.getText())) {
            throw new ArithmeticException("undefined operator '"+ctx.op.getText()+"' found");
        }
        
-       return this.operators.get(ctx.op.getText()).evaluate(left, right);
+       return state.operators.get(ctx.op.getText()).evaluate(left, right);
    }
    
    /**
@@ -382,10 +346,10 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        //visit the assignment to add the variable to the variables.
        this.visit(ac);
        String varName = ac.variable().getText();
-       Type t = this.variables.get(varName);
+       Type t = state.variables.get(varName);
        
        HashMap<String, Type> var = this.formatVariables(ctx);
-       Expression.State s = Expression.State.from(state);
+       State s = State.from(state);
        s.variables = var;
        Visitor v = new Visitor(s);
        
@@ -394,6 +358,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        while(computed.getValue().equals(Scalar.ONE)) {
            if(ctx.ex() != null) {
                 try {
+                    if(!ctx.ex().procedure().isEmpty()) {
+                        throw new RuntimeException("cannot define a procedure in a control statement");
+                    }
                     v.visit(ctx.ex());
                 } catch (ExpressionException ex) {
                     throw ex;
@@ -416,12 +383,15 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    @Override
    public Context visitWhileLoop(WhileLoopContext ctx) {
        HashMap<String, Type> var = this.formatVariables(ctx);
-       Expression.State s = Expression.State.from(state);
+       State s = State.from(state);
        s.variables = var;
        Visitor v = new Visitor(s);
        Context computed = v.visit(ctx.forcedLogicalOperation());
        while(computed.getValue().equals(Scalar.ONE)) {
             try {
+                if(!ctx.ex().procedure().isEmpty()) {
+                    throw new RuntimeException("cannot define a procedure in a control statement");
+                }
                 v.visit(ctx.ex());
             } catch (ExpressionException ex) {
                 throw ex;
@@ -433,11 +403,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    }
    
    private void updateExisingValues(HashMap<String, Type> vars) {
-       for(Map.Entry<String, Type> e: vars.entrySet()) {
-           if(this.variables.containsKey(e.getKey())) {
-               this.variables.put(e.getKey(), e.getValue());
-           }
-       }
+       vars.entrySet().stream().filter((e) -> (state.variables.containsKey(e.getKey()))).forEach((e) -> {
+           state.variables.put(e.getKey(), e.getValue());
+        });
    }
    
    /**
@@ -454,11 +422,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        boolean isFirst = ctx.variable().start.getCharPositionInLine() == ctx.start.getCharPositionInLine();
        Context left = (isFirst) ? this.visit(ctx.variable()) : this.visit(ctx.expr());
        Context right = (!isFirst) ? this.visit(ctx.variable()) : this.visit(ctx.expr());
-       if(!this.operators.containsKey(ctx.LOGICAL().getText())) {
+       if(!state.operators.containsKey(ctx.LOGICAL().getText())) {
            throw new ArithmeticException("undefined operator '"+ctx.LOGICAL().getText()+"' found");
        }
        
-       return this.operators.get(ctx.LOGICAL().getText()).evaluate(left, right);
+       return state.operators.get(ctx.LOGICAL().getText()).evaluate(left, right);
    }
    
    /**
@@ -477,11 +445,11 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Context left = this.visit(ctx.left);
        Context right = this.visit(ctx.right);
        
-       if(!this.operators.containsKey(ctx.op.getText())) {
+       if(!state.operators.containsKey(ctx.op.getText())) {
            throw new ArithmeticException("undefined operator '"+ctx.op.getText()+"' found");
        }
        
-       return this.operators.get(ctx.op.getText()).evaluate(left, right);
+       return state.operators.get(ctx.op.getText()).evaluate(left, right);
    }
    
    @Override
@@ -555,15 +523,13 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     */
    private HashMap<String, Type> formatVariables(ParserRuleContext ctx) {
        HashMap<String, Type> var = new HashMap<>();
-       var.put("TRUE", variables.get("TRUE"));
-       var.put("FALSE", variables.get("FALSE"));
-       var.put("PI", variables.get("PI"));
+       var.put("TRUE", state.variables.get("TRUE"));
+       var.put("FALSE", state.variables.get("FALSE"));
+       var.put("PI", state.variables.get("PI"));
        if(!(ctx instanceof FuncDefinitionContext)) {
-           for(Map.Entry<String, Type> e : this.variables.entrySet()) {
-               if(!var.containsKey(e.getKey())) {
-                   var.put(e.getKey(), e.getValue());
-               }
-           }
+           state.variables.entrySet().stream().filter((e) -> (!var.containsKey(e.getKey()))).forEach((e) -> {
+               var.put(e.getKey(), e.getValue());
+           });
        }
        return var;
    }
@@ -579,7 +545,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Context<Scalar> ifExpression = this.visit(ctx.logicalOperation());
        
        HashMap<String, Type> var = this.formatVariables(ctx);
-       Expression.State s = Expression.State.from(state);
+       State s = State.from(state);
        s.variables = var;
        Visitor v = new Visitor(s);
        //it has to equate to boolean true or false (Scalar 1 or 0)
@@ -595,6 +561,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            if(ctx.ex() != null) {
                 Context res;
                 try {
+                    if(!ctx.ex().procedure().isEmpty()) {
+                        throw new RuntimeException("cannot define a procedure in a control statement");
+                    }
                     res = v.visit(ctx.ex());
                     this.updateExisingValues(var);
                 } catch (ExpressionException ex) {
@@ -619,6 +588,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
                if(eif.ex() != null) {
                     Context res = null;
                     try {
+                        if(!eif.ex().procedure().isEmpty()) {
+                            throw new RuntimeException("cannot define a procedure in a control statement");
+                        }
                         res = v.visit(eif.ex());
                         this.updateExisingValues(var);
                     } catch (ExpressionException ex) {
@@ -634,6 +606,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            if(elses.ex() != null) {
                 Context res = null;
                 try {
+                    if(!elses.ex().procedure().isEmpty()) {
+                        throw new RuntimeException("cannot define a procedure in a control statement");
+                    }
                     res = v.visit(elses.ex());
                     this.updateExisingValues(var);
                 } catch (ExpressionException ex) {
@@ -655,7 +630,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        //this is a procedure declaration, assign as new function
        //throw an exception if the procedure already exists.
        String name = ctx.funcName().getText();
-       if(this.procedures.containsKey(name.toUpperCase()) || this.functions.containsKey(name.toUpperCase())) {
+       if(state.procedures.containsKey(name.toUpperCase()) || state.functions.containsKey(name.toUpperCase())) {
            throw new RuntimeException("function '" + name.toUpperCase() + "' already defined.");
        }
        
@@ -666,13 +641,13 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
                 throw new RuntimeException("cannot define a function inside a function.");
             }
 
-            for(VariableContext ve : l) {
+            l.stream().forEach((ve) -> {
                 vn.add(ve.getText());
-            }
+           });
        }
        
        Procedure p = new Procedure(name, vn, ctx.ex());
-       this.procedures.put(name.toUpperCase(), p);
+       state.procedures.put(name.toUpperCase(), p);
        return null;
    }
    
@@ -778,10 +753,10 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
                varName = (isMinus) ? varName.substring(1, varName.length()) : varName;
            }
            //get the variable.   
-           if(!this.variables.containsKey(varName)) {
+           if(!state.variables.containsKey(varName)) {
                throw new ArithmeticException("variable '"+varName+"' is not defined.");
            }
-           Type v = this.variables.get(varName);
+           Type v = state.variables.get(varName);
            //negate this value if we have a minus.
            if(isMinus) {
                v = (Type) ((Arithmetic)v).negate();
@@ -824,9 +799,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         }
        
        //first check for a procedure.
-       if(this.procedures.containsKey(name)) {
+       if(state.procedures.containsKey(name)) {
            //we have a procedure.
-           Procedure p = this.procedures.get(name);
+           Procedure p = state.procedures.get(name);
            if(args.size() != p.getVariableNames().size()) {
                throw new RuntimeException("invalid amount of parameters provided for function: " + p.getName());
            }
@@ -834,17 +809,17 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            for(int i = 0; i < args.size(); i++) {
                sv.put(p.getVariableNames().get(i), args.get(i));
            }
-           Expression.State se = Expression.State.from(state);
+           State se = State.from(state);
            se.variables = sv;
            Visitor v = new Visitor(se);
            return p.run(v);
        }
        
-       if(!this.functions.containsKey(name)) {
+       if(!state.functions.containsKey(name)) {
            throw new ArithmeticException("undefined function '"+name+"' called.");
        }
        
-       Function f = this.functions.get(name);
+       Function f = state.functions.get(name);
         
         if(args.size() < f.getAmountOfExpectedParameters()) {
             throw new RuntimeException("invalid amount of parameters provided for function: " + f.getName());
@@ -865,10 +840,10 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    @Override
    public Context visitPrint(PrintContext ctx) {
        Context c = this.visit(ctx.expression());
-       if(listener == null) {
-           listener = new ConsoleOutput();
+       if(state.listener == null) {
+           state.listener = new ConsoleOutput();
        }
-       listener.print(c);
+       state.listener.print(c);
        return c;
    }
    

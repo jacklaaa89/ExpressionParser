@@ -18,4 +18,12 @@ public interface OutputListener {
      * @param context the returned context.
      */
     public void onReturn(Context context);
+    
+    /**
+     * Triggered when a syntax error occurs in the script.
+     * @param message the error message.
+     * @param line the line where the error occurred.
+     * @param charPositionInLine the position in that line where the error occurred.
+     */
+    public void syntaxError(String message, int line, int charPositionInLine);
 }

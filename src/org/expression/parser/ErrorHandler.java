@@ -7,12 +7,26 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
+import org.expression.output.OutputListener;
 
 /**
  * Handles any syntax errors that occur in parsing the expression.
  * @author Jack Timblin
  */
 public class ErrorHandler implements ANTLRErrorListener {
+    
+    /**
+     * The listener to notify when an error occurs.
+     */
+    private final OutputListener listener;
+    
+    /**
+     * Initialises a new ErrorHandler with a listener to notify.
+     * @param listener the listener to notify on error.
+     */
+    public ErrorHandler(OutputListener listener) {
+        this.listener = listener;
+    }
     
     /**
      * Reports a syntax error when it occurs.
@@ -26,10 +40,11 @@ public class ErrorHandler implements ANTLRErrorListener {
      */
     @Override
     public void syntaxError(Recognizer<?, ?> rcgnzr, Object o, int i, int i1, String string, RecognitionException re) {
-        if(re != null) {
-            throw re;
+        String message = (re != null) ? re.getMessage() : string;
+        if(listener == null) {
+            throw new RuntimeException(string + " on line " + i + ":" + i1);
         }
-        throw new RuntimeException(string + " on line " + i + ":" + i1);
+        listener.syntaxError(message, i, i1);
     }
     
     @Override

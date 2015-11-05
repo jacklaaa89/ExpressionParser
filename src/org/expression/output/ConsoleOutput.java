@@ -13,7 +13,10 @@ public class ConsoleOutput implements OutputListener {
     }
 
     @Override
-    public void onReturn(Context context) {
-        System.err.println(context);
+    public void onReturn(Context context) {}
+
+    @Override
+    public void syntaxError(String message, int line, int charPositionInLine) {
+        throw new RuntimeException("Syntax Error on line: " + line + ", position: " + charPositionInLine);
     }
 }
