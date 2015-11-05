@@ -25,34 +25,89 @@ public class Procedure {
      * The context of this procedure. I.e the body of the function.
      */
     private final ParserRuleContext ctx;
+    
+    /**
+     * The name of the procedure.
+     */
     private final String name;
     
-    public Procedure(String name, List<String> variableNames, ParserRuleContext ctx) {
+    /**
+     * The return type of the procedure, can be nullified.
+     */
+    private Class<?> returnType = null;
+    
+    /**
+     * Initialises A new procedure to use within the script.
+     * @param name the name of the procedure.
+     * @param variableNames the names of the variables that were defined.
+     * @param ctx the scope/context/body of the procedure.
+     * @param returnType any applied return type of this procedure.
+     */
+    public Procedure(
+            String name, 
+            List<String> variableNames, 
+            ParserRuleContext ctx, 
+            Class<?> returnType
+    ) {
         this.variableNames = variableNames;
         this.name = name;
         this.ctx = ctx;
+        this.returnType = returnType;
     }
     
-    public Context run(final Visitor scope) {
+    /**
+     * Run this procedure using a provided visitor.
+     * @param state the provided visitor
+     * @return the context from running this procedures context/body.
+     */
+    public Context run(final State state) {
+        Visitor v = new Visitor(state);
         Context res;
         try {
-            res = scope.visit(ctx);
+            res = v.visit(ctx);
         } catch (ExpressionException ex) {
             res = ex.getContext();
         }
+        
+        if(returnType != null) {
+            if(!res.getValue().getClass().equals(returnType)) {
+                throw new RuntimeException("Invalid return type found. Expected: " + returnType.getSimpleName() + ", Found: " + res.getValue().getClass().getSimpleName());
+            }
+        }
+        
         return res;
     }
     
+    /**
+     * gets the names of the defined variables in this procedure.
+     * @return the list of variable names.
+     */
     public List<String> getVariableNames() {
         return variableNames;
     }
-
+    
+    /**
+     * gets the body/context of this procedure.
+     * @return this procedures context/body.
+     */
     public ParserRuleContext getCtx() {
         return ctx;
     }
-
+    
+    /**
+     * gets the name of this procedure.
+     * @return this procedures declared name.
+     */
     public String getName() {
         return name;
+    }
+    
+    /**
+     * gets this procedures return type. Will be null if there was no return type defined.
+     * @return this procedures return type.
+     */
+    public Class<?> getReturnType() {
+        return this.returnType;
     }
     
 }

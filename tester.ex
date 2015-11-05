@@ -11,9 +11,9 @@ function zeros() {
 		var m = a[0];
 		if(SIZE(a) > 1) {
 			var n = a[1];
-			r = new [m,n];
+			r = new Matrix(m,n);
 		} else {
-			r = new [m];
+			r = new Vector(m);
 		}		
 	}
 	r; //the last evaluated statement is returned.

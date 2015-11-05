@@ -1,6 +1,7 @@
-function helloWorld(a) {
+function helloWorld(a) -> Vector {
     if(!(a instanceof Scalar)) {
         return [1,2,3];
     }
-    [4,5,6]; //the last evaluated statement is returned.
+    var b = new Vector(3);
+    b[0] = 4; b[1] = 5; b[2] = 6;
 }

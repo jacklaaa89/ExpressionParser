@@ -198,6 +198,12 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArrayAccess(ExpressionParser.ArrayAccessContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#type}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitType(ExpressionParser.TypeContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ExpressionParser#print}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -258,6 +264,12 @@ public interface ExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitProcedure(ExpressionParser.ProcedureContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpressionParser#procedureReturnType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProcedureReturnType(ExpressionParser.ProcedureReturnTypeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ExpressionParser#array}.
 	 * @param ctx the parse tree

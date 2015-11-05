@@ -51,10 +51,12 @@ import org.expression.parser.ExpressionParser.NewExprContext;
 import org.expression.parser.ExpressionParser.NewStructureContext;
 import org.expression.parser.ExpressionParser.PrintContext;
 import org.expression.parser.ExpressionParser.ProcedureContext;
+import org.expression.parser.ExpressionParser.ProcedureReturnTypeContext;
 import org.expression.parser.ExpressionParser.ReturnStatementContext;
 import org.expression.parser.ExpressionParser.StartContext;
 import org.expression.parser.ExpressionParser.TernaryContext;
 import org.expression.parser.ExpressionParser.TernaryExprContext;
+import org.expression.parser.ExpressionParser.TypeContext;
 import org.expression.parser.ExpressionParser.VariableContext;
 import org.expression.parser.ExpressionParser.WhileLoopContext;
 
@@ -87,6 +89,12 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
         //get the indices.
         NewStructureContext c = ctx.newStructure();
         
+        //get the type.
+        TypeContext ty = c.type();
+        if(ty.SCALAR_TYPE() != null) {
+            throw new IllegalArgumentException("Cannot construct a scalar as a type.");
+        }
+        
         //determine the index to access.
         List<IndexContext> in = c.index();
 
@@ -100,7 +108,17 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
             indices[i] = v;
         }
         
-        Type t = (indices.length > 1) ? Matrix.zeroes(indices[0], indices[1]) : Vector.zeroes(indices[0]);
+        Type t; 
+        
+        if(ty.ARRAY_TYPE() != null) {
+            t = Vector.zeroes(indices[0]);
+        } else {
+            if(indices.length == 1) {
+                throw new RuntimeException("matrices need two dimension values.");
+            }
+            t = Matrix.zeroes(indices[0], indices[1]);
+        }
+        
         return new Context(t, c.start.getLine(), c.start.getCharPositionInLine(), this.getFullStatement(c));
         
     }
@@ -113,7 +131,8 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     @Override
     public Context visitInstanceOfExpression(InstanceOfExpressionContext ctx) {
         boolean negated = ctx.NOT() != null;
-        Class<?> type = (ctx.ARRAY_TYPE() != null) ? Vector.class : ((ctx.MATRIX_TYPE() != null) ? Matrix.class : Scalar.class);
+        TypeContext t = ctx.type();
+        Class<?> type = (t.ARRAY_TYPE() != null) ? Vector.class : ((t.MATRIX_TYPE() != null) ? Matrix.class : Scalar.class);
         Context c = this.visit(ctx.variable());
         boolean is = (!negated) ? c.getValue().getClass().equals(type) : !c.getValue().getClass().equals(type);
         Scalar result = is ? Scalar.ONE : Scalar.ZERO;
@@ -646,7 +665,15 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            });
        }
        
-       Procedure p = new Procedure(name, vn, ctx.ex());
+       //determine if we have a return type specified for this procedure.
+       ProcedureReturnTypeContext rt = ctx.procedureReturnType();
+       Class<?> returnType = null;
+       if(rt != null) {
+            TypeContext t = rt.type();
+            returnType = (t.ARRAY_TYPE() != null) ? Vector.class : ((t.MATRIX_TYPE() != null) ? Matrix.class : Scalar.class);
+       }
+       
+       Procedure p = new Procedure(name, vn, ctx.ex(), returnType);
        state.procedures.put(name.toUpperCase(), p);
        return null;
    }
@@ -811,8 +838,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            }
            State se = State.from(state);
            se.variables = sv;
-           Visitor v = new Visitor(se);
-           return p.run(v);
+           return p.run(se);
        }
        
        if(!state.functions.containsKey(name)) {

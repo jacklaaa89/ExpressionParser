@@ -503,9 +503,9 @@ function zeros(a) {
 		var m = a[0];
 		if(SIZE(a) > 1) {
 			var n = a[1];
-			r = new [m,n];
+			r = new Matrix(m,n);
 		} else {
-			r = new [m];
+			r = new Vector(m);
 		}		
 	}
 	r; //the last evaluated statement is returned.
@@ -639,7 +639,7 @@ System.out.println(v); //prints [12.0, 894.0, 8.260880967445882, 1.0]
 
 ````
 //file stored at 'an/example/location.ex'
-function helloWorld(a) {
+function helloWorld(a) -> Vector {
 	if(a instanceof Scalar) {
 		return [1,2,3];
 	}

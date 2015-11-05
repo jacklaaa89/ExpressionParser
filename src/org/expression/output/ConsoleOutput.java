@@ -17,6 +17,6 @@ public class ConsoleOutput implements OutputListener {
 
     @Override
     public void syntaxError(String message, int line, int charPositionInLine) {
-        throw new RuntimeException("Syntax Error on line: " + line + ", position: " + charPositionInLine);
+        throw new RuntimeException("Syntax Error on line: " + line + ", position: " + charPositionInLine + "\nMessage: " + message);
     }
 }

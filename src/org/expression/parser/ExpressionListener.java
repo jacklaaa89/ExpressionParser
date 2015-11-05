@@ -322,6 +322,16 @@ public interface ExpressionListener extends ParseTreeListener {
 	 */
 	void exitArrayAccess(ExpressionParser.ArrayAccessContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void enterType(ExpressionParser.TypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void exitType(ExpressionParser.TypeContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ExpressionParser#print}.
 	 * @param ctx the parse tree
 	 */
@@ -423,6 +433,16 @@ public interface ExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitProcedure(ExpressionParser.ProcedureContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#procedureReturnType}.
+	 * @param ctx the parse tree
+	 */
+	void enterProcedureReturnType(ExpressionParser.ProcedureReturnTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#procedureReturnType}.
+	 * @param ctx the parse tree
+	 */
+	void exitProcedureReturnType(ExpressionParser.ProcedureReturnTypeContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ExpressionParser#array}.
 	 * @param ctx the parse tree

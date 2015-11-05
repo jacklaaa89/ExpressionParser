@@ -55,8 +55,8 @@ incDecExpression
 	;
 
 instanceOfExpression
-	: NOT LPAREN variable INSTANCE_OF (SCALAR_TYPE|MATRIX_TYPE|ARRAY_TYPE) RPAREN
-	| variable INSTANCE_OF (SCALAR_TYPE|MATRIX_TYPE|ARRAY_TYPE)
+	: NOT LPAREN variable INSTANCE_OF type RPAREN
+	| variable INSTANCE_OF type
 	;
 
 controlStatement
@@ -77,7 +77,7 @@ forcedLogicalOperation
 	;
 
 newStructure
-	: NEW LBRACE index (COMMA index)? RBRACE
+	: NEW type LPAREN index (COMMA index)? RPAREN
 	;
 
 ternary
@@ -106,6 +106,10 @@ elseStatement
 
 arrayAccess
 	: (func | atom) LBRACE (index (COMMA index)?) RBRACE
+	;
+
+type
+	: (SCALAR_TYPE|MATRIX_TYPE|ARRAY_TYPE)
 	;
 
 print
@@ -146,7 +150,11 @@ procedureParams
 	;
 
 procedure
-	: FUNCTION funcName LPAREN (procedureParams)? RPAREN BLOCKLEFT ex? BLOCKRIGHT
+	: FUNCTION funcName LPAREN (procedureParams)? RPAREN (procedureReturnType)? BLOCKLEFT ex? BLOCKRIGHT
+	;
+
+procedureReturnType
+	: RIGHT_ARROW type
 	;
 
 array
@@ -223,6 +231,10 @@ UNDERSCORE
 
 RBRACE
 	: ']'
+	;
+
+RIGHT_ARROW
+	: '->'
 	;
 
 PLUS
