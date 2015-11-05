@@ -119,7 +119,6 @@ public class Expression {
         if(!source.exists() || source.isDirectory()) {
             throw new RuntimeException("source file must exist.");
         }
-        //TODO - check file extension.
         if(!this.validFileExtension(source)) {
             throw new RuntimeException("invalid file extension.");
         }
@@ -796,6 +795,9 @@ public class Expression {
                 throw new IllegalArgumentException("invalid source location: location is null.");
             }
             throw new IllegalArgumentException("invalid source location: '" + source.getAbsolutePath()+ "'");
+        }
+        if(!this.validFileExtension(source)) {
+            throw new RuntimeException("invalid file extension.");
         }
         try {
             this.expression = new ANTLRFileStream(source.getAbsolutePath());

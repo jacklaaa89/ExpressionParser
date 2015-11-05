@@ -493,7 +493,7 @@ System.out.println(e.setExpression("ZEROS(3,3)").eval()); //prints [0,0,0; 0,0,0
 
 Functions can also be defined in the actual expression script. Functions defined in the script cannot already be defined as a function so they cannot be used to override functions.
 
-To define a function we use the `function` keyword followed by a function definition. For example to define the same function `zeros` in script:
+To define a function we use the `function` keyword followed by a function definition. A function definition is in the form: `function _functionName_ (_functionParam1_, ...)? (-> _returnType_)?`. For example to define the same function `zeros` in script:
 
 ````
 function zeros(a) {

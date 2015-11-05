@@ -813,15 +813,15 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
 
             for(int i = 0; i < expr.size(); i++) {
                 ab[(i)] = expr.get(i);
-             }
+            }
             
-             for(int i = 0; i < ab.length; i++) {
+            for(int i = 0; i < ab.length; i++) {
                  Context c = this.visit(ab[i]);
                  if(c == null) {
                      throw new NullPointerException("function parameters cannot be null.");
                  }
                  args.add(i, this.visit(ab[i]).getValue());
-             }
+            }
              
         }
        
