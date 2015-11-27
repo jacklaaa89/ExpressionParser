@@ -1,0 +1,221 @@
+package org.expression.api;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * A typical route, i.e a URI which can be translated to the Controller/Method to fire.
+ * @author Jack Timblin
+ */
+public class Route {
+    
+    /**
+     * The pattern to match against.
+     */
+    private final Pattern pattern;
+    
+    /**
+     * The string representation of the pattern to match against.
+     */
+    private String stringPattern;
+    
+    /**
+     * The names of the parameter names defined in the pattern.
+     */
+    private List<String> groupNames;
+    
+    /**
+     * The controller name, this can be defined with the route or pulled
+     * from the pattern when the <code>:controller</code> placeholder is found
+     * in the pattern.
+     */
+    private String controller;
+    
+    /**
+     * The action name, this can be defined with the route or pulled
+     * from the pattern when the <code>:action</code> placeholder is found
+     * in the pattern.
+     */
+    private String action;
+    
+    /**
+     * The parameters that were found in the matched route. This is either by custom
+     * named placeholders in the form <code>{name:pattern}</code> or any params at the end of the route when
+     * the <code>:params</code> placeholder is at the end.
+     */
+    private Map<String, Object> params;
+    
+    /**
+     * The package where controllers are defined.
+     */
+    private final String CONTROLLER_PACKAGE = "org.expression.api.controller";
+    
+    /**
+     * The amount of custom placeholders which are allowed in any one pattern.
+     */
+    private final int PARAMETER_LIMIT = 10; 
+    
+    /**
+     * Initialises a Route with a pattern.
+     * @param pattern The pattern to match with.
+     */
+    public Route(String pattern) {
+        this.formatPlaceholders(pattern);
+        this.pattern = Pattern.compile(stringPattern);
+    }
+    
+    /**
+     * Formats the standard <code> :controller, :action, :params placeholders </code>
+     * into usable regular expression groups.
+     * @param pattern the pattern to format.
+     */
+    private void formatPlaceholders(String pattern) {
+        if(!pattern.contains(":controller") && controller == null) {
+            throw new RuntimeException("need a controller");
+        }
+        pattern = pattern.replace(":controller", "(?<controller>[a-zA-Z0-9\\_\\-]+)");
+        List<String> t = new ArrayList<>();
+        t.add("controller");
+        if(pattern.contains(":action")) {
+            pattern = pattern.replace(":action", "(?<action>[a-zA-Z0-9\\_\\-]+)");
+            t.add("action");
+        }
+        if(pattern.contains(":params")) {
+            if(pattern.contains("/:params")) {
+                pattern = pattern.replace("/:params", ":params");
+            }
+            pattern = pattern.replace(":params", "(?<params>/(.*)*)");
+            t.add("params");
+        }
+        this.stringPattern = pattern;
+        this.groupNames = t;
+        String patternRegex = "(\\{([A-Za-z]+):([A-Za-z\\-_+\\[\\]]+)\\})";
+        Pattern p = Pattern.compile(patternRegex);
+        
+        Matcher m = p.matcher(stringPattern);
+        int i = 0;
+        while(m.find()) {
+            if(i < PARAMETER_LIMIT) {
+                String name = m.group(2);
+                String pat = m.group(3);
+                stringPattern = m.replaceFirst("(?<"+name+">"+pat+")");
+                m = p.matcher(stringPattern);
+                groupNames.add(name);
+                i++;
+            }
+        }
+        this.params = new HashMap<>();
+    }
+    
+    /**
+     * Initialises a pattern with a defined action.
+     * @param pattern the pattern to match with.
+     * @param action the action to use.
+     */
+    public Route(String pattern, String action) {
+        this.action = action;
+        this.formatPlaceholders(pattern);
+        this.pattern = Pattern.compile(stringPattern);
+    }
+    
+    /**
+     * Initialises a pattern with a defined action and controller.
+     * @param pattern the pattern to match with.
+     * @param controller the controller to use.
+     * @param action the action to use.
+     */
+    public Route(String pattern, String controller, String action) {
+        this.controller = controller;
+        this.action = action;
+        this.formatPlaceholders(pattern);
+        this.pattern = Pattern.compile(stringPattern);
+        
+    }
+    
+    /**
+     * Determines whether a URI matches this route.
+     * @param uri the URI to match with.
+     * @return <code>TRUE</code> if this route matches the URI, <code>FALSE</code> otherwise.
+     */
+    public boolean matches(String uri) {
+        Matcher m = pattern.matcher(uri);
+        if(!m.matches()) {
+            return false;
+        }
+        
+        if(groupNames.contains("controller") && controller == null) {
+            controller = m.group("controller");
+        }
+        if(groupNames.contains("action") && action == null) {
+            action = m.group("action");
+        }
+        if(groupNames.contains("params")) {
+            String p = m.group("params");
+            if(p != null) {
+                String[] e = p.trim().split("/");
+                String[] d = new String[e.length-1];
+                System.arraycopy(e, 1, d, 0, d.length);
+                List<String> pe = new ArrayList<>();
+                for(int i = 0; i < d.length; i++) {
+                    pe.add(d[i]);
+                }
+                params.put("params", pe);
+            }
+        }
+        groupNames.remove("action");
+        groupNames.remove("params");
+        groupNames.remove("controller");
+        
+        for(String entry : groupNames) {
+            params.put(entry, m.group(entry));
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Gets the params defined in the URI. Should only be called after matching.
+     * @return the matches params.
+     */
+    public Map<String, Object> getParams() {
+        return this.params;
+    }
+    
+    /**
+     * Determines the fully qualified controller class name to use.
+     * This method doesn't check if the class exists.
+     * @return The fully qualified controller name.
+     */
+    public String getControllerName() {
+        if(controller == null) {
+            throw new RuntimeException("Controller is not defined.");
+        }
+        String stripped = controller.replaceAll("[^A-Za-z0-9]", "");
+        String controllerName = stripped.substring(0, 1).toUpperCase() + stripped.substring(1).toLowerCase() + "Controller";
+        return CONTROLLER_PACKAGE + "." + controllerName;
+    }
+    
+    /**
+     * Determines the controller method name to execute.
+     * This method doesn't check if the method exists.
+     * @return The method name.
+     */
+    public String getActionName() {
+        if(action == null) {
+            throw new RuntimeException("Action is not defined.");
+        }
+        String stripped = action.replaceAll("[^A-Za-z0-9]", "");
+        String actionName = stripped.toLowerCase() + "Action";
+        return actionName;
+    }
+    
+    @Override
+    public String toString() {
+        return stringPattern;
+    }
+    
+}

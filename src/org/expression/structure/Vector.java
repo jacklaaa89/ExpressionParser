@@ -2,7 +2,6 @@ package org.expression.structure;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 import org.expression.computation.Arithmetic;
 import org.expression.Coordinate;
 import org.expression.computation.Handler;
