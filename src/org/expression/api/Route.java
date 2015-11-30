@@ -1,11 +1,14 @@
 package org.expression.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.expression.http.Request;
+import org.expression.http.RequestType;
 
 /**
  * A typical route, i.e a URI which can be translated to the Controller/Method to fire.
@@ -43,6 +46,16 @@ public class Route {
     private String action;
     
     /**
+     * The original pattern with original place-holders etc, used in organizing routes.
+     */
+    private String mappedPattern;
+    
+    /**
+     * The Http Method Request types that this route accepts.
+     */
+    private RequestType[] acceptedTypes = { RequestType.GET };
+    
+    /**
      * The parameters that were found in the matched route. This is either by custom
      * named placeholders in the form <code>{name:pattern}</code> or any params at the end of the route when
      * the <code>:params</code> placeholder is at the end.
@@ -68,12 +81,18 @@ public class Route {
         this.pattern = Pattern.compile(stringPattern);
     }
     
+    public Route(String pattern, RequestType[] acceptedTypes) {
+        this(pattern);
+        this.acceptedTypes = acceptedTypes;
+    }
+    
     /**
      * Formats the standard <code> :controller, :action, :params placeholders </code>
      * into usable regular expression groups.
      * @param pattern the pattern to format.
      */
     private void formatPlaceholders(String pattern) {
+        this.mappedPattern = pattern;
         if(!pattern.contains(":controller") && controller == null) {
             throw new RuntimeException("need a controller");
         }
@@ -93,7 +112,7 @@ public class Route {
         }
         this.stringPattern = pattern;
         this.groupNames = t;
-        String patternRegex = "(\\{([A-Za-z]+):([A-Za-z\\-_+\\[\\]]+)\\})";
+        String patternRegex = "(\\{([A-Za-z]+):([A-Za-z0-9\\-_\\+\\[\\]]+)\\})";
         Pattern p = Pattern.compile(patternRegex);
         
         Matcher m = p.matcher(stringPattern);
@@ -122,6 +141,11 @@ public class Route {
         this.pattern = Pattern.compile(stringPattern);
     }
     
+    public Route(String pattern, String action, RequestType[] acceptedTypes) {
+        this(pattern, action);
+        this.acceptedTypes = acceptedTypes;
+    }
+    
     /**
      * Initialises a pattern with a defined action and controller.
      * @param pattern the pattern to match with.
@@ -136,15 +160,25 @@ public class Route {
         
     }
     
+    public Route(String pattern, String controller, String action, RequestType[] acceptedTypes) {
+        this(pattern, controller, action);
+        this.acceptedTypes = acceptedTypes;
+    }
+    
     /**
      * Determines whether a URI matches this route.
-     * @param uri the URI to match with.
+     * @param request the request to match with.
      * @return <code>TRUE</code> if this route matches the URI, <code>FALSE</code> otherwise.
      */
-    public boolean matches(String uri) {
-        Matcher m = pattern.matcher(uri);
+    public boolean matches(Request request) {
+        
+        Matcher m = pattern.matcher(request.getURI());
         if(!m.matches()) {
             return false;
+        }
+        
+        if(!Arrays.asList(acceptedTypes).contains(request.getRequestType())) {
+            return false; //route doesnt match request type.
         }
         
         if(groupNames.contains("controller") && controller == null) {
@@ -197,6 +231,14 @@ public class Route {
         String stripped = controller.replaceAll("[^A-Za-z0-9]", "");
         String controllerName = stripped.substring(0, 1).toUpperCase() + stripped.substring(1).toLowerCase() + "Controller";
         return CONTROLLER_PACKAGE + "." + controllerName;
+    }
+    
+    /**
+     * returns the original pattern which declared this route.
+     * @return the original pattern.
+     */
+    public String getPattern() {
+        return this.mappedPattern;
     }
     
     /**

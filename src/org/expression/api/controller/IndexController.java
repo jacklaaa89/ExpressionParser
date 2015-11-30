@@ -3,6 +3,8 @@ package org.expression.api.controller;
 import java.util.List;
 import org.expression.api.DependencyInjector;
 import org.expression.api.annotation.HttpMethod;
+import org.expression.api.annotation.IncludeParams;
+import org.expression.api.annotation.Variable;
 import org.expression.http.RequestType;
 
 /**
@@ -15,9 +17,9 @@ public class IndexController extends Controller {
         super(di);
     }
     
-    @HttpMethod(types={ RequestType.POST })
+    @IncludeParams
     public String indexAction(List<String> params) {
-        return "This is a response";
+        return "This is a response: " + params.toString(); 
     }
     
 }

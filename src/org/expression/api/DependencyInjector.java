@@ -28,7 +28,7 @@ public class DependencyInjector {
     }
     
     public void set(String name, Service definition, boolean shared) {
-        Object o = (shared) ? definition.definition() : definition;
+        Object o = (shared) ? definition.initialise() : definition;
         services.put(name, o);
     }
     
@@ -48,7 +48,7 @@ public class DependencyInjector {
         T t;
         try {
             if(o instanceof Service) {
-                o = ((Service)o).definition();
+                o = ((Service)o).initialise();
             }
 
             t = (T) o;

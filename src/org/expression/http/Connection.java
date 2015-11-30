@@ -13,6 +13,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import org.expression.api.DependencyInjector;
+import org.expression.api.Dispatcher;
 import org.expression.api.Service;
 
 /**
@@ -40,13 +41,9 @@ public class Connection implements Runnable {
                 lines.add(line);
             }
             final Request req = Request.parseRequest(lines.toArray(new String[] {}));
-            DependencyInjector.getDefault().set("request", new Service() {
-                @Override
-                public Object definition() {
-                    return req;
-                }
-            }, true);
-            responseWriter.append(Response.buildResponse(Request.StatusCode.OK, "OKAY").toString());
+            DependencyInjector.getDefault().set("request", () -> req, true);
+            Dispatcher dispatcher = DependencyInjector.getDefault().get("dispatcher");
+            responseWriter.append(dispatcher.dispatch(req).toString());
             responseWriter.flush();
             socket.close();
         } catch (IOException e) {}
