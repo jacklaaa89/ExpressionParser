@@ -3,9 +3,7 @@ package org.expression.api;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.expression.api.annotation.HttpMethod;
 import org.expression.api.annotation.IncludeParams;
@@ -19,7 +17,9 @@ import org.expression.http.RequestType;
  * The class which is responsible for maintaining and executing routes.
  * @author Jack Timblin
  */
-public class Router {
+public class Router implements EventAware {
+    
+    private EventManager manager;
     
     /**
      * The defined routes.
@@ -51,7 +51,6 @@ public class Router {
         if(useDefaultRouting) {
             this.routes.put("/", new Route("/", "index", "index"));
             this.routes.put("/:controller(/?)", new Route("/:controller(/?)", "index"));
-            this.routes.put("/:controller/:action(/:params)?", new Route("/:controller/:action(/:params)?"));
             this.buildRoutesFromControllers();
         }
     }
@@ -93,7 +92,7 @@ public class Router {
      * Maps a route in this router.
      * @param route the route to map.
      */
-    public void map(Route route) {
+    public synchronized void map(Route route) {
         this.routes.put(route.getPattern(), route);
     }
     
@@ -119,7 +118,8 @@ public class Router {
             ArrayList<Class<?>> clzs = ReflectionHelper.getClassesForPackage(defaultPackage);
             
             //Only get the classes that extend the Controller class.
-            for(Class<?> clz : clzs) {
+            for(int i = 0; i < clzs.size(); i++) {
+                Class<?> clz = clzs.get(i);
                 try {
                     Class<?> casted = clz.asSubclass(Controller.class);
                     if(casted.getSimpleName().equals("Controller") && Modifier.isAbstract(casted.getModifiers())) {
@@ -160,12 +160,21 @@ public class Router {
                                 : ((action.equals("index")) ? "(/" : "/") + action + ((action.equals("index")) ? ")?" : ""));
                         
                         //add the variables.
-                        for(Variable v : variables) {
-                            if(!v.name().equals("params")) {
-                                String iPattern = "{arg_" + v.position() + ":[A-Za-z0-9-_]+}";
-                                pattern += "/" + iPattern;
+                        
+                        for(int i = 0; i < variables.length; i++) {
+                            for(Variable v : variables) {
+                                if(v.position() == i) {
+                                    if(!v.name().equals("params")) {
+                                        String iPattern = "{arg_" + v.position() + ":[A-Za-z0-9-_]+}";
+                                        pattern += "/" + iPattern;
+                                    
+                                    }
+                                    break;
+                                }
                             }
                         }
+                        
+                        
                         
                         for(Variable v : variables) {
                             pattern = pattern.replaceFirst("arg_" + v.position(), v.name());
@@ -185,6 +194,16 @@ public class Router {
     
     public Map<String, Route> getRoutes() {
         return this.routes;
+    }
+
+    @Override
+    public void setEventManager(EventManager manager) {
+        this.manager = manager;
+    }
+
+    @Override
+    public EventManager getEventManager() {
+        return this.manager;
     }
     
 }

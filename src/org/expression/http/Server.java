@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.expression.http;
 
 import java.io.IOException;
@@ -12,16 +7,27 @@ import java.util.concurrent.Executors;
 import java.net.Socket;
 
 /**
- *
- * @author Jack
+ * The server which controls the incoming connections.
+ * @author Jack Timblin
  */
 public class Server {
+    
+    /**
+     * The port which to listen for incoming requests.
+     */
     private final int port;
     
+    /**
+     * Initialises the server.
+     * @param port the port to listen on.
+     */
     public Server(int port) {
         this.port = port;
     }
     
+    /**
+     * Blocks and listens for incoming requests.
+     */
     public void serve() {
         try {
             final ExecutorService service = Executors.newCachedThreadPool();

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.expression.api.DependencyInjector;
 import org.expression.api.Dispatcher;
-import org.expression.api.Service;
+import org.expression.api.exception.DispatchException;
 
 /**
  *
@@ -41,9 +41,18 @@ public class Connection implements Runnable {
                 lines.add(line);
             }
             final Request req = Request.parseRequest(lines.toArray(new String[] {}));
-            DependencyInjector.getDefault().set("request", () -> req, true);
+            DependencyInjector.getDefault().set("request", (DependencyInjector di) -> req, true);
             Dispatcher dispatcher = DependencyInjector.getDefault().get("dispatcher");
-            responseWriter.append(dispatcher.dispatch(req).toString());
+            Response r;
+            try {
+                r = dispatcher.dispatch(req);
+            } catch (DispatchException e) {
+                r = e.getResponse();
+                if(e.getTriggeredException() != null) {
+                    e.getTriggeredException().printStackTrace();
+                }
+            }
+            responseWriter.append(r.toString());
             responseWriter.flush();
             socket.close();
         } catch (IOException e) {}

@@ -1,25 +1,36 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.expression.api;
 
 import java.util.HashMap;
 
 /**
- *
- * @author Jack
- */
+ * Service injector which allows for components in the framework to be easily accessible
+ * throughout the application.
+ * @author Jack Timblin
+*/
 public class DependencyInjector {
     
+    /**
+     * The container for all the services which we can store by name.
+     */
     private final HashMap<String, Object> services;
+    
+    /**
+     * A static global accessible instance of the DependencyInjector.
+     */
     private static DependencyInjector DI;
     
-    public DependencyInjector() {
+    /**
+     * Initialises the DI, setting a default EventManager.
+     */
+    private DependencyInjector() {
         services = new HashMap<>();
+        set("eventManager", new EventManager(), true);
     }
     
+    /**
+     * Access point to this applications DI.
+     * @return this applications DI.
+     */
     public static final DependencyInjector getDefault() {
         if(!(DI instanceof DependencyInjector)) {
             DI = new DependencyInjector();
@@ -27,20 +38,78 @@ public class DependencyInjector {
         return DI;
     }
     
-    public void set(String name, Service definition, boolean shared) {
-        Object o = (shared) ? definition.initialise() : definition;
+    /**
+     * Sets a service to be managed by the DI.
+     * @param name the name of the service.
+     * @param definition the service definition.
+     * @param shared  whether the same instance should be used or a new instance on each
+     * retrieval.
+     */
+    public final void set(String name, Service definition, boolean shared) {
+        Object o = (shared) ? definition.initialise(this) : definition;
         services.put(name, o);
     }
     
-    public void set(String name, Service definition) {
+    /**
+     * Sets a service to be managed by the DI.
+     * @param name the name of the service.
+     * @param definition the service definition.
+     */
+    public final void set(String name, Service definition) {
         set(name, definition, false);
     }
     
-    public void setShared(String name, Service definition) {
+    /**
+     * Sets a shared service to be managed by the DI.
+     * @param name the name of the service.
+     * @param definition the service definition.
+     */
+    public final void setShared(String name, Service definition) {
         set(name, definition, true);
     }
     
-    public <T extends Object> T get(String name) {
+    /**
+     * Sets a service to be managed by the DI.
+     * @param name the name of the service.
+     * @param service the object which this DI will manage.
+     * @param shared  whether the same instance should be used or a new instance on each
+     * retrieval.
+     */
+    public final void set(String name, Object service, boolean shared) {
+        Object o = (shared) ? service : new Service(){
+            @Override
+            public Object initialise(DependencyInjector di) {
+                return service;
+            }
+        };
+        services.put(name, o);
+    }
+    
+    /**
+     * Sets a service to be managed by the DI.
+     * @param name the name of the service.
+     * @param service the object which this DI will manage.
+     */
+    public final void set(String name, Object service) {
+        set(name, (Object) service, false);
+    }
+    
+    /**
+     * Sets a shared service to be managed by the DI.
+     * @param name the name of the service.
+     * @param service the object which this DI will manage.
+     */
+    public final void setShared(String name, Object service) {
+        set(name, (Object) service, true);
+    }
+    
+    /**
+     * Retrieves a service from the DI.
+     * @param <T> The type of object which is being retrieved.
+     * @param name the name of the service.
+     * @return the service or null if no service was found under the {@code name}.
+     */
+    public final <T extends Object> T get(String name) {
         if(!services.containsKey(name)) {
             return null;
         }
@@ -48,12 +117,17 @@ public class DependencyInjector {
         T t;
         try {
             if(o instanceof Service) {
-                o = ((Service)o).initialise();
+                o = ((Service)o).initialise(this);
             }
 
             t = (T) o;
             if(t instanceof InjectionAware) {
                 ((InjectionAware)t).setDI(this);
+            }
+            if(t instanceof EventAware) {
+               if(((EventAware)t).getEventManager() == null) {
+                   ((EventAware)t).setEventManager(get("eventManager"));
+               }
             }
         } catch (ClassCastException e) {
             return null;

@@ -1,12 +1,20 @@
 package org.expression;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import org.expression.api.DependencyInjector;
 import org.expression.api.Dispatcher;
+import org.expression.api.Event;
+import org.expression.api.EventListener;
+import org.expression.api.EventManager;
 import org.expression.api.Route;
 import org.expression.api.Router;
-import org.expression.api.Service;
+import org.expression.api.exception.DispatchException;
 import org.expression.http.Request;
+import org.expression.http.RequestType;
 import org.expression.http.Server;
+import org.expression.http.StatusCode;
 
 /**
  *
@@ -14,13 +22,28 @@ import org.expression.http.Server;
  */
 public class Main {
     public static void main(String[] args) {
-        DependencyInjector.getDefault().set("router", () -> {
+        DependencyInjector.getDefault().set("router", (DependencyInjector di) -> {
             Router r = new Router(true);
+            
+            r.map(new Route("/get-function/{name:[A-Za-z]+}", "get-function", "index"));
+            
             //add custom routes....
             return r;
-        });
-        DependencyInjector.getDefault().set("dispatcher", () -> {
+        }, true);
+        DependencyInjector.getDefault().set("dispatcher", (DependencyInjector di) -> {
             Dispatcher d = new Dispatcher();
+            EventManager em = new EventManager();
+            
+            em.attach("dispatch:beforeDispatch", (EventListener<Dispatcher>) (Event<Dispatcher> event) -> {
+                Dispatcher dis = event.getSource();
+                Request r = dis.getCurrentRequest();
+                if(r.getVersion() != 1.1) {
+                    throw new DispatchException(StatusCode.HTTP_VERSION_NOT_SUPPORTED, "<Invalid HTTP Version>", null);
+                }
+            });
+            
+            d.setEventManager(em);
+            
             return d;
         });
         Server server = new Server(1234);

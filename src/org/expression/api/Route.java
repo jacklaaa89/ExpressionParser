@@ -53,7 +53,7 @@ public class Route {
     /**
      * The Http Method Request types that this route accepts.
      */
-    private RequestType[] acceptedTypes = { RequestType.GET };
+    private RequestType[] acceptedTypes = { RequestType.GET, RequestType.POST };
     
     /**
      * The parameters that were found in the matched route. This is either by custom
@@ -92,7 +92,14 @@ public class Route {
      * @param pattern the pattern to format.
      */
     private void formatPlaceholders(String pattern) {
+        
+        if(pattern.endsWith("/")) {
+            pattern = pattern.substring(0, pattern.length() - 1);
+        }
+        pattern += "(/)?";
+        
         this.mappedPattern = pattern;
+        
         if(!pattern.contains(":controller") && controller == null) {
             throw new RuntimeException("need a controller");
         }
@@ -112,7 +119,7 @@ public class Route {
         }
         this.stringPattern = pattern;
         this.groupNames = t;
-        String patternRegex = "(\\{([A-Za-z]+):([A-Za-z0-9\\-_\\+\\[\\]]+)\\})";
+        String patternRegex = "(\\{([A-Za-z0-9]+):([A-Za-z0-9\\-_\\+\\[\\]]+)\\})";
         Pattern p = Pattern.compile(patternRegex);
         
         Matcher m = p.matcher(stringPattern);
@@ -228,8 +235,18 @@ public class Route {
         if(controller == null) {
             throw new RuntimeException("Controller is not defined.");
         }
-        String stripped = controller.replaceAll("[^A-Za-z0-9]", "");
-        String controllerName = stripped.substring(0, 1).toUpperCase() + stripped.substring(1).toLowerCase() + "Controller";
+        String stripped = controller.replaceAll("[^A-Za-z0-9\\-]", "");
+        
+        //format the spaces to camelCase.
+        String[] spl = stripped.split("\\-");
+        StringBuilder b = new StringBuilder();
+        for(String s : spl) {
+            b.append(s.substring(0, 1).toUpperCase());
+            b.append(s.substring(1, s.length()).toLowerCase());
+        }
+        
+        stripped = b.toString();
+        String controllerName = stripped + "Controller";
         return CONTROLLER_PACKAGE + "." + controllerName;
     }
     
@@ -250,8 +267,18 @@ public class Route {
         if(action == null) {
             throw new RuntimeException("Action is not defined.");
         }
-        String stripped = action.replaceAll("[^A-Za-z0-9]", "");
-        String actionName = stripped.toLowerCase() + "Action";
+        String stripped = action.replaceAll("[^A-Za-z0-9\\-]", "");
+        //format the spaces to camelCase.
+        String[] spl = stripped.split("\\-");
+        StringBuilder b = new StringBuilder();
+        for(String s : spl) {
+            b.append(s.substring(0, 1).toUpperCase());
+            b.append(s.substring(1, s.length()).toLowerCase());
+        }
+        stripped = b.toString();
+        stripped = stripped.substring(0, 1).toLowerCase() + stripped.substring(1, stripped.length());
+        
+        String actionName = stripped + "Action";
         return actionName;
     }
     

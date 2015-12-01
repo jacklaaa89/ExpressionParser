@@ -1,7 +1,8 @@
 package org.expression.http;
 
+import java.util.Arrays;
 import java.util.Iterator;
-import org.expression.http.Request.StatusCode;
+import org.expression.http.StatusCode;
 
 /**
  *
@@ -12,6 +13,7 @@ public class Response extends Core {
     private StatusCode code;
     private String responsePayload;
     private final static String HTTP_VERSION = "1.1";
+    private String statusCodeMessage = null;
     
     private Response() {
         super();
@@ -33,6 +35,22 @@ public class Response extends Core {
         this.responsePayload = response;
     }
     
+    private void setStatusCodeMessage(String statusCodeMessage) {
+        this.statusCodeMessage = statusCodeMessage;
+    }
+    
+    public String getStatusCodeMessage() {
+        String m = code.toString();
+        String[] allowedKeywords = {"OK", "URI"};
+        String[] spl = m.split("_");
+        StringBuilder b = new StringBuilder();
+        for(String s : spl) {
+            b.append(!Arrays.asList(allowedKeywords).contains(s) ? s.substring(0, 1).toUpperCase() + s.substring(1, s.length()).toLowerCase() : s);
+            b.append(" ");
+        }
+        return (statusCodeMessage != null) ? statusCodeMessage : b.toString();
+    }
+    
     private String getFormattedVersion() {
         return "HTTP/" + HTTP_VERSION;
     }
@@ -52,7 +70,7 @@ public class Response extends Core {
          .append(" ")
          .append(getStatusCode().getCode())
          .append(" ")
-         .append(getStatusCode().toString())
+         .append(getStatusCodeMessage())
          .append("\r\n");
         Iterator i = getHeaders();
         while(i.hasNext()) {
@@ -63,12 +81,17 @@ public class Response extends Core {
         return b.toString();
     }
     
-    public static Response buildResponse(StatusCode code, String response, Header... headers) {
+    public static Response buildResponse(StatusCode code, String statusCodeMessage, String response, Header... headers) {
         Response r = new Response();
         r.setStatusCode(code);
         r.setResponse(response);
+        r.setStatusCodeMessage(statusCodeMessage);
         //work with the custom headers.
         return r;
+    }
+    
+    public static Response buildResponse(StatusCode code, String response, Header... headers) {
+        return Response.buildResponse(code, null, response, headers);
     }
     
 }
