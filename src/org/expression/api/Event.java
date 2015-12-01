@@ -22,24 +22,53 @@ public class Event<T> {
     private final Exception e;
     
     /**
-     * Initialises an Event.
-     * @param source the source object.
-     * @param eventTriggered the event that was triggered.
-     * @param exception any exception attached to this event.
+     * Whether this Event can be cancelled.
      */
-    public Event(T source, String eventTriggered, Exception exception) {
-        this.source = source;
-        this.eventTriggered = eventTriggered;
-        this.e = exception;
-    }
+    private final boolean isCancellable;
+    
+    /**
+     * Whether this event has been stopped.
+     */
+    private boolean isStopped = false;
     
     /**
      * Initialises an Event.
      * @param source the source object.
      * @param eventTriggered the event that was triggered.
+     * @param exception any exception attached to this event.
+     * @param isCancellable whether this event can be cancelled.
      */
-    public Event(T source, String eventTriggered) {
-        this(source, eventTriggered, null);
+    public Event(T source, String eventTriggered, Exception exception, boolean isCancellable) {
+        this.source = source;
+        this.eventTriggered = eventTriggered;
+        this.e = exception;
+        this.isCancellable = isCancellable; 
+    }
+    
+    /**
+     * Determine if this event is cancellable, i.e event propagation can be stopped.
+     * @return true if event propagation can be cancelled, false otherwise. 
+     */
+    public boolean isCancellable() {
+        return this.isCancellable;
+    }
+    
+    /**
+     * Attempts to stop event propagation from this event.
+     */
+    public void stop() {
+        if(!this.isCancellable()) {
+            throw new RuntimeException("This event is not cancellable");
+        }
+        this.isStopped = true;
+    }
+    
+    /**
+     * Determines if event propagation has been stopped.
+     * @return true if it has been stopped, false otherwise.
+     */
+    public boolean isStopped() {
+        return this.isStopped;
     }
     
     /**

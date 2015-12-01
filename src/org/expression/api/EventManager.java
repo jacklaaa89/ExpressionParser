@@ -17,10 +17,29 @@ public class EventManager {
     private final Map<String, List<EventListener>> triggers;
     
     /**
+     * Whether the EventManager should collect responses from event triggers.
+     */
+    private boolean collectResponses = false;
+    
+    /**
+     * The valid responses from event triggers.
+     */
+    private final ArrayList<Object> responses;
+    
+    /**
      * Initialises the EventManager.
      */
     public EventManager() {
         this.triggers = new HashMap<>();
+        responses = new ArrayList<>();
+    }
+    
+    public boolean isCollectingResponses() {
+        return this.collectResponses;
+    }
+    
+    public void collectResponses(boolean collectResponses) {
+        this.collectResponses = collectResponses;
     }
     
     /**
@@ -39,37 +58,56 @@ public class EventManager {
      * @param event the event to fire.
      * @param source the source object.
      * @param ex any attached exception for this event.
+     * @param isCancellable whether the event can be cancelled.
      */
-    public void fire(String event, Object source, Exception ex) {
+    public void fire(
+            String event, 
+            Object source, 
+            Exception ex, 
+            boolean isCancellable) {
+        responses.clear(); //remove all old responses.
         String[] e = (event.contains(":")) ? event.trim().split(":") : new String[] {event};
         if(e.length == 0) {
             return;
         }
         
-        Event ev = new Event(source, event, ex);
+        Event ev = new Event(source, event, ex, isCancellable);
         String namespace = e[0];
         
         if(triggers.containsKey(namespace)) {
             for(EventListener el : triggers.get(namespace)) {
-                el.eventTriggered(ev);
+                Object re = el.eventTriggered(ev);
+                if(isCollectingResponses() && re != null) {
+                    responses.add(re);
+                }
+                if(ev.isStopped()) {
+                    break;
+                }
             }
         }
-        
-        if(triggers.containsKey(event)) {
-            for(EventListener el : triggers.get(event)) {
-                el.eventTriggered(ev);
+        if(!ev.isStopped()) {
+            if(triggers.containsKey(event)) {
+                for(EventListener el : triggers.get(event)) {
+                    Object re = el.eventTriggered(ev);
+                    if(isCollectingResponses() && re != null) {
+                        responses.add(re);
+                    }
+                    if(ev.isStopped()) {
+                        break;
+                    }
+                }
             }
         }
         
     }
     
     /**
-     * Fires an event.
-     * @param event the event to fire.
-     * @param source the source object.
+     * Gets any collected responses, will return an empty list if no valid responses
+     * were collected or collect response is not true.
+     * @return the list of responses.
      */
-    public void fire(String event, Object source) {
-        fire(event, source, null);
+    public ArrayList<Object> getResponses() {
+        return responses;
     }
     
     @Override

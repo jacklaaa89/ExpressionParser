@@ -19,17 +19,15 @@ import org.expression.http.RequestType;
  */
 public class Router implements EventAware {
     
+    /**
+     * The EventManager instance.
+     */
     private EventManager manager;
     
     /**
      * The defined routes.
      */
     private final Map<String, Route> routes;
-    
-    /**
-     * The route to use when nothing matches.
-     */
-    private Route notFoundRoute = null;
     
     /**
      * Whether to use the default routing strategy or not. 
@@ -61,16 +59,6 @@ public class Router implements EventAware {
     }
     
     /**
-     * Initialises a router.
-     * @param useDefault whether we use use the default routing strategy or not.
-     * @param notFound the route to use if no other route matches the request.
-     */
-    public Router(boolean useDefault, Route notFound) {
-        this(useDefault);
-        this.notFoundRoute = notFound;
-    }
-    
-    /**
      * Attempts to match the Request to a Route.
      * @param request the request to match.
      * @return a Route on a successful match or null if no match was found and
@@ -88,10 +76,6 @@ public class Router implements EventAware {
         
         if(defaultRoute.matches(request) && this.useDefaultRouting) { //only active if set.
             return defaultRoute;
-        }
-        
-        if(notFoundRoute != null) {
-            return notFoundRoute;
         }
         
         return null;
@@ -215,6 +199,10 @@ public class Router implements EventAware {
         } catch(ClassNotFoundException e) {}
     }
     
+    /**
+     * Gets the list of defined routes in this router.
+     * @return the list of routes.
+     */
     public Map<String, Route> getRoutes() {
         return this.routes;
     }

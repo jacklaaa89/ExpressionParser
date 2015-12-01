@@ -48,7 +48,7 @@ public class Dispatcher implements InjectionAware, EventAware {
         currentRequest = request;
         
         try {
-            manager.fire("dispatch:beforeDispatch", this);
+            manager.fire("dispatch:beforeDispatch", this, null, true);
         } catch (DispatchException e) {
             throw e;
         }
@@ -57,10 +57,18 @@ public class Dispatcher implements InjectionAware, EventAware {
         Route matched = router.match(request);
                 
         if(matched == null) {
-            throw new DispatchException(StatusCode.NOT_FOUND, "<Could not locate controller/action>", null);
+            DispatchException ex = new DispatchException(StatusCode.NOT_FOUND, "<Could not locate controller/action>", null);
+            manager.fire("dispatch:beforeNotFound", this, ex, true);
+            if(manager.isCollectingResponses()) {
+                ArrayList<Object> responses = manager.getResponses();
+                for(Object entry : responses) {
+                    if(entry instanceof Response) {
+                        return (Response) entry;
+                    }
+                }
+            }
+            throw ex;
         }
-        
-        System.out.println(matched.getControllerName());
         
         String controller = matched.getControllerName();
         
@@ -177,16 +185,27 @@ public class Dispatcher implements InjectionAware, EventAware {
             Response res = (response instanceof Response) ? (Response) response : Response.buildResponse(StatusCode.OK, null, (String) response);
             
             try {
-                manager.fire("dispatch:afterDispatch", this);
+                manager.fire("dispatch:afterDispatch", this, null, true);
             } catch (DispatchException e) {
                 throw e;
             }
             
             return res;
-        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | 
-                IllegalAccessException | InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new DispatchException(StatusCode.NOT_FOUND, "<Could not locate action>", e);
-        } 
+        } catch (ClassNotFoundException | NoSuchMethodException ex) {
+            DispatchException dex = new DispatchException(StatusCode.NOT_FOUND, "<Could not locate controller/action>", ex);
+            manager.fire("dispatch:beforeNotFound", this, dex, true);
+            if(manager.isCollectingResponses()) {
+                ArrayList<Object> responses = manager.getResponses();
+                for(Object entry : responses) {
+                    if(entry instanceof Response) {
+                        return (Response) entry;
+                    }
+                }
+            }
+            throw dex;
+        }
         
     }
 

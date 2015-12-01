@@ -10,7 +10,9 @@ public interface EventListener<T> {
     /**
      * Triggered when an attached event is fired.
      * @param event the event that was fired.
+     * @return Any object which needs to be collected, returning null avoids an object to be 
+     * collected.
      * @throws DispatchException if the event should stop execution at this point.
      */
-    public void eventTriggered(Event<T> event) throws DispatchException;
+    public Object eventTriggered(Event<T> event) throws DispatchException;
 }

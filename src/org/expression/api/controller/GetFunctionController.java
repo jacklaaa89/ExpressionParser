@@ -1,6 +1,8 @@
 package org.expression.api.controller;
 
+import java.util.List;
 import org.expression.api.DependencyInjector;
+import org.expression.api.annotation.IncludeParams;
 import org.expression.api.annotation.Variable;
 
 /**
@@ -14,8 +16,9 @@ public class GetFunctionController extends Controller {
     }
     
     @Variable(name="name",position=0)
-    public String indexAction(String name) {
-        return "The name is: " + name;
+    @IncludeParams
+    public String indexAction(String name, List<String> params) {
+        return name + ": " + params.toString();
     }
     
 }
