@@ -19,7 +19,7 @@ public class Route {
     /**
      * The pattern to match against.
      */
-    private final Pattern pattern;
+    private Pattern pattern;
     
     /**
      * The string representation of the pattern to match against.
@@ -78,9 +78,13 @@ public class Route {
      */
     public Route(String pattern) {
         this.formatPlaceholders(pattern);
-        this.pattern = Pattern.compile(stringPattern);
     }
     
+    /**
+     * Initialises a Route with a pattern.
+     * @param pattern The pattern to match with.
+     * @param acceptedTypes the accepted HTTP request types.
+     */
     public Route(String pattern, RequestType[] acceptedTypes) {
         this(pattern);
         this.acceptedTypes = acceptedTypes;
@@ -135,40 +139,32 @@ public class Route {
             }
         }
         this.params = new HashMap<>();
+        this.pattern = Pattern.compile(stringPattern);
     }
     
     /**
      * Initialises a pattern with a defined action.
      * @param pattern the pattern to match with.
-     * @param action the action to use.
+     * @param routeDetails details of the controller and action.
      */
-    public Route(String pattern, String action) {
-        this.action = action;
+    public Route(String pattern, String...routeDetails) {
+        if(routeDetails.length > 0) {
+            controller = routeDetails[0];
+            if(routeDetails.length > 1) {
+                action = routeDetails[1];
+            }
+        }
         this.formatPlaceholders(pattern);
-        this.pattern = Pattern.compile(stringPattern);
-    }
-    
-    public Route(String pattern, String action, RequestType[] acceptedTypes) {
-        this(pattern, action);
-        this.acceptedTypes = acceptedTypes;
     }
     
     /**
-     * Initialises a pattern with a defined action and controller.
+     * Initialises a pattern with a defined action.
      * @param pattern the pattern to match with.
-     * @param controller the controller to use.
-     * @param action the action to use.
+     * @param acceptedTypes the HTTP methods this route accepts.
+     * @param routeDetails details of the controller and action.
      */
-    public Route(String pattern, String controller, String action) {
-        this.controller = controller;
-        this.action = action;
-        this.formatPlaceholders(pattern);
-        this.pattern = Pattern.compile(stringPattern);
-        
-    }
-    
-    public Route(String pattern, String controller, String action, RequestType[] acceptedTypes) {
-        this(pattern, controller, action);
+    public Route(String pattern, RequestType[] acceptedTypes, String... routeDetails) {
+        this(pattern, routeDetails);
         this.acceptedTypes = acceptedTypes;
     }
     

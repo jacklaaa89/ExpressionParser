@@ -42,6 +42,11 @@ public class Router implements EventAware {
     private Request currentRequest;
     
     /**
+     * The default /controller/action/params route, needs to be attempted last.
+     */
+    private final Route defaultRoute = new Route("/:controller/:action(/:params)?(/)?");
+    
+    /**
      * Initialises a router.
      * @param useDefault whether we use use the default routing strategy or not.
      */
@@ -49,8 +54,9 @@ public class Router implements EventAware {
         routes = new HashMap<>();
         this.useDefaultRouting = useDefault;
         if(useDefaultRouting) {
-            this.routes.put("/", new Route("/", "index", "index"));
-            this.routes.put("/:controller(/?)", new Route("/:controller(/?)", "index"));
+            
+            this.map(new Route("/", "index", "index"));
+            this.map(new Route("/:controller(/?)", (String) null, "index"));
             this.buildRoutesFromControllers();
         }
     }
@@ -81,6 +87,10 @@ public class Router implements EventAware {
             }
         }
         
+        if(defaultRoute.matches(request) && this.useDefaultRouting) { //only active if set.
+            return defaultRoute;
+        }
+        
         if(notFoundRoute != null) {
             return notFoundRoute;
         }
@@ -92,7 +102,7 @@ public class Router implements EventAware {
      * Maps a route in this router.
      * @param route the route to map.
      */
-    public synchronized void map(Route route) {
+    public final synchronized void map(Route route) {
         this.routes.put(route.getPattern(), route);
     }
     
@@ -184,7 +194,7 @@ public class Router implements EventAware {
                         boolean containsParams = include.length > 0;
                         
                         pattern += (containsParams) ? "(/:params)?" : "(/)?";
-                        this.map(new Route(pattern, controller, action, types));
+                        this.map(new Route(pattern, types, controller, action));
                     }
                 }
             }
