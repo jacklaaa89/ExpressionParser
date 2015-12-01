@@ -54,7 +54,6 @@ public class Router implements EventAware {
         routes = new HashMap<>();
         this.useDefaultRouting = useDefault;
         if(useDefaultRouting) {
-            
             this.map(new Route("/", "index", "index"));
             this.map(new Route("/:controller(/?)", (String) null, "index"));
             this.buildRoutesFromControllers();
@@ -120,7 +119,21 @@ public class Router implements EventAware {
     }
     
     /**
-     * Builds routes from controllers .
+     * Generates All Available Routes that have been defined in Controller classes using Reflection.
+     * It uses the special HttpMethod and Variable annotations to define the route.
+     * So for example: 
+     * <br/>
+     * <code>
+     * public class GetFunctionController extends Controller {<br/>
+     *      //more code...<br/>
+     *      /@Variable(name="name",position=0)<br/>
+     *      public String listAction(String name) {<br/>
+     *          //action code...<br/>
+     *      }<br/>
+     *      //more code...<br/>
+     * }<br/>
+     * </code>
+     * Parsing the code above would produce the route "/get-function/list/{name:[A-Za-z0-9_\\-]+}(/)?"
      */
     private void buildRoutesFromControllers() {
         String defaultPackage = "org.expression.api.controller";
