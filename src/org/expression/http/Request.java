@@ -49,6 +49,50 @@ public class Request extends Core {
         return hs.iterator();
     }
     
+    /**
+     * Determines whether this request is of a certain HTTP Method.
+     * @param type the request type.
+     * @return true if this request is if {@code type}, false otherwise.
+     */
+    public boolean is(RequestType type) {
+        return this.requestType == type;
+    }
+    
+    /**
+     * Determines if this request is a HTTP POST request.
+     * @return true if this request is post, false otherwise.
+     */
+    public boolean isPost() {
+        return is(RequestType.POST);
+    }
+    
+    /**
+     * Determines if this request is a HTTP GET request.
+     * @return true if this request is post, false otherwise.
+     */
+    public boolean isGet() {
+        return is(RequestType.GET);
+    }
+    
+    /**
+     * Sets the request payload for this request, this is only valid for
+     * certain types of request so we need to parse and determine the HTTP method
+     * before attempting to retrieve the payload.
+     * @param payload the data with the request.
+     */
+    protected void setRequestPayload(String payload) {
+        this.requestPayload = payload;
+    }
+    
+    /**
+     * Gets the currently set request payload. This will be an empty string
+     * if no payload was set or the method is not applicable to receive a payload.
+     * @return the request payload.
+     */
+    public String getRequestPayload() {
+        return this.requestPayload;
+    }
+    
     public Parameter getQueryParam(String name) {
         if(!this.hasQueryParam(name)) {
             return null;

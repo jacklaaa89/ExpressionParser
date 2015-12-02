@@ -2,7 +2,6 @@ package org.expression.http;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import org.expression.http.StatusCode;
 
 /**
  *
@@ -87,6 +86,9 @@ public class Response extends Core {
         r.setResponse(response);
         r.setStatusCodeMessage(statusCodeMessage);
         //work with the custom headers.
+        for(Header h : headers) {
+            r.setHeader(h.getName(), h.getValue());
+        }
         return r;
     }
     

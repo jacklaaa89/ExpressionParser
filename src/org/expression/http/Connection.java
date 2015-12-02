@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.expression.http;
 
 import java.io.BufferedReader;
@@ -41,6 +36,22 @@ public class Connection implements Runnable {
                 lines.add(line);
             }
             final Request req = Request.parseRequest(lines.toArray(new String[] {}));
+            
+            StringBuilder body = new StringBuilder();
+            if(req.isPost() || req.is(RequestType.PUT) || req.is(RequestType.PATCH)) {
+                if(!req.hasHeader("Content-Length")) {
+                    throw new RuntimeException("Content-Length is required.");
+                }
+                int contentLength = Integer.parseInt(req.getHeader("Content-Length").getValue());
+                int c = 0;
+                for(int i = 0; i < contentLength; i++) {
+                    c = requestReader.read();
+                    body.append((char)c);
+                }
+            }
+            
+            req.setRequestPayload(body.toString());
+            
             DependencyInjector.getDefault().set("request", (DependencyInjector di) -> req, true);
             Dispatcher dispatcher = DependencyInjector.getDefault().get("dispatcher");
             Response r;
