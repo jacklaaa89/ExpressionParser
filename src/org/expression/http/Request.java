@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.expression.http.data.Data;
+import org.expression.http.data.Format;
 
 /**
  *
@@ -14,6 +16,8 @@ public class Request extends Core {
     
     private static final String DEFAULT_HTTP_VERSION = "1.1";
     private String version = DEFAULT_HTTP_VERSION;
+    private static final FormatType DEFAULT_FORMAT = FormatType.XML;
+    private FormatType format = DEFAULT_FORMAT;
     
     private final Map<String, Parameter> params;
     private String requestPayload = null;
@@ -25,7 +29,6 @@ public class Request extends Core {
         //set the default headers, request type and status code.
         requestType = RequestType.GET;
         params = new HashMap<>();
-        
     }
     
     private void setQueryParam(String name, String value) {
@@ -100,11 +103,17 @@ public class Request extends Core {
         return params.get(name);
     }
     
+    public FormatType getFormatType() {
+        return this.format;
+    }
+    
+    private void setFormatType(FormatType type) {
+        this.format = type;
+    }
+    
     public boolean hasQueryParam(String name) {
         return params.containsKey(name);
     }
-    
-    
     
     public double getVersion() {
         return Double.parseDouble(this.version);
@@ -112,6 +121,26 @@ public class Request extends Core {
     
     public String getFormattedVersion() {
         return "HTTP/" + this.version;
+    }
+    
+    /**
+     * Generates a Data object from this request object.
+     * @return the data object for this request.
+     */
+    public Data getData() {
+        Data d = new Data();
+        for(Map.Entry<String, Parameter> entry : params.entrySet()) {
+            Parameter p = entry.getValue();
+            d.set(p.getName(), p.getValue());
+        }
+        
+        Format f = this.format.getFormatter();
+        Data e = (f != null) ? f.parseInput(this) : new Data();
+        
+        Data r = new Data();
+        r.set("queryParams", d); r.set("payload", e);
+        
+        return r;
     }
     
     public RequestType getRequestType() {
@@ -155,7 +184,21 @@ public class Request extends Core {
         }
         Request re = new Request();
         re.setRequestType(RequestType.valueOf(first[0]));
-        re.setURI(first[1]);
+        
+        //attempt to pull a type from the uri.
+        String uri = first[1];
+        if(uri.matches("(^.*\\/[^/]*)(\\.[^\\.\\/]*)$")) {
+            String ex = uri.replaceFirst("(^.*\\/[^/]*)(\\.[^\\.\\/]*)$", "$2");
+            uri = uri.replaceFirst("(^.*\\/[^/]*)(\\.[^\\.\\/]*)$", "$1");
+            for(FormatType type : FormatType.values()) {
+                if(type.matches(ex)) {
+                    re.setFormatType(type);
+                    break;
+                }
+            }
+        }
+        
+        re.setURI(uri);
         
         //parse the URI from the query params.
         String[] s = re.getURI().trim().split("\\?");

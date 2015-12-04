@@ -6,7 +6,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import org.expression.api.annotation.HttpMethod;
 import org.expression.api.annotation.IncludeParams;
 import org.expression.api.annotation.Variable;
@@ -17,6 +19,7 @@ import org.expression.http.Request;
 import org.expression.http.RequestType;
 import org.expression.http.Response;
 import org.expression.http.StatusCode;
+import org.expression.http.data.Data;
 
 /**
  * Class which actively dispatches a request received from a client.
@@ -89,7 +92,7 @@ public class Dispatcher implements InjectionAware, EventAware {
                 }
             }
             if(t == null) {
-                throw new DispatchException(StatusCode.NOT_FOUND, "<Could not locate action>", null);
+                throw new DispatchException(StatusCode.NOT_FOUND, "<Could not locate action>", new NullPointerException("No Action Method Found."));
             }
             
             if(t.getReturnType() != String.class && t.getReturnType() != Response.class) {
@@ -100,70 +103,22 @@ public class Dispatcher implements InjectionAware, EventAware {
             Annotation[] an = t.getDeclaredAnnotationsByType(Variables.class);
             Variable[] v = t.getAnnotationsByType(Variable.class);
             v = (an.length > 0) ? ((Variables)an[0]).value() : v;
-            Object[] mp = new Object[t.getParameterCount()];
-            
-            IncludeParams[] ip = t.getAnnotationsByType(IncludeParams.class);
-            boolean includeParams = (ip.length > 0);
-            
-            if(includeParams) {
-                List<String> par = new ArrayList<>();
-                if(matched.getParams().containsKey("params")) {
-                    par = (List<String>) matched.getParams().get("params");
-                } 
-                mp[mp.length - 1] = par;
+            Data d = request.getData();
+            Data ee = new Data();
+            for(Map.Entry<String, Object> entry : matched.getParams().entrySet()) {
+               ee.set(entry.getKey(), entry.getValue());
             }
+            d.set("uriParams", ee);
+            
+            Object[] mp = (t.getParameterCount() > 0) ? new Object[] { d } : new Object[] {};
             
             //check the remainder of the Parameters.
-            if(v.length + ((includeParams) ? 1 : 0) != t.getParameterCount()) {
+            if(mp.length != t.getParameterCount()) {
                 throw new DispatchException(
                     StatusCode.INTERNAL_SERVER_ERROR,
                     "<Internal Server Error>",
                     new RuntimeException("Not enough declared parameters")
                 );
-            }
-            
-            if(v.length > matched.getParams().size()) { //params is provided regardless.
-                throw new DispatchException(
-                    StatusCode.INTERNAL_SERVER_ERROR,
-                    "<Internal Server Error>",
-                    new RuntimeException("Not enough provided parameters")
-                );
-            }
-            
-            //get params.
-            Parameter[] pz = t.getParameters();
-            for(Variable va : v) {
-                if(!matched.getParams().containsKey(va.name())) {
-                    throw new DispatchException(
-                        StatusCode.INTERNAL_SERVER_ERROR,
-                        "<Internal Server Error>",
-                        new RuntimeException("Required Parameter not provided.")
-                    );
-                }
-                Object ob = matched.getParams().get(va.name());
-                if(va.position() >= pz.length || va.position() < 0) {
-                    throw new DispatchException(
-                        StatusCode.INTERNAL_SERVER_ERROR,
-                        "<Internal Server Error>",
-                        new RuntimeException("Provided position index is out of bounds")
-                    );
-                }
-                Parameter pp = pz[va.position()];
-                if(pp.getType() != ob.getClass()) {
-                    throw new DispatchException(
-                        StatusCode.INTERNAL_SERVER_ERROR,
-                        "<Internal Server Error>",
-                        new RuntimeException("Provided Object is of invalid type.")
-                    );
-                }
-                if(mp[va.position()] != null) {
-                    throw new DispatchException(
-                        StatusCode.INTERNAL_SERVER_ERROR,
-                        "<Internal Server Error>",
-                        new RuntimeException("Duplicate parameter position defined")
-                    );
-                }
-                mp[va.position()] = ob;
             }
             
             //check that this method can handle this http method.

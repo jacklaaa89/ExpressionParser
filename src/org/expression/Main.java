@@ -1,5 +1,7 @@
 package org.expression;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.expression.api.DependencyInjector;
 import org.expression.api.Dispatcher;
 import org.expression.api.Event;
@@ -19,9 +21,10 @@ import org.expression.http.StatusCode;
  */
 public class Main {
     public static void main(String[] args) {
+        
         DependencyInjector.getDefault().set("router", (DependencyInjector di) -> {
             Router r = new Router(true);
-            r.map(new Route("/get-function/{name:[A-Za-z]+}/:params", "get-function", "index"));
+            r.map(new Route("/get-function/{name:[A-Za-z]+}(/:params)?", "get-function", "index"));
             //add custom routes....
             return r;
         }, true);
@@ -55,5 +58,6 @@ public class Main {
         });
         Server server = new Server(1234);
         server.serve();
+       
     }
 }
