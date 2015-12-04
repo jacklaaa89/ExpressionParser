@@ -3,6 +3,8 @@ package org.expression.http.data;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +12,7 @@ import java.util.Map;
  * An generic encapsulation of data input and output which is easily accessible.
  * @author Jack Timblin
  */
-public class Data {
+public class Data implements Iterable<Data>, Iterator<Data> {
     
     /**
      * The dataset of entries in this data entry.
@@ -24,10 +26,21 @@ public class Data {
     private Object value;
     
     /**
+     * The current position in the iterator.
+     */
+    private int position = -1;
+    
+    /**
+     * IF we have served the single value.
+     */
+    private boolean hasServedValue = false;
+    
+    /**
      * Initialises a new data object with a null value.
      */
     public Data() {
-        this.entries = new HashMap<>();
+        //use linked hash map to maintain insertion order.
+        this.entries = new LinkedHashMap<>();
         this.value = null;
     }
     
@@ -154,7 +167,7 @@ public class Data {
             value = new Data(value);
         }
         boolean emptyButInteger = ((key instanceof Integer) && entries.isEmpty());
-        key = (!emptyButInteger && this.isObject()) ? ((String)key+"") : key;
+        key = (!emptyButInteger && this.isObject()) ? ((String)key.toString()+"") : key;
         this.entries.put(key, (Data) value);
     }
     
@@ -324,5 +337,40 @@ public class Data {
         }
         return b.toString();
     }
-    
+
+    @Override
+    public Iterator iterator() {
+        return this;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if(value != null && !hasServedValue) {
+            return true;
+        }
+        int newPos = this.position + 1;
+        if(newPos >= this.size()) {
+            return false;
+        }
+        Object[] keys = this.entries.keySet().toArray(new Object[]{});
+        return keys[newPos] != null;
+    }
+
+    @Override
+    public Data next() {
+        this.position++;
+        if(value != null && !hasServedValue) {
+            hasServedValue = true;
+            return new Data(value);
+        }
+        if(value != null && hasServedValue) {
+            return null;
+        }
+        if(this.position >= this.size()) {
+            return null;
+        }
+        Object[] keys = this.entries.keySet().toArray(new Object[]{});
+        Object key = keys[this.position];
+        return this.entries.get(key);
+    }
 }
