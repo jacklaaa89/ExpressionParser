@@ -10,16 +10,22 @@ import java.util.List;
 import org.expression.api.DependencyInjector;
 import org.expression.api.Dispatcher;
 import org.expression.api.exception.DispatchException;
-import org.expression.http.data.Data;
-import org.expression.http.data.Xml;
 
 /**
- *
- * @author Jack
+ * A single instance of a client connection to the Daemon, handles a single request.
+ * @author Jack Timblin
  */
 public class Connection implements Runnable {
+    
+    /**
+     * The connection socket/handle.
+     */
     private final Socket socket;
     
+    /**
+     * Initialises this connection with its connection handle.
+     * @param socket the connection handle to read input from and write output too.
+     */
     public Connection(Socket socket) {
         this.socket = socket;
     }

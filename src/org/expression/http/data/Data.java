@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * An generic encapsulation of data input and output which is easily accessible.
@@ -376,4 +377,16 @@ public class Data implements Iterable<Data>, Iterator<Data> {
         Object key = keys[this.position];
         return this.entries.get(key);
     }
+    
+    /**
+     * Sorts this Data object into natural order by the key.
+     */
+    public void sort() {
+        Map<Object, Data> map = new TreeMap<>(entries);
+        entries.clear();
+        map.entrySet().stream().forEach((e) -> {
+            entries.put(e.getKey(), e.getValue());
+        });
+    }
+    
 }

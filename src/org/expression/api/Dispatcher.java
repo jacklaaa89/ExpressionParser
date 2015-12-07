@@ -4,13 +4,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import org.expression.api.annotation.HttpMethod;
-import org.expression.api.annotation.IncludeParams;
 import org.expression.api.annotation.Variable;
 import org.expression.api.annotation.Variables;
 import org.expression.api.controller.Controller;
@@ -43,6 +39,11 @@ public class Dispatcher implements InjectionAware, EventAware {
     private EventManager manager;
     
     /**
+     * The currently matched route.
+     */
+    private Route currentRoute;
+    
+    /**
      * Handles actually dispatching the request to the controller/action.
      * @param request the request to dispatch.
      * @return the response.
@@ -72,6 +73,8 @@ public class Dispatcher implements InjectionAware, EventAware {
             }
             throw ex;
         }
+        
+        currentRoute = matched;
         
         String controller = matched.getControllerName();
         
@@ -103,14 +106,27 @@ public class Dispatcher implements InjectionAware, EventAware {
             Annotation[] an = t.getDeclaredAnnotationsByType(Variables.class);
             Variable[] v = t.getAnnotationsByType(Variable.class);
             v = (an.length > 0) ? ((Variables)an[0]).value() : v;
-            Data d = request.getData();
             Data ee = new Data();
             for(Map.Entry<String, Object> entry : matched.getParams().entrySet()) {
                ee.set(entry.getKey(), entry.getValue());
             }
-            d.set("uriParams", ee);
             
-            Object[] mp = (t.getParameterCount() > 0) ? new Object[] { d } : new Object[] {};
+            if(ee.size() != v.length - (ee.hasKey("params") ? 1 : 0)) {
+                throw new DispatchException(
+                    StatusCode.INTERNAL_SERVER_ERROR,
+                    "<Internal Server Error>",
+                    new RuntimeException("Declared Params are not the same length")
+                );
+            }
+//            if(;;) {
+//                throw new DispatchException(
+//                    StatusCode.INTERNAL_SERVER_ERROR,
+//                    "<Internal Server Error>",
+//                    new RuntimeException("Declared Params are not the same length")
+//                );
+//            }
+            
+            Object[] mp = new Object[] {};
             
             //check the remainder of the Parameters.
             if(mp.length != t.getParameterCount()) {
@@ -192,6 +208,24 @@ public class Dispatcher implements InjectionAware, EventAware {
     @Override
     public EventManager getEventManager() {
         return this.manager;
+    }
+    
+    /**
+     * Returns a particular query parameter parsed from the route.
+     * @param name the name of the parameter.
+     * @return the value, or null if the value was not set, or found.
+     */
+    public Object getParam(String name) {
+        if(currentRoute == null) {
+            return null;
+        }
+        if(currentRoute.getParams().isEmpty()) {
+            return null;
+        }
+        if(!currentRoute.getParams().containsKey(name)) {
+            return null;
+        }
+        return this.currentRoute.getParams().get(name);
     }
     
 }

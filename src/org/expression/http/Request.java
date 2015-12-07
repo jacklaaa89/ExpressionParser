@@ -9,21 +9,54 @@ import org.expression.http.data.Data;
 import org.expression.http.data.Format;
 
 /**
- *
- * @author Jack
+ * An encapsulation of a HTTP Request.
+ * @author Jack Timblin
  */
 public class Request extends Core {
     
+    /**
+     * The default HTTP version type of accept.
+     */
     private static final String DEFAULT_HTTP_VERSION = "1.1";
+    
+    /**
+     * The provided HTTP version.
+     */
     private String version = DEFAULT_HTTP_VERSION;
+    
+    /**
+     * The default input format type for the request. (XML)
+     */
     private static final FormatType DEFAULT_FORMAT = FormatType.XML;
+    
+    /**
+     * The provided format type for the request.
+     */
     private FormatType format = DEFAULT_FORMAT;
     
+    /**
+     * The provided URI parameters.
+     */
     private final Map<String, Parameter> params;
+    
+    /**
+     * The POST/PUT/UPDATE request payload.
+     */
     private String requestPayload = null;
+    
+    /**
+     * The type of request.
+     */
     private RequestType requestType;
+    
+    /**
+     * The URI for the request.
+     */
     private String uri;
     
+    /**
+     * Initialises a new Request, setting default values.
+     */
     private Request() {
         super();
         //set the default headers, request type and status code.
@@ -31,10 +64,19 @@ public class Request extends Core {
         params = new HashMap<>();
     }
     
+    /**
+     * Set a query parameter.
+     * @param name the name of the parameter.
+     * @param value the value.
+     */
     private void setQueryParam(String name, String value) {
         this.params.put(name, new Parameter(name, value));
     }
     
+    /**
+     * Set the used HTTP version.
+     * @param version the used HTTP version.
+     */
     private void setHttpVersion(String version) {
         try {
             Double.parseDouble(version);
@@ -44,11 +86,15 @@ public class Request extends Core {
         this.version = version;
     }
     
+    /**
+     * Gets an iterator for the defined Query Parameters.
+     * @return an iterator for the query parameters.
+     */
     public Iterator getQueryParams() {
         List<Parameter> hs = new ArrayList<>();
-        for (Map.Entry<String, Parameter> header : params.entrySet()) {
+        params.entrySet().stream().forEach((header) -> {
             hs.add(header.getValue());
-        }
+        });
         return hs.iterator();
     }
     
@@ -96,29 +142,35 @@ public class Request extends Core {
         return this.requestPayload;
     }
     
-    public Parameter getQueryParam(String name) {
-        if(!this.hasQueryParam(name)) {
-            return null;
-        }
-        return params.get(name);
-    }
-    
+    /**
+     * Gets the type of input which was used and expected back.
+     * @return the format type.
+     */
     public FormatType getFormatType() {
         return this.format;
     }
     
+    /**
+     * Sets the used format type. this is defined as the last {@code.(format_ex)} in the URI.
+     * @param type the format type, the default is XML if this is not defined.
+     */
     private void setFormatType(FormatType type) {
         this.format = type;
     }
     
-    public boolean hasQueryParam(String name) {
-        return params.containsKey(name);
-    }
-    
-    public double getVersion() {
+    /**
+     * Gets the double representation of the HTTP version provided.
+     * @return the double HTTP version provided.
+     * @throws NumberFormatException if the version cannot be parsed to a valid double.
+     */
+    public double getVersion() throws NumberFormatException {
         return Double.parseDouble(this.version);
     }
     
+    /**
+     * Gets the string representation of the version with leading "HTTP/".
+     * @return the formatted HTTP version.
+     */
     public String getFormattedVersion() {
         return "HTTP/" + this.version;
     }
@@ -128,37 +180,75 @@ public class Request extends Core {
      * @return the data object for this request.
      */
     public Data getData() {
-        Data d = new Data();
-        for(Map.Entry<String, Parameter> entry : params.entrySet()) {
-            Parameter p = entry.getValue();
-            d.set(p.getName(), p.getValue());
-        }
-        
         Format f = this.format.getFormatter();
         Data e = (f != null) ? f.parseInput(this) : new Data();
-        
-        Data r = new Data();
-        r.set("queryParams", d); r.set("payload", e);
-        
-        return r;
+        return e;
     }
     
+    /**
+     * Determines if this request has a query parameter for a name.
+     * @param name the name of the parameter to check for.
+     * @return true if this request has a valid query parameter for the name, false otherwise.
+     */
+    public boolean hasQuery(String name) {
+        return this.params.containsKey(name);
+    }
+    
+    /**
+     * Determines if this request has a valid request payload.
+     * @return true if this request has a valid payload, false otherwise.
+     */
+    public boolean hasData() {
+        return this.requestPayload != null && this.requestPayload.length() != 0;
+    }
+    
+    /**
+     * Gets a query parameter if it was defined.
+     * @param name the name of the query parameter.
+     * @return the value of the parameter, or null if it was not defined.
+     */
+    public String getQuery(String name) {
+        return this.params.containsKey(name) ? this.params.get(name).getValue() : null; 
+    }
+    
+    /**
+     * Gets the request type. i.e POST/GET etc.
+     * @return the request type.
+     */
     public RequestType getRequestType() {
         return this.requestType;
     }
     
+    /**
+     * Sets the request type which was made. i.e POST/GET etc.
+     * @param type the request type.
+     */
     private void setRequestType(RequestType type) {
         this.requestType = type;
     }
     
+    /**
+     * Gets the provided URI.
+     * @return the uri.
+     */
     public String getURI() {
         return this.uri;
     }
     
+    /**
+     * Sets the URI provided, with the trailing format type removed if
+     * it was provided.
+     * @param uri the uri.
+     */
     private void setURI(String uri) {
         this.uri = uri;
     }
     
+    /**
+     * Parses a string line into a usable Request object.
+     * @param request the complete request.
+     * @return a compiled Request object.
+     */
     public static Request parseRequest(String request) {
         String[] lines = request.split("\r\n");
         return Request.parseRequest(lines);
@@ -176,6 +266,11 @@ public class Request extends Core {
         return b.toString();
     }
     
+    /**
+     * Parses an array of string lines into a usable Request object.
+     * @param lines the array of string lines from the input stream
+     * @return a compiled Request object.
+     */
     public static Request parseRequest(String[] lines) {
         //get the request type etc.
         String[] first = lines[0].trim().split(" ");

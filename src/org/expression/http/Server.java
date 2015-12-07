@@ -5,6 +5,9 @@ import java.net.ServerSocket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.net.Socket;
+import org.expression.api.DependencyInjector;
+import org.expression.api.Dispatcher;
+import org.expression.api.Router;
 
 /**
  * The server which controls the incoming connections.
@@ -29,6 +32,13 @@ public class Server {
      * Blocks and listens for incoming requests.
      */
     public void serve() {
+        DependencyInjector di = DependencyInjector.getDefault();
+        if(!di.has("router", Router.class)) {
+            di.setShared("router", new Router(true));
+        }
+        if(!di.has("dispatcher", Dispatcher.class)) {
+            di.setShared("dispatcher", new Dispatcher());
+        }
         try {
             final ExecutorService service = Executors.newCachedThreadPool();
             ServerSocket serverSocket = new ServerSocket(this.port);

@@ -135,4 +135,30 @@ public class DependencyInjector {
         return t;
     }
     
+    /**
+     * Determines if the DI has a service with a particular name.
+     * @param service the name of the service.
+     * @return true if the di finds a match, false otherwise.
+     */
+    public boolean has(String service) {
+        return has(service, Object.class);
+    }
+    
+    /**
+     * Determines if the DI has a service with a particular name, which can 
+     * be casted to a particular object type.
+     * @param service the name of the service.
+     * @param cls the class of the service object.
+     * @return true if the di finds a match, false otherwise.
+     */
+    public boolean has(String service, Class<?> cls) {
+        if(!services.containsKey(service)) {
+            return false;
+        }
+        try {
+            cls.cast(services.get(service));
+        } catch (ClassCastException e) {return false;}//abuse of exception handling.
+        return true;
+    }
+    
 }

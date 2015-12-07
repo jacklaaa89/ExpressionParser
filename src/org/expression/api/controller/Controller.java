@@ -1,6 +1,8 @@
 package org.expression.api.controller;
 
 import org.expression.api.DependencyInjector;
+import org.expression.api.Dispatcher;
+import org.expression.http.Request;
 
 /**
  * Base Controller implementation.
@@ -14,11 +16,23 @@ public abstract class Controller {
     private final DependencyInjector di;
     
     /**
+     * The current request object.
+     */
+    private final Request currentRequest;
+    
+    /**
+     * The dispatcher dealing with the request.
+     */
+    private final Dispatcher dispatcher;
+    
+    /**
      * Initialises the controller, giving it easy access to the DI.
      * @param di the dependency injector.
      */
     public Controller(DependencyInjector di) {
         this.di = di;
+        this.dispatcher = di.<Dispatcher>get("dispatcher");
+        this.currentRequest = di.<Request>get("request");
     }
     
     /**
@@ -29,6 +43,34 @@ public abstract class Controller {
      */
     public <T extends Object> T get(String service) {
         return this.di.<T>get(service);
+    }
+    
+    public boolean has(String service) {
+        return di.has(service);
+    }
+    
+    /**
+     * Gets the di instance. 
+     * @return the dependency injector instance.
+     */
+    public DependencyInjector getDi() {
+        return di;
+    }
+    
+    /**
+     * Gets the current request object.
+     * @return the current request.
+     */
+    public Request getRequest() {
+        return currentRequest;
+    }
+    
+    /**
+     * Gets the current dispatcher instance.
+     * @return the current dispatcher.
+     */
+    public Dispatcher getDispatcher() {
+        return dispatcher;
     }
     
 }

@@ -1,7 +1,5 @@
 package org.expression;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.expression.api.DependencyInjector;
 import org.expression.api.Dispatcher;
 import org.expression.api.Event;
@@ -55,9 +53,8 @@ public class Main {
             d.setEventManager(em);
             
             return d;
-        });
+        }, true);
         Server server = new Server(1234);
         server.serve();
-       
     }
 }
