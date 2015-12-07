@@ -167,8 +167,10 @@ public class Data implements Iterable<Data>, Iterator<Data> {
             value = new Data(value);
         }
         boolean emptyButInteger = ((key instanceof Integer) && entries.isEmpty());
-        key = (!emptyButInteger && this.isObject()) ? ((String)key.toString()+"") : key;
-        this.entries.put(key, (Data) value);
+        if(key != null) {
+            key = (!emptyButInteger && this.isObject()) ? (""+(String)key.toString()) : key;
+            this.entries.put(key, (Data) value);
+        }
     }
     
     /**
@@ -247,9 +249,9 @@ public class Data implements Iterable<Data>, Iterator<Data> {
         }
         List<Data> l = new ArrayList<>();
         try {
-            for(Map.Entry<Object, Data> entry : entries.entrySet()) {
+            entries.entrySet().stream().forEach((entry) -> {
                 l.add((Integer)entry.getKey(), entry.getValue());
-            }
+            });
         } catch (ClassCastException e) {
             return null;
         }
@@ -267,9 +269,9 @@ public class Data implements Iterable<Data>, Iterator<Data> {
         }
         Map<String, Data> l = new HashMap<>();
         try {
-            for(Map.Entry<Object, Data> entry : entries.entrySet()) {
+            entries.entrySet().stream().forEach((entry) -> {
                 l.put((String)entry.getKey().toString() + "", entry.getValue());
-            }
+            });
         } catch (ClassCastException e) {
             return null;
         }
@@ -350,6 +352,7 @@ public class Data implements Iterable<Data>, Iterator<Data> {
         }
         int newPos = this.position + 1;
         if(newPos >= this.size()) {
+            this.position = -1;
             return false;
         }
         Object[] keys = this.entries.keySet().toArray(new Object[]{});
