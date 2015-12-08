@@ -35,7 +35,7 @@ public class Response extends Core {
      */
     private Response() {
         super();
-        this.setHeader("Content-Type", "application/json");
+        this.setHeader("Content-Type", "application/xml");
         this.setHeader("Server", "ExpressionParser_V1.0");
         code = StatusCode.OK;
         responsePayload = "";

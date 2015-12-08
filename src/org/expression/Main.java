@@ -8,10 +8,12 @@ import org.expression.api.EventManager;
 import org.expression.api.Route;
 import org.expression.api.Router;
 import org.expression.api.exception.DispatchException;
+import org.expression.http.FormatType;
 import org.expression.http.Request;
 import org.expression.http.Response;
 import org.expression.http.Server;
 import org.expression.http.StatusCode;
+import org.expression.http.data.Data;
 
 /**
  *
@@ -47,7 +49,11 @@ public class Main {
                 if(event.isCancellable()) {
                     event.stop(); //stop this event and collect response.
                 }
-                return Response.buildResponse(StatusCode.NOT_FOUND, "<The Requested Function is not Found.>");
+                
+                Response.Builder builder = new Response.Builder();
+                return builder.setResponse("<The Requested Function is not Found.>")
+                       .setStatusCode(StatusCode.NOT_FOUND)
+                       .build();
             });
             
             d.setEventManager(em);
