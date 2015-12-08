@@ -1,8 +1,13 @@
 package org.expression.http.data;
 
 import java.io.StringReader;
+import java.io.StringWriter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.xml.sax.InputSource;
 import org.expression.http.Request;
 import org.w3c.dom.Document;
@@ -17,7 +22,51 @@ public class Xml implements Format {
 
     @Override
     public String getFormattedResponse(Data output) {
-        return null;
+        if(output.isArray()) {
+            //root entry cannot be an array.
+            return "<InvalidOutputException/>";
+        }
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document d = builder.newDocument();
+            Node root = d.createElement("Response");
+            append(output, root, d);
+            d.appendChild(root);
+            DOMSource source = new DOMSource(d);
+            StringWriter writer = new StringWriter();
+            StreamResult result = new StreamResult(writer);
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer t = tf.newTransformer();
+            t.transform(source, result);
+            return writer.toString();
+        } catch(Exception e) {
+            e.printStackTrace();
+            return "<InvalidOutputException/>";
+        }
+    }
+    
+    /**
+     * Appends an data entry to the document at {@code node}.
+     * @param output the output append.
+     * @param node the node to append the output too.
+     * @param doc the overall documents to create elements etc.
+     */
+    private void append(Data output, Node node, Document doc) {
+        for(Data.Entry entry : output) {
+            String attr = entry.getKey().toString();
+            if(output.isArray()) {
+                attr = node.getNodeName() + "_" +  attr;
+            }
+            Node e = doc.createElement(attr);
+            Data v = entry.getValue();
+            if(v.hasValue()) {
+                e.appendChild(doc.createTextNode(v.toString()));
+            } else {
+                append(v, e, doc);
+            }
+            node.appendChild(e);
+        }
     }
 
     @Override
