@@ -59,7 +59,10 @@ public class DispatchException extends RuntimeException {
      * @return the response.
      */
     public Response getResponse() {
-        return Response.buildResponse(code, message, message);
+        Response.Builder builder = new Response.Builder();
+        return builder.setStatusCode(code)
+               .setResponse(message)
+               .build();
     }
     
 }

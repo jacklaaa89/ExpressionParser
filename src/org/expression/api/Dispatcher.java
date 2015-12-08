@@ -5,7 +5,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Map;
 import org.expression.api.annotation.HttpMethod;
 import org.expression.api.annotation.Variable;
 import org.expression.api.annotation.Variables;
@@ -98,7 +97,7 @@ public class Dispatcher implements InjectionAware, EventAware {
                 throw new DispatchException(StatusCode.NOT_FOUND, "<Could not locate action>", new NullPointerException("No Action Method Found."));
             }
             
-            if(t.getReturnType() != String.class && t.getReturnType() != Response.class) {
+            if(t.getReturnType() != String.class && t.getReturnType() != Response.class && t.getReturnType() != Data.class) {
                 throw new DispatchException(StatusCode.INTERNAL_SERVER_ERROR, "<Internal Server Error>", null);
             }
             
@@ -107,9 +106,9 @@ public class Dispatcher implements InjectionAware, EventAware {
             Variable[] v = t.getAnnotationsByType(Variable.class);
             v = (an.length > 0) ? ((Variables)an[0]).value() : v;
             Data ee = new Data();
-            for(Map.Entry<String, Object> entry : matched.getParams().entrySet()) {
-               ee.set(entry.getKey(), entry.getValue());
-            }
+            matched.getParams().entrySet().stream().forEach((entry) -> {
+                ee.set(entry.getKey(), entry.getValue());
+            });
             
             if(ee.size() != v.length - (ee.hasKey("params") ? 1 : 0)) {
                 throw new DispatchException(
@@ -153,7 +152,19 @@ public class Dispatcher implements InjectionAware, EventAware {
             }
             
             Object response = t.invoke(o, mp);
-            Response res = (response instanceof Response) ? (Response) response : Response.buildResponse(StatusCode.OK, null, (String) response);
+            Response r;
+            if(!(response instanceof Response)) {
+                Response.Builder builder = new Response.Builder();
+                if(response instanceof Data) {
+                    builder.setResponse((Data)response, request.getFormatType());
+                } else {
+                    builder.setResponse((String)response);
+                }
+                builder.setStatusCode(StatusCode.OK);
+                r = builder.build();
+            } else {
+                r = (Response) response;
+            }
             
             try {
                 manager.fire("dispatch:afterDispatch", this, null, true);
@@ -161,7 +172,7 @@ public class Dispatcher implements InjectionAware, EventAware {
                 throw e;
             }
             
-            return res;
+            return r;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new DispatchException(StatusCode.NOT_FOUND, "<Could not locate action>", e);
         } catch (ClassNotFoundException | NoSuchMethodException ex) {

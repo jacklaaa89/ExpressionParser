@@ -13,7 +13,7 @@ import java.util.TreeMap;
  * An generic encapsulation of data input and output which is easily accessible.
  * @author Jack Timblin
  */
-public class Data implements Iterable<Data>, Iterator<Data> {
+public class Data implements Iterable<Data.Entry>, Iterator<Data.Entry> {
     
     /**
      * The dataset of entries in this data entry.
@@ -49,7 +49,7 @@ public class Data implements Iterable<Data>, Iterator<Data> {
      * Initialises a data object with a single value, only used internally. 
      * @param value the single value of this data object.
      */
-    public Data(Object value) {
+    protected Data(Object value) {
         this();
         this.value = value;
     }
@@ -351,6 +351,10 @@ public class Data implements Iterable<Data>, Iterator<Data> {
         if(value != null && !hasServedValue) {
             return true;
         }
+        if(value != null && hasServedValue) {
+            this.hasServedValue = false;
+            return false;
+        }
         int newPos = this.position + 1;
         if(newPos >= this.size()) {
             this.position = -1;
@@ -361,11 +365,11 @@ public class Data implements Iterable<Data>, Iterator<Data> {
     }
 
     @Override
-    public Data next() {
+    public Data.Entry next() {
         this.position++;
         if(value != null && !hasServedValue) {
-            hasServedValue = true;
-            return new Data(value);
+            this.hasServedValue = true;
+            return new Data.Entry(null,new Data(value));
         }
         if(value != null && hasServedValue) {
             return null;
@@ -375,7 +379,7 @@ public class Data implements Iterable<Data>, Iterator<Data> {
         }
         Object[] keys = this.entries.keySet().toArray(new Object[]{});
         Object key = keys[this.position];
-        return this.entries.get(key);
+        return new Data.Entry(key, this.entries.get(key));
     }
     
     /**
@@ -387,6 +391,101 @@ public class Data implements Iterable<Data>, Iterator<Data> {
         map.entrySet().stream().forEach((e) -> {
             entries.put(e.getKey(), e.getValue());
         });
+    }
+    
+    /**
+     * Iterator Pointer object to an entry in a Data instance.
+     */
+    public static class Entry {
+        
+        /**
+         * The key of the entry.
+         */
+        private Object key;
+        
+        /**
+         * The value of the entry.
+         */
+        private Data value;
+        
+        /**
+         * Initialises a new Entry.
+         * @param key the key.
+         * @param value the value.
+         */
+        private Entry(Object key, Data value) {
+            this.key = key;
+            this.value = value;
+        }
+        
+        /**
+         * Gets the key for this particular entry.
+         * @return the key.
+         */
+        public Object getKey() {
+            return this.key;
+        }
+        
+        /**
+         * Gets the value of this entry, without any value unwrapping.
+         * @return the value of this entry.
+         */
+        public Data getValue() {
+            return this.value;
+        }
+        
+        /**
+         * Gets the value stored in this data entry if it is a single value.
+         * @param <T> the type of value.
+         * @param cls the class object to cast with.
+         * @return the value stored in this entries value if its classed as a single value.
+         */
+        public <T> T getValue(Class<T> cls) {
+            if(this.value != null && this.value.hasValue()) {
+                return this.value.get(cls);
+            }
+            return null;
+        }
+        
+        /**
+         * Gets the value stored in this data entry at a certain key.
+         * @param <T> The type of the object stored at the key in this entries value.
+         * @param <K> The type of the key object.
+         * @param key The key.
+         * @param cls A class object of the value.
+         * @return the value at the key in this datas entry.
+         */
+        private <T, K> T getValue(K key, Class<T> cls) {
+            return this.value.get(key, cls);
+        }
+        
+        /**
+         * Gets the value stored in this data entry at a certain key.
+         * @param <T> The type of the object stored at the key in this entries value.
+         * @param key The key.
+         * @param cls A class object of the value.
+         * @return the value at the key in this datas entry.
+         */
+        public <T> T getValue(String key, Class<T> cls) {
+            return this.<T,String>getValue(key, cls);
+        }
+        
+        /**
+         * Gets the value stored in this data entry at a certain key.
+         * @param <T> The type of the object stored at the key in this entries value.
+         * @param key The key.
+         * @param cls A class object of the value.
+         * @return the value at the key in this datas entry.
+         */
+        public <T> T getValue(Integer key, Class<T> cls) {
+            return this.<T,Integer>getValue(key, cls);
+        }
+        
+        @Override
+        public String toString() {
+            return ((key == null) ? "No Key" : key.toString()) + " : " + this.value.toString();
+        }
+        
     }
     
 }

@@ -2,6 +2,7 @@ package org.expression.http;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import org.expression.http.data.Data;
 
 /**
  * Am encapsulation of a HTTP response.
@@ -132,34 +133,89 @@ public class Response extends Core {
     }
     
     /**
-     * Builds a response.
-     * @param code the status code.
-     * @param statusCodeMessage an optional status code message.
-     * @param response the response body itself.
-     * @param headers any optional headers to apply.
-     * @return the build response.
+     * Builder for Responses.
      */
-    public static Response buildResponse(StatusCode code, String statusCodeMessage, String response, Header... headers) {
-        Response r = new Response();
-        r.setStatusCode(code);
-        r.setResponse(response);
-        r.setStatusCodeMessage(statusCodeMessage);
-        //work with the custom headers.
-        for(Header h : headers) {
-            r.setHeader(h.getName(), h.getValue());
+    public static class Builder {
+        
+        /**
+         * The internal response object.
+         */
+        private Response response;
+        
+        /**
+         * Initialises the initial response.
+         */
+        public Builder() {
+            response = new Response();
         }
-        return r;
+        
+        /**
+         * Sets the status code of the response.
+         * @param code the status code of the message.
+         * @return this for method chaining.
+         */
+        public Builder setStatusCode(StatusCode code) {
+            response.setStatusCode(code);
+            return this;
+        }
+        
+        /**
+         * Sets the status code of the response, with optional message.
+         * @param code the status code of the message.
+         * @param message the custom message.
+         * @return this for method chaining.
+         */
+        public Builder setStatusCode(StatusCode code, String message) {
+            response.setStatusCode(code);
+            response.setStatusCodeMessage(message);
+            return this;
+        }
+        
+        /**
+         * Sets the string response data for the response.
+         * @param data the data.
+         * @return this for method chaining.
+         */
+        public Builder setResponse(String data) {
+            response.setResponse(data);
+            return this;
+        }
+        
+        /**
+         * Sets the response using a formatter.
+         * @param data the data to format.
+         * @param type the format type.
+         * @return this for method chaining.
+         */
+        public Builder setResponse(Data data, FormatType type) {
+            String r = "<EmptyResponse/>";
+            if(type != null && type.getFormatter() != null) {
+                r = type.getFormatter().getFormattedResponse(data);
+            }
+            return setResponse(r);
+        }
+        
+        /**
+         * Sets any custom headers to the response.
+         * @param headers the headers to add, any previously set headers
+         * will be overridden.
+         * @return this for method chaining.
+         */
+        public Builder setHeaders(Header... headers) {
+            for(Header h : headers) {
+                response.setHeader(h.getName(), h.getValue());
+            }
+            return this;
+        }
+        
+        /**
+         * Builds the response.
+         * @return the response.
+         */
+        public Response build() {
+            //sanity checks.
+            return response;
+        }
+        
     }
-    
-    /**
-     * Builds a response.
-     * @param code the status code.
-     * @param response the response body itself.
-     * @param headers any optional headers to apply.
-     * @return the build response.
-     */
-    public static Response buildResponse(StatusCode code, String response, Header... headers) {
-        return Response.buildResponse(code, null, response, headers);
-    }
-    
 }
