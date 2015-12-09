@@ -117,13 +117,6 @@ public class Dispatcher implements InjectionAware, EventAware {
                     new RuntimeException("Declared Params are not the same length")
                 );
             }
-//            if(;;) {
-//                throw new DispatchException(
-//                    StatusCode.INTERNAL_SERVER_ERROR,
-//                    "<Internal Server Error>",
-//                    new RuntimeException("Declared Params are not the same length")
-//                );
-//            }
             
             Object[] mp = new Object[] {};
             
@@ -165,6 +158,9 @@ public class Dispatcher implements InjectionAware, EventAware {
             } else {
                 r = (Response) response;
             }
+            
+            //set the content type from the request.
+            r.setHeader("Content-Type", request.getFormatType().getContentType());
             
             try {
                 manager.fire("dispatch:afterDispatch", this, null, true);

@@ -11,7 +11,8 @@ public enum FormatType {
     /**
      * Formatter to manipulate XML input/output.
      */
-    XML(new String[]{"xml"/*, any more xml extensions*/}) {
+    XML(new String[]{"xml"/*, any more xml extensions*/},
+        "application/xml") {
         @Override
         public Format getFormatter() {
             return new Xml();
@@ -20,7 +21,8 @@ public enum FormatType {
     /**
      * Formatter to manipulate JSON input/output.
      */
-    JSON(new String[]{"json"/*, any more json extensions*/}) {
+    JSON(new String[]{"json"/*, any more json extensions*/},
+        "application/json") {
         @Override
         public Format getFormatter() {
             return null;
@@ -30,13 +32,16 @@ public enum FormatType {
      * The list of accepted extensions that match this format.
      */
     private final String[] acceptedTypes;
+    private final String contentType;
     
     /**
      * Initialises a new FormatType.
      * @param acceptedExtensions the list of accepted extensions.
+     * @param contentType the content type used in the response header.
      */
-    FormatType(String[] acceptedExtensions) {
+    FormatType(String[] acceptedExtensions, String contentType) {
         this.acceptedTypes = acceptedExtensions;
+        this.contentType = contentType;
     }
     /**
      * Get the list of accepted extensions.
@@ -44,6 +49,15 @@ public enum FormatType {
      */
     public String[] getAcceptedExtensions() {
         return this.acceptedTypes;
+    }
+    
+    /**
+     * Gets the content type of this format to use
+     * in the response header.
+     * @return the content type.
+     */
+    public String getContentType() {
+        return this.contentType;
     }
     
     /**
