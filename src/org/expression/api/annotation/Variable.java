@@ -7,8 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
- * @author jacktimblin
+ * A Particular URI variable and the position in the route it will be placed.
+ * @author Jack Timblin
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

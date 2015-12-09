@@ -6,8 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
- * @author Jack
+ * Annotation to determine what HTTP methods a particular action accepts.
+ * @author Jack Timblin
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
