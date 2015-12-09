@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * An generic encapsulation of data input and output which is easily accessible.
@@ -391,6 +393,14 @@ public class Data implements Iterable<Data.Entry>, Iterator<Data.Entry> {
         map.entrySet().stream().forEach((e) -> {
             entries.put(e.getKey(), e.getValue());
         });
+    }
+    
+    /**
+     * Returns a sequential {@code Stream} with this collection as its source.
+     * @return a sequential {@code Stream} over the elements in this collection
+     */
+    public Stream<Data.Entry> stream() {
+        return StreamSupport.stream(spliterator(), false);
     }
     
     /**

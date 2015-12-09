@@ -53,7 +53,7 @@ public class Xml implements Format {
      * @param doc the overall documents to create elements etc.
      */
     private void append(Data output, Node node, Document doc) {
-        for(Data.Entry entry : output) {
+        output.stream().forEach((entry) -> {
             String attr = entry.getKey().toString();
             if(output.isArray()) {
                 attr = node.getNodeName() + "_" +  attr;
@@ -66,7 +66,7 @@ public class Xml implements Format {
                 append(v, e, doc);
             }
             node.appendChild(e);
-        }
+        });
     }
 
     @Override
