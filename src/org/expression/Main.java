@@ -1,5 +1,7 @@
 package org.expression;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
 import org.expression.api.DependencyInjector;
 import org.expression.api.Dispatcher;
 import org.expression.api.Event;
@@ -8,7 +10,6 @@ import org.expression.api.EventManager;
 import org.expression.api.Route;
 import org.expression.api.Router;
 import org.expression.api.exception.DispatchException;
-import org.expression.http.FormatType;
 import org.expression.http.Request;
 import org.expression.http.Response;
 import org.expression.http.Server;
@@ -38,7 +39,11 @@ public class Main {
                 Request r = dis.getCurrentRequest();
                 
                 if(r.getVersion() != 1.1) {
-                    throw new DispatchException(StatusCode.HTTP_VERSION_NOT_SUPPORTED, "<Invalid HTTP Version>", null);
+                    throw DispatchException.newInstance(
+                            StatusCode.HTTP_VERSION_NOT_SUPPORTED, 
+                            "Invalid HTTP Version", 
+                            null
+                    );
                 }
                 
                 return null;
@@ -60,7 +65,14 @@ public class Main {
             
             return d;
         }, true);
-        Server server = new Server(1234);
-        server.serve();
+        
+        try {
+            Server server = new Server(1234, 50, Server.ALL);
+            server.serve();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

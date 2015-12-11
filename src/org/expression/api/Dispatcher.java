@@ -60,7 +60,7 @@ public class Dispatcher implements InjectionAware, EventAware {
         Route matched = router.match(request);
                 
         if(matched == null) {
-            DispatchException ex = new DispatchException(StatusCode.NOT_FOUND, "<Could not locate controller/action>", null);
+            DispatchException ex = DispatchException.newInstance(StatusCode.NOT_FOUND, "Could not locate controller/action", null);
             manager.fire("dispatch:beforeNotFound", this, ex, true);
             if(manager.isCollectingResponses()) {
                 ArrayList<Object> responses = manager.getResponses();
@@ -83,7 +83,11 @@ public class Dispatcher implements InjectionAware, EventAware {
             Object[] params = { di };
             Object o = c.newInstance(params);
             if(!(o instanceof Controller)) {
-                throw new DispatchException(StatusCode.INTERNAL_SERVER_ERROR, "<Internal Server Error>", null);
+                throw DispatchException.newInstance(
+                        StatusCode.INTERNAL_SERVER_ERROR, 
+                        "Internal Server Error", 
+                        new RuntimeException("The provided class is not a Controller instance.")
+                );
             }
             Method[] mz = clz.getDeclaredMethods();
             Method t = null;
@@ -94,11 +98,19 @@ public class Dispatcher implements InjectionAware, EventAware {
                 }
             }
             if(t == null) {
-                throw new DispatchException(StatusCode.NOT_FOUND, "<Could not locate action>", new NullPointerException("No Action Method Found."));
+                throw DispatchException.newInstance(
+                        StatusCode.NOT_FOUND, 
+                        "Could not locate action", 
+                        new NullPointerException("No Action Method Found.")
+                );
             }
             
             if(t.getReturnType() != String.class && t.getReturnType() != Response.class && t.getReturnType() != Data.class) {
-                throw new DispatchException(StatusCode.INTERNAL_SERVER_ERROR, "<Internal Server Error>", null);
+                throw DispatchException.newInstance(
+                        StatusCode.INTERNAL_SERVER_ERROR, 
+                        "Internal Server Error", 
+                        new RuntimeException("The Return type of the action method is not supported.")
+                );
             }
             
             //get annotations.
@@ -111,9 +123,9 @@ public class Dispatcher implements InjectionAware, EventAware {
             });
             
             if(ee.size() != v.length - (ee.hasKey("params") ? 1 : 0)) {
-                throw new DispatchException(
+                throw DispatchException.newInstance(
                     StatusCode.INTERNAL_SERVER_ERROR,
-                    "<Internal Server Error>",
+                    "Internal Server Error",
                     new RuntimeException("Declared Params are not the same length")
                 );
             }
@@ -122,9 +134,9 @@ public class Dispatcher implements InjectionAware, EventAware {
             
             //check the remainder of the Parameters.
             if(mp.length != t.getParameterCount()) {
-                throw new DispatchException(
+                throw DispatchException.newInstance(
                     StatusCode.INTERNAL_SERVER_ERROR,
-                    "<Internal Server Error>",
+                    "Internal Server Error",
                     new RuntimeException("Not enough declared parameters")
                 );
             }
@@ -140,7 +152,11 @@ public class Dispatcher implements InjectionAware, EventAware {
                     }
                 }
                 if(!accepted) {
-                    throw new DispatchException(StatusCode.INTERNAL_SERVER_ERROR, "<method cannot accept http method: " + request.getRequestType().toString() + ">", null);
+                    throw DispatchException.newInstance(
+                            StatusCode.INTERNAL_SERVER_ERROR, 
+                            "Action cannot accept HTTP method: " + request.getRequestType().toString(), 
+                            new RuntimeException("Unsupported HTTP method '" + request.getRequestType().toString() + "' found for action.")
+                    );
                 }
             }
             
@@ -169,10 +185,28 @@ public class Dispatcher implements InjectionAware, EventAware {
             }
             
             return r;
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new DispatchException(StatusCode.NOT_FOUND, "<Could not locate action>", e);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw DispatchException.newInstance(
+                    StatusCode.NOT_FOUND, 
+                    "Could not locate action",
+                    e
+            );
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getCause();
+            if(t instanceof DispatchException) {
+                throw (DispatchException) t;
+            }
+            throw DispatchException.newInstance(
+                    StatusCode.UNKNOWN_ERROR, 
+                    "Unknown Error", 
+                    (Exception)t
+            );
         } catch (ClassNotFoundException | NoSuchMethodException ex) {
-            DispatchException dex = new DispatchException(StatusCode.NOT_FOUND, "<Could not locate controller/action>", ex);
+            DispatchException dex = DispatchException.newInstance(
+                    StatusCode.NOT_FOUND, 
+                    "Could not locate controller/action", 
+                    ex
+            );
             manager.fire("dispatch:beforeNotFound", this, dex, true);
             if(manager.isCollectingResponses()) {
                 ArrayList<Object> responses = manager.getResponses();
@@ -184,7 +218,6 @@ public class Dispatcher implements InjectionAware, EventAware {
             }
             throw dex;
         }
-        
     }
 
     @Override
