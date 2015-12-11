@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.expression.api.exception.DispatchException;
 import org.expression.http.data.Data;
 import org.expression.http.data.Format;
 
@@ -181,8 +182,18 @@ public class Request extends Core {
      */
     public Data getData() {
         Format f = this.format.getFormatter();
-        Data e = (f != null) ? f.parseInput(this) : new Data();
-        return e;
+        Data empty = new Data();
+        empty.set("Request", new Data());
+        Data e = (f != null) ? f.parseInput(this) : empty;
+        //check if the root key is 'Request'
+        if(!e.hasKey("Request") || (e.size() != 1)) {
+            throw DispatchException.newInstance(
+                    StatusCode.BAD_REQUEST, 
+                    "Request Data starts with invalid root node.", 
+                    new NullPointerException("Node 'Request' was not found at the root.")
+            );
+        }
+        return e.get("Request");
     }
     
     /**

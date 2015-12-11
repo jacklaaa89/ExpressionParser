@@ -22,10 +22,6 @@ public class EvaluateController extends Controller {
     @HttpMethod({RequestType.POST})
     public Data indexAction() throws DispatchException {
         Data d = this.getRequest().getData();
-        if(!d.hasKey("Request")) {
-            return new Data();
-        }
-        d = d.get("Request");
         if(!d.hasKey("Expression")) {
             return new Data();
         }
@@ -38,7 +34,6 @@ public class EvaluateController extends Controller {
         e.setExpression(ex);
         try {
             Context c = e.eval();
-            System.out.println(c);
             re.set("Expression", c.getExpression());
             re.set("Result", c.getValue().toString());
             return re;

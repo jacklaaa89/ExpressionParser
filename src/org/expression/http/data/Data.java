@@ -171,7 +171,7 @@ public class Data implements Iterable<Data.Entry>, Iterator<Data.Entry> {
         }
         boolean emptyButInteger = ((key instanceof Integer) && entries.isEmpty());
         if(key != null) {
-            key = (!emptyButInteger && this.isObject()) ? (""+(String)key.toString()) : key;
+            //key = (!emptyButInteger && this.isObject()) ? (""+(String)key.toString()) : key;
             this.entries.put(key, (Data) value);
         }
     }
