@@ -14,7 +14,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
-import org.expression.Context;
 import org.expression.State;
 import org.expression.Scalar;
 import org.expression.Type;
@@ -892,7 +891,9 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
      */
    @Override 
    public Context visitParenExpr(ParenExprContext ctx) {
-       return this.visit(ctx.expr()); 
+       Context c = this.visit(ctx.expr()); 
+       c.wrapExpression("(", ")");
+       return c;
    }
    
    /**

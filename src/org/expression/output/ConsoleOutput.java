@@ -1,6 +1,6 @@
 package org.expression.output;
 
-import org.expression.Context;
+import org.expression.parser.Context;
 
 /**
  * The default output. Prints the context to the console.

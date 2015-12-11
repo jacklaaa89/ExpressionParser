@@ -1,5 +1,7 @@
-package org.expression;
+package org.expression.parser;
 
+import org.expression.Scalar;
+import org.expression.Type;
 import org.expression.structure.Matrix;
 import org.expression.structure.Vector;
 
@@ -32,7 +34,7 @@ public class Context<T extends Type> {
     /**
      * The expression which was evaluated.
      */
-    private final String expression;
+    private String expression;
     
     /**
      * Initializes a context, providing it with a result from this evaluation.
@@ -86,6 +88,18 @@ public class Context<T extends Type> {
      */
     public T getValue() {
         return value;
+    }
+    
+    /**
+     * Wraps the expression in start and end string values.
+     * Useful for applying parenthesis to expressions, as they are
+     * stripped during the parsing process to account for the
+     * order of operations.
+     * @param start the value to append to the start of the expression
+     * @param end  the value to append to the end.
+     */
+    protected void wrapExpression(String start, String end) {
+        this.expression = start + expression + end;
     }
     
     /**

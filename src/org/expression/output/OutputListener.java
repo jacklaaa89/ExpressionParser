@@ -1,6 +1,6 @@
 package org.expression.output;
 
-import org.expression.Context;
+import org.expression.parser.Context;
 
 /**
  * Interface used to get output from when the 'print' keyword is used.
