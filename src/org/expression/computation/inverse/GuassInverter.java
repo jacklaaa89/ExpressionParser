@@ -1,9 +1,7 @@
 package org.expression.computation.inverse;
 
 import org.expression.Scalar;
-import org.expression.computation.linear.LinearSystemSolver;
 import org.expression.structure.Matrix;
-import org.expression.structure.Vector;
 
 /**
  * Calculate the inverse of A using Guassian Elimination.

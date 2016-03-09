@@ -25,7 +25,18 @@ public interface Arithmetic<T extends Arithmetic> extends Type<T>, Comparable<T>
      */
     public  <D extends Arithmetic> D negate();
     
+    /**
+     * Increments a value (or all of the values in a structure) by 1.
+     * @param <D> The data type to return.
+     * @return the value after all values have been incremented.
+     */
     public <D extends Arithmetic> D increment();
+    
+    /**
+     * Decrements a value (or all of the values in a structure) by 1.
+     * @param <D> The data type to return.
+     * @return the value after all values have been decremented.
+     */
     public <D extends Arithmetic> D decrement();
     
     /**
@@ -125,7 +136,7 @@ public interface Arithmetic<T extends Arithmetic> extends Type<T>, Comparable<T>
     public int compareTo(Arithmetic o);
     
     /**
-     * {@inheritDoc }
+     * {@inheritDoc}
      */
     @Override
     public boolean equals(Object o);

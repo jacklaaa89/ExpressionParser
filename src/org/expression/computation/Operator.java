@@ -225,6 +225,11 @@ public class Operator {
         return this;
     }
     
+    /**
+     * Removes a list of evaluators from this operation.
+     * @param expression the list of evaluators to remove. 
+     * @return this operator after the specified evaluators are removed.
+     */
     public Operator removeEvaluator(int[] expression) {
         for(int i = 0; i < expression.length; i++) {
             this.removeEvaluator(expression[i]);

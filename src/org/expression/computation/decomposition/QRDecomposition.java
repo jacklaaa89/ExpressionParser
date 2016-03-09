@@ -8,7 +8,7 @@ import org.expression.structure.Predicate;
 /**
  * Decomposes a matrix A in which A = Q*R where R is an upper
  * triangular matrix and Q is an orthogonal matrix. 
- * i.e Q^T*Q = I where Q^T is the tranpose of Q and I is the Identity matrix.
+ * i.e Q^T*Q = I where Q^T is the transpose of Q and I is the Identity matrix.
  * @author Jack Timblin
  */
 public class QRDecomposition extends AbstractDecompositor implements Decompositor {

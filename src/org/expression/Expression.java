@@ -38,8 +38,6 @@ import org.expression.structure.Predicate;
 
 /**
  * The Expression class which is an encapsulation of an expression to parse.
- * We can set the precision and rounding mode to use in the MathContext when parsing the
- * expression.
  * We can also parse boolean expressions which respectfully return a 0 or 1 which can be
  * evaluated to FALSE or TRUE.
  * @author Jack Timblin 
@@ -128,7 +126,7 @@ public class Expression {
     }
     
     /**
-     * Initialises the Expression class, adding all of the core operations, variables and functions.
+     * Initializes the Expression class, adding all of the core operations, variables and functions.
      */
     private void initialize() {
         //Initialize the data collections.
@@ -159,6 +157,8 @@ public class Expression {
         addFunction("floor", Functions.FLOOR);
         addFunction("ceiling", Functions.CEILING);
         
+        //random function, generates a Scalar, Vector or Matrix with
+        //random values between 0 and 1.
         addFunction(new Function("random", 0){
             @Override
                 public Type eval(List<Type> args) {
@@ -198,6 +198,7 @@ public class Expression {
             }
         );
         
+        //gets the largest value in a data structure.
         addFunction(new Function("max", 1){
             @Override
                 public Type eval(List<Type> args) throws ClassCastException {
@@ -206,6 +207,7 @@ public class Expression {
             }
         );
         
+        //gets the smallest value in a data structure.
         addFunction(new Function("min", 1){
             @Override
                 public Type eval(List<Type> args) throws ClassCastException {
@@ -214,6 +216,7 @@ public class Expression {
             }
         );
         
+        //rounds all of the values (or value) to the provided precision.
         addFunction(new Function("round", 2){
             @Override
                 public Type eval(List<Type> args) throws ClassCastException {
@@ -230,6 +233,7 @@ public class Expression {
             }
         );
         
+        //determines the sum of all the values in a data structure.
         addFunction(new Function("sum", 1) {
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
@@ -237,7 +241,7 @@ public class Expression {
             }
         });
         
-        //Matrix functions.
+        //Calculates the transpose of a Matrix.
         addFunction(new Function("transpose", 1) {
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
@@ -246,6 +250,7 @@ public class Expression {
             }
         });
         
+        //generates a new identity matrix with n values.
         addFunction(new Function("identity", 1){
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
@@ -254,6 +259,7 @@ public class Expression {
             }
         });
         
+        //generates a scalar matrix of n values.
         addFunction(new Function("scalar", 2) {
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
@@ -263,6 +269,7 @@ public class Expression {
             }
         });
         
+        //determines if a matrix is square.
         addFunction(new Function("square", 1){
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
@@ -271,6 +278,7 @@ public class Expression {
             }
         });
         
+        //determines if a matrix is diagonally dominant
         addFunction(new Function("diagonally_dominant", 1){
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
@@ -279,6 +287,7 @@ public class Expression {
             }
         });
         
+        //calculates the determinant of a matrix.
         addFunction(new Function("det", 1){
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
@@ -287,6 +296,7 @@ public class Expression {
             }
         });
         
+        //determines the rank of a matrix.
         addFunction(new Function("rank", 1) {
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
@@ -295,6 +305,7 @@ public class Expression {
             }
         });
         
+        //inserts a new row into a matrix or a single entry into a vector.
         addFunction(new Function("row", 2) {
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
@@ -307,6 +318,7 @@ public class Expression {
             }
         });
         
+        //Attempts to solve a system of equations using guassian elimination.
         addFunction(new Function("gaussian", 2) {
             @Override
             public Type eval(List<Type> args) {
@@ -316,6 +328,7 @@ public class Expression {
             }
         });
         
+        //Attempts to solve a system of equations using LU factorization.
         addFunction(new Function("lu", 2){
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
@@ -325,6 +338,7 @@ public class Expression {
             }
         });
         
+        //Attempts to solve a system of equations using QR factorization.
         addFunction(new Function("qr", 2) {
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
@@ -334,6 +348,7 @@ public class Expression {
             }
         });
         
+        //adds a new column into a matrix or a new entry in a vector.
         addFunction(new Function("column", 2){
             @Override
             public Type eval(List<Type> args) {
@@ -355,6 +370,7 @@ public class Expression {
             }
         });
         
+        //determines the size of a data structure.
         addFunction(new Function("size", 1){
             @Override
             public Type eval(List<Type> args) throws ClassCastException {
@@ -367,6 +383,7 @@ public class Expression {
             }
         });
         
+        //attempts to retrieve a slice of a data structure from n to m.
         addFunction(new Function("slice", 3) {
             @Override
             public Type eval(List<Type> args) {
@@ -387,6 +404,7 @@ public class Expression {
             }
         });
         
+        //attempts to determine the square root of a value.
         addFunction(new Function("sqrt", 1){
                 @Override
                 public Type eval(List<Type> args) {
@@ -397,6 +415,7 @@ public class Expression {
             }
         );
         
+        //bitwise left operator.
         addOperator(new Operator("<<")
             .addEvaluator(
                 new int[] {
@@ -410,6 +429,7 @@ public class Expression {
             )
         );
         
+        //bitwise right operator.
         addOperator(new Operator(">>")
             .addEvaluator(
                 new int[] {
@@ -423,6 +443,7 @@ public class Expression {
             )
         );
         
+        //modulo operator.
         addOperator(new Operator("%")
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
@@ -433,6 +454,7 @@ public class Expression {
             .removeEvaluator(Operator.EXPRESSION_VECTOR_MATRIX)
         );
         
+        //addition operator.
         addOperator(new Operator("+")
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
@@ -444,6 +466,7 @@ public class Expression {
             .removeEvaluator(Operator.EXPRESSION_VECTOR_MATRIX)
         );
         
+        //multiplication operator.
         addOperator(new Operator("*")
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
@@ -455,6 +478,7 @@ public class Expression {
             .removeEvaluator(Operator.EXPRESSION_VECTOR_MATRIX)
         );
         
+        //substraction operator
         addOperator(new Operator("-")
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
@@ -466,6 +490,7 @@ public class Expression {
             .removeEvaluator(Operator.EXPRESSION_VECTOR_MATRIX)
         );
         
+        //power operator.
         addOperator(new Operator("^")
             .addEvaluator(
                 Operator.EXPRESSION_SCALAR, 
@@ -481,6 +506,7 @@ public class Expression {
             )
         );
         
+        //division operator.
         addOperator(new Operator("/")
             .addEvaluator(
                 Operator.EXPRESSION_ALL,
@@ -490,6 +516,7 @@ public class Expression {
             )
         );
         
+        //logical OR operator.
         addOperator(new Operator("||")
             .addEvaluator(
                 Operator.EXPRESSION_SCALAR, 
@@ -555,6 +582,7 @@ public class Expression {
             )
         );
         
+        //logical AND operator.
         addOperator(new Operator("&&")
             .addEvaluator(
                 Operator.EXPRESSION_SCALAR, 
@@ -625,6 +653,7 @@ public class Expression {
             return Scalar.ZERO;
         };
         
+        //less than operator.
         addOperator(new Operator("<")
             .addEvaluator(
                 Operator.EXPRESSION_SYMMETRIC, 
@@ -635,6 +664,7 @@ public class Expression {
             .setDefaultEvaluator(def)
         );
         
+        //greater than operator.
         addOperator(new Operator(">")
             .addEvaluator(
                 Operator.EXPRESSION_SYMMETRIC, 
@@ -645,6 +675,7 @@ public class Expression {
             .setDefaultEvaluator(def)
         );
         
+        //greater than or equal to operator.
         addOperator(new Operator(">=")
             .addEvaluator(
                 Operator.EXPRESSION_SYMMETRIC, 
@@ -655,6 +686,7 @@ public class Expression {
             .setDefaultEvaluator(def)
         );
         
+        //less than or equal to operator.
         addOperator(new Operator("<=")
             .addEvaluator(
                 Operator.EXPRESSION_SYMMETRIC, 
@@ -665,6 +697,7 @@ public class Expression {
             .setDefaultEvaluator(def)
         );
         
+        //logical equal to operator.
         addOperator(new Operator("==")
             .addEvaluator(
                 Operator.EXPRESSION_SYMMETRIC, 
@@ -675,6 +708,7 @@ public class Expression {
             .setDefaultEvaluator(def)
         );
         
+        //logical not equal to operator.
         addOperator(new Operator("!=")
             .addEvaluator(
                 Operator.EXPRESSION_SYMMETRIC, 

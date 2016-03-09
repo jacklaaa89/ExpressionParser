@@ -35,7 +35,6 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
      * Initializes an empty matrix with zero values.
      * @param m the column size
      * @param n the row size.
-     * @param mc A MathContext to use in computation.
      */
     public Matrix(int m, int n) {
         super(m); //set the row capacity.

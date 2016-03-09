@@ -6,8 +6,9 @@ import org.expression.structure.Predicate;
 import org.expression.structure.Vector;
 
 /**
- *
- * @author jacktimblin
+ * Attempts to solve a System of Linear Equations using the Jacobi
+ * method, i.e. the best guess method to converge a pretty accurate solution.
+ * @author Jack Timblin
  */
 public class Jacobi extends AbstractSolver implements Solver {
     

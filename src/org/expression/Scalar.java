@@ -3,7 +3,6 @@ package org.expression;
 import org.expression.computation.Handler;
 import org.expression.computation.Arithmetic;
 import org.expression.computation.Functions;
-import java.math.MathContext;
 
 /**
  * A representation of a Scalar value. It is effectively a container for
@@ -34,8 +33,7 @@ public class Scalar implements Arithmetic<Arithmetic>  {
     public final double value;
     
     /**
-     * Initializes a Scalar value using a given MathContext,
-     * using a DECIMAL32 MathContext.
+     * Initializes a Scalar value
      * @param val the initial value of this scalar.
      */
     public Scalar(double val) {
@@ -43,7 +41,7 @@ public class Scalar implements Arithmetic<Arithmetic>  {
     }
     
     /**
-     * Initializes a Scalar value using a given MathContext.
+     * Initializes a Scalar value
      * @param value the initial value of this scalar to be parsed into a double.
      */
     public Scalar(String value) {
@@ -51,8 +49,7 @@ public class Scalar implements Arithmetic<Arithmetic>  {
     }
     
     /**
-     * Generates a Scalar with a random value between 0 and 1, 
-     * using a DECIMAL32 MathContext.
+     * Generates a Scalar with a random value between 0 and 1
      * @return the random Scalar value.
      */
     public static Scalar random() {
@@ -293,7 +290,7 @@ public class Scalar implements Arithmetic<Arithmetic>  {
     }
     
     /**
-     * return the value of this {@code Scalar} represented as an int.
+     * return the value of this {@code Scalar} represented as an integer.
      * @return this scalar as an integer
      */
     public int intValue() {

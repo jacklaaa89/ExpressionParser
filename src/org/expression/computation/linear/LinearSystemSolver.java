@@ -27,12 +27,20 @@ public enum LinearSystemSolver {
             return new LU(A);
         }
     },
+    /**
+     * Solver which solves a system of linear equations using 
+     * Least Squares.
+     */
     LEAST_SQUARES {
         @Override
         public AbstractSolver get(Matrix A) {
             return new LeastSquares(A);
         }
     },
+    /**
+     * Solver which solves a system of linear equations using 
+     * the Jacobi method.
+     */
     JACOBI {
         @Override
         public AbstractSolver get(Matrix A) {

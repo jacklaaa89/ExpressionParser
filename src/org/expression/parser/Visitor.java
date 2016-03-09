@@ -70,7 +70,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     private final State state;
     
     /**
-     * Initialises a Visitor with all the required variables.
+     * Initializes a Visitor with all the required variables.
      * @param state the current state of the expression variables.
      */
     public Visitor(State state) {

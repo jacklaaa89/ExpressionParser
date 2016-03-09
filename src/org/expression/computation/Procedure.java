@@ -37,7 +37,7 @@ public class Procedure {
     private Class<?> returnType = null;
     
     /**
-     * Initialises A new procedure to use within the script.
+     * Initializes A new procedure to use within the script.
      * @param name the name of the procedure.
      * @param variableNames the names of the variables that were defined.
      * @param ctx the scope/context/body of the procedure.

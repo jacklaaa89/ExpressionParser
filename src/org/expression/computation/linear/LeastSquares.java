@@ -8,11 +8,15 @@ import org.expression.structure.Predicate;
 import org.expression.structure.Vector;
 
 /**
- *
- * @author jacktimblin
+ * Attempts to solve a System of Linear Equations using the Least Squares method.
+ * @author Jack Timblin
  */
 public class LeastSquares extends AbstractSolver implements Solver {
-
+    
+    /**
+     * Initializes the Least Squares SOlver.
+     * @param A the coefficient Matrix A.
+     */
     public LeastSquares(Matrix A) {
         super(A);
     }

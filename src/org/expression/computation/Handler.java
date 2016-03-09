@@ -1,6 +1,5 @@
 package org.expression.computation;
 
-import java.math.MathContext;
 import org.expression.Scalar;
 
 /**
