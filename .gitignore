@@ -1,5 +1,6 @@
 nbproject/*
 dist/*
+!dist/ExpressionParser-Complete.jar
 build/*
 manifest.mf
 .DS_Store
