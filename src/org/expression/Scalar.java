@@ -147,6 +147,7 @@ public class Scalar implements Arithmetic<Arithmetic>  {
      * @return the computed data structure.
      */
     public Scalar divide(Scalar data) {
+        if(data.equals(ZERO)) {throw new RuntimeException("Division by Zero."); }
         return new Scalar(this.value/((Scalar)data).value);
     }
 

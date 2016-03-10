@@ -514,7 +514,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     @Override
     public Matrix divide(Type data) {
         if(data instanceof Scalar) return this.divide((Scalar)data);
-        throw new ArithmeticException("matrix division is unsupported");
+        throw new RuntimeException("matrix division is unsupported");
     }
     
     /**
