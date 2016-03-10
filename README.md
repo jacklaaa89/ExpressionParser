@@ -3,7 +3,7 @@ ExpressionParser
 
 ### Introduction
 
-ExpressionParser parses and evaluates mathematical and boolean expressions. It utilizes a lexer and parser generated using the Antlr parser generator.
+ExpressionParser parses and evaluates mathematical and boolean expressions. It utilizes a lexer and parser generated using the Antlr parser generator. The framework is compiled into a JAR file (along with a JavaDoc JAR) in the `dist/` directory. Just add these to your classpath or import as a library to your project in your IDE of choice.
 
 ##### Simple Usage
 
