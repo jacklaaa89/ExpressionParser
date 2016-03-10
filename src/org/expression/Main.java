@@ -9,8 +9,8 @@ import org.expression.parser.Context;
 public class Main {
     public static void main(String[] args) {
         Expression ex = new Expression();
-        ex.setExpression("[2,RANDOM()] + 1;");
+        ex.setExpression("var a = -[1,1]; -a++;");
         Context c = ex.eval();
-        System.out.println(c.getValue());
+        System.out.println(c);
     }
 }
