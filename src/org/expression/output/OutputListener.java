@@ -26,4 +26,12 @@ public interface OutputListener {
      * @param charPositionInLine the position in that line where the error occurred.
      */
     public void syntaxError(String message, int line, int charPositionInLine);
+    
+    /**
+     * Triggered when an exception is thrown, if this method is set then exceptions are
+     * not thrown, they are passed to this method.
+     * @param e the exception which was thrown.
+     */
+    public void exceptionThrown(RuntimeException e);
+    
 }

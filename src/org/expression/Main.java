@@ -9,7 +9,7 @@ import org.expression.parser.Context;
 public class Main {
     public static void main(String[] args) {
         Expression ex = new Expression();
-        ex.setExpression("var a = -[1,1]; -a++;");
+        ex.setExpression("10 / 0;");
         Context c = ex.eval();
         System.out.println(c);
     }

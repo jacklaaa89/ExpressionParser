@@ -923,6 +923,13 @@ public class Expression {
             if(listener != null) {
                 listener.onReturn(c);
             }
+        } catch (RuntimeException e) {
+            //any other runtime exception is an error.
+            if(listener == null) {
+                throw e;
+            }
+            c = null;
+            listener.exceptionThrown(e);
         }
         
         if(c == null) {

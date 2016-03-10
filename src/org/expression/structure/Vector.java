@@ -241,10 +241,8 @@ public class Vector extends BaseStructure<Scalar, Vector, VectorFunction> {
      * Attempts to divide each value in this Vector by a scalar value.
      * @param divisor the scalar value to divide each element in the vector with.
      * @return the result of A/b = C
-     * @throws ArithmeticException if a division by zero is attempted.
      */
-    public Vector divide(Scalar divisor) throws ArithmeticException {
-        if(divisor.equals(Scalar.ZERO)) throw new ArithmeticException("division by zero.");
+    public Vector divide(Scalar divisor) {
         Vector A = this;
         int N = this.size();
         Vector C = new Vector(N);
