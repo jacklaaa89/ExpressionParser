@@ -3,6 +3,9 @@ package org.expression.computation;
 import java.util.HashMap;
 import org.expression.parser.Context;
 import org.expression.Type;
+import org.expression.exception.EmptyContextOperationException;
+import org.expression.exception.InvalidDimensionsException;
+import org.expression.exception.UnsupportedOperationException;
 
 /**
  * A encapsulation of an operator to use in the grammar.
@@ -27,9 +30,12 @@ public class Operator {
      * The default evaluator if one is not set for a particular context.
      */
     private Evaluator defaultEvaluator = (Evaluator) (Arithmetic left, Arithmetic right) -> {
+        if(left == null || right == null) { /* we have an empty context */
+            throw new EmptyContextOperationException("an operation was attempted on an empty context.");
+        }
         String l = left.getClass().getSimpleName();
         String r = right.getClass().getSimpleName();
-        throw new ArithmeticException("unsupported operation for ("+l+" "+sign+" "+r+").");
+        throw new UnsupportedOperationException("unsupported operation for ("+l+" "+sign+" "+r+").", left, right, this);
     };
     
     /***** EXPRESSION_CONSTANTS *****/
@@ -333,7 +339,7 @@ public class Operator {
         if((left.isArray() && right.isArray()) || (left.isMatrix() && right.isMatrix())) {
             Arithmetic l = (Arithmetic) left.getValue(); Arithmetic r = (Arithmetic) right.getValue();
             if(!l.sizeOf(r)) {
-                throw new ArithmeticException("dimensions do not agree");
+                throw new InvalidDimensionsException("dimensions do not agree");
             }
         }
         

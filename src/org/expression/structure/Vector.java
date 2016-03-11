@@ -272,7 +272,7 @@ public class Vector extends BaseStructure<Scalar, Vector, VectorFunction> {
         Vector C = new Vector(N);
         for(int i = 0; i < N; i++) {
             Scalar bi = b.get(i);
-            if(bi.equals(Scalar.ZERO)) throw new ArithmeticException("division by zero.");
+            //if(bi.equals(Scalar.ZERO)) throw new ArithmeticException("division by zero.");
             Scalar n = (Scalar) A.get(i).divide(bi);
             C.set(i, n);
         }

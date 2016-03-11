@@ -63,6 +63,11 @@ public class Procedure {
     public Context run(final State state) {
         Visitor v = new Visitor(state);
         Context res;
+        if(ctx == null) {
+            //generate a empty context from the state if there is 
+            //no body to this procedure.
+            return new Context(null, 1, 1, state.expression);
+        }
         try {
             res = v.visit(ctx);
         } catch (ExpressionException ex) {

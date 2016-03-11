@@ -902,6 +902,7 @@ public class Expression {
         s.listener = listener;
         s.operators = operators;
         s.variables = variables;
+        s.expression = expression.toString();
         return s;
     }
     

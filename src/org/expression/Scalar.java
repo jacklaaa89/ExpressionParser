@@ -3,6 +3,7 @@ package org.expression;
 import org.expression.computation.Handler;
 import org.expression.computation.Arithmetic;
 import org.expression.computation.Functions;
+import org.expression.exception.DivisonByZeroException;
 
 /**
  * A representation of a Scalar value. It is effectively a container for
@@ -147,7 +148,7 @@ public class Scalar implements Arithmetic<Arithmetic>  {
      * @return the computed data structure.
      */
     public Scalar divide(Scalar data) {
-        if(data.equals(ZERO)) {throw new RuntimeException("Division by Zero."); }
+        if(data.equals(ZERO)) {throw new DivisonByZeroException("Division by Zero.", this, data); }
         return new Scalar(this.value/((Scalar)data).value);
     }
 

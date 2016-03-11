@@ -655,8 +655,10 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        List<String> vn = new ArrayList<>();
        if(ctx.procedureParams() != null && !ctx.procedureParams().variable().isEmpty()) {
             List<VariableContext> l = ctx.procedureParams().variable();
-            if(!ctx.ex().procedure().isEmpty()) {
-                throw new RuntimeException("cannot define a function inside a function.");
+            if(ctx.ex() != null) {
+                if(!ctx.ex().procedure().isEmpty()) {
+                    throw new RuntimeException("cannot define a function inside a function.");
+                }
             }
 
             l.stream().forEach((ve) -> {

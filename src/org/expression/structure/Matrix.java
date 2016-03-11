@@ -13,6 +13,7 @@ import org.expression.computation.decomposition.LinearSystemDecompositor;
 import org.expression.computation.decomposition.SingleValueDecomposition;
 import org.expression.computation.linear.AbstractSolver;
 import org.expression.computation.linear.LinearSystemSolver;
+import org.expression.exception.InvalidDimensionsException;
 import org.expression.structure.function.MatrixFunction;
 
 /**
@@ -299,7 +300,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
         if(B instanceof Scalar) return this.add((Scalar)B);
         Matrix b = (Matrix) B;
         Matrix A = this;
-        if(b.M != A.M || b.N != A.N) throw new RuntimeException("Illegal matrix dimensions");
+        if(b.M != A.M || b.N != A.N) throw new InvalidDimensionsException("Illegal matrix dimensions");
         Matrix C = new Matrix(M, N);
         for(int i = 0; i < M; i++) {
             for(int j = 0; j < N; j++) {
@@ -354,7 +355,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
         if(B instanceof Scalar) return this.subtract((Scalar)B);
         Matrix A = this;
         Matrix b = (Matrix) B;
-        if(b.M != A.M || b.N != A.N) throw new RuntimeException("Illegal matrix dimensions");
+        if(b.M != A.M || b.N != A.N) throw new InvalidDimensionsException("Illegal matrix dimensions");
         Matrix C = new Matrix(M, N);
         for(int i = 0; i < M; i++) {
             for(int j = 0; j < N; j++) {
@@ -376,7 +377,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
         if(B instanceof Vector) return this.multiply((Vector)B);
         Matrix A = this;
         Matrix b = (Matrix) B;
-        if(A.N != b.M) throw new RuntimeException("Illegal matrix dimensions");
+        if(A.N != b.M) throw new InvalidDimensionsException("Illegal matrix dimensions");
         Matrix C = new Matrix(A.M, b.N);
         for(int i = 0; i < C.M; i++) {
             for(int j = 0; j < C.N; j++) {
@@ -418,7 +419,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
         if(!(object instanceof Matrix)) return false;
         Matrix B = (Matrix) object;
         Matrix A = this;
-        if(B.M != A.M || B.N != A.N) throw new RuntimeException("Illegal matrix dimensions");
+        if(B.M != A.M || B.N != A.N) throw new InvalidDimensionsException("Illegal matrix dimensions");
         for(int i = 0; i < M; i++) {
             for(int j = 0; j < N; j++) {
                 if(!A.get(i, j).equals(B.get(i, j))) return false;
@@ -514,7 +515,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     @Override
     public Matrix divide(Type data) {
         if(data instanceof Scalar) return this.divide((Scalar)data);
-        throw new RuntimeException("matrix division is unsupported");
+        throw new ArithmeticException("matrix division is unsupported");
     }
     
     /**
@@ -598,7 +599,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
         if(data instanceof Scalar) return this.mod((Scalar)data);
         Matrix A = this;
         Matrix B = (Matrix) data;
-        if((A.M != B.M) || A.N != B.N) throw new ArithmeticException("invalid matrix dimensions");
+        if((A.M != B.M) || A.N != B.N) throw new InvalidDimensionsException("invalid matrix dimensions");
         
         Matrix C = Matrix.from(A);
         for(int i = 0; i < A.M; i++) {
@@ -653,7 +654,7 @@ public class Matrix extends BaseStructure<Vector, Matrix, MatrixFunction> {
     @Override
     public Matrix slice(Coordinate start, Coordinate end) {
         if(end.x - start.x < 0 || end.y - start.y < 0) {
-            throw new ArithmeticException("invalid dimensions");
+            throw new InvalidDimensionsException("invalid dimensions");
         }
         
         if(start.equals(Coordinate.COORDINATE_START)) {

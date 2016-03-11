@@ -60,6 +60,11 @@ public class State {
      * The defined output listener which is triggered on certain parse events.
      */
     public OutputListener listener;
+    
+    /**
+     * The current expression string for the current state.
+     */
+    public String expression;
 
     /**
      * Copies a new state object from an existing state.
@@ -77,6 +82,7 @@ public class State {
         s.procedures = state.procedures;
         s.tree = state.tree;
         s.variables = state.variables;
+        s.expression = state.expression;
         return s;
     }
 
