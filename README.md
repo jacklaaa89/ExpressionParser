@@ -129,6 +129,13 @@ Expression e = new Expression("var x = 4; if(4 < 3){ /* empty context. */ }");
 System.out.println(e.eval()); //prints [Empty Context] as no return value was determined.
 ````
 
+However, even though empty contexts are supported, attempting to use an empty context in an operation or a function will result in an an exception being thrown.
+
+````java
+Expression e = new Expression("function hello(arg) {} hello(1) + 2; SIZE(hello(1));");
+System.out.println(e.eval()); //throws exception as performing operations on empty contexts is invalid.
+````
+
 You can print out results from other expressions using the `print` keyword which prints the result to the output listener.
 
 ###### Output Listener
@@ -156,6 +163,12 @@ e.setExpression("var x = 1; var y = 2; print x; print y; print x + y;");
 //y = 2.0
 //x + y = 3.0
 ````
+
+The `OutputListener` interface also has a variety of other methods which will need to be overriden, these are:
+
+- `syntaxError()` - triggered when a syntax error is found while parsing the expression.
+- `exceptionThrown()` - triggered when any exception is thrown in the application.
+- `onReturn()` - triggered when a return statement is used in the script. (deprecated)
 
 ##### Commenting
 

@@ -16,6 +16,7 @@ public interface OutputListener {
     /**
      * Triggered when an return statement is used in the script.
      * @param context the returned context.
+     * @deprecated - seems a redundant callback?
      */
     public void onReturn(Context context);
     
