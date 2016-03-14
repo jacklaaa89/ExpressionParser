@@ -687,3 +687,4 @@ There is some functionality that is in the works of being implemented. These are
 - [x] Allow type checking using instanceof.
 - [x] Implement return statements in scripts.
 - [x] Implement import statements in scripts.
+- [ ] Add support to specify whether to use radians or degrees in trigonometric functions.
