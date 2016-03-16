@@ -185,6 +185,11 @@ However, because these operators are supported on values which don't nessacarily
 
 So for example: `var n = 0; n = n--;` and `var b = [1, 2, 3]++;` are both valid statements. 
 
+The operators that are used in incrementing/decrementing variables are now controlled using `FixedOperators`
+which means their functionality can be customised to meet your needs.
+
+However, since for loops use these statements to control the execution of the loop condition, changing the functionality of these variables will also affect this functionality, as for loops are bound to the API.
+
 ##### Control Statements
 
 ###### If Statement
@@ -366,6 +371,36 @@ Context result = e.eval();
 
 System.out.println(result); //prints 4
 ````
+
+#### Fixed Operations 
+
+Fixed Operators can also be added and customised. A fixed operator is where an operator is pre/postfixed to a value (An example is the ++/-- operators.)
+These are defined in effectively the same way as normal operations except we use a `FixedOperator` operator and this requires a secondary variable or whether 
+this operator is pre or post fixed to the value.
+
+So for example, if we wanted to add a '++' operator which is prefixed to variables then we can do:
+
+````java
+Expression e = new Expression();
+
+e.addOperator(
+    new FixedOperator(
+        "++", 
+        FixedOperator.PREFIX
+    ).addEvaluator(
+        Operator.EXPRESSION_ALL,
+        new Evaluator() {
+                @Override
+                public Type eval(Arithmetic left, Arithmetic right) {
+                    //right is always null.
+                    return left.add(Scalar.TWO);
+                }
+        }
+    )
+);
+````
+
+> Also Fixed operators only support the expression types EXPRESSION_SCALAR, EXPRESSION_VECTOR, EXPRESSION_MATRIX & EXPRESSION_ALL (for all).
 
 ### Functions
 
