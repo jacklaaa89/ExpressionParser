@@ -26,8 +26,9 @@ expression
 	;
 
 expr
-	: newStructure						   #newExpr
-    | incDecExpression                     #incDecExpr
+	: incDecExpression	#incDecExpr
+        | prefixOperation       #prefixExpr
+        |   newStructure           #newExpr
 	| arrayAccess                          #arrayAccessExpr
 	| LPAREN expr RPAREN                   #parenExpr
 	| instanceOfExpression      		   #instanceofExpr
@@ -50,9 +51,14 @@ atom
 	;
 
 incDecExpression
-	: atom (INCREMENT|DECREMENT)
-	| func (INCREMENT|DECREMENT)
+	: atom (INCREMENT|DECREMENT|OPERATOR)
+	| func (INCREMENT|DECREMENT|OPERATOR)
 	;
+
+prefixOperation
+        : (INCREMENT|DECREMENT|OPERATOR) atom
+        | (INCREMENT|DECREMENT|OPERATOR) func
+        ;
 
 instanceOfExpression
 	: NOT LPAREN variable INSTANCE_OF type RPAREN

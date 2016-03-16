@@ -1,4 +1,4 @@
-// Generated from ExpressionParser/Expression.g4 by ANTLR 4.5.1
+// Generated from Expression.g4 by ANTLR 4.5.1
 
 package org.expression.parser;
 

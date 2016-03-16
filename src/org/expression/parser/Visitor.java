@@ -14,10 +14,12 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
-import org.expression.State;
+import org.expression.Scope;
 import org.expression.Scalar;
 import org.expression.Type;
 import org.expression.computation.Arithmetic;
+import org.expression.computation.Operator;
+import org.expression.computation.FixedOperator;
 import org.expression.computation.Procedure;
 import org.expression.output.ConsoleOutput;
 import org.expression.parser.ExpressionParser.ArrayAccessContext;
@@ -48,6 +50,8 @@ import org.expression.parser.ExpressionParser.LogicalOperationContext;
 import org.expression.parser.ExpressionParser.MatrixContext;
 import org.expression.parser.ExpressionParser.NewExprContext;
 import org.expression.parser.ExpressionParser.NewStructureContext;
+import org.expression.parser.ExpressionParser.PrefixExprContext;
+import org.expression.parser.ExpressionParser.PrefixOperationContext;
 import org.expression.parser.ExpressionParser.PrintContext;
 import org.expression.parser.ExpressionParser.ProcedureContext;
 import org.expression.parser.ExpressionParser.ProcedureReturnTypeContext;
@@ -67,13 +71,13 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
     /**
      * the current state of the expression variables.
      */
-    private final State state;
+    private final Scope state;
     
     /**
      * Initializes a Visitor with all the required variables.
      * @param state the current state of the expression variables.
      */
-    public Visitor(State state) {
+    public Visitor(Scope state) {
         this.state = state;
     }
     
@@ -335,7 +339,38 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        }
        
        Arithmetic t;
-       t = (ce.DECREMENT() != null) ? ((Arithmetic)c.getValue()).decrement() : ((Arithmetic)c.getValue()).increment();
+       
+       String op = (ce.DECREMENT() != null) ? "--" : ((ce.INCREMENT() != null) ? "++" : ce.OPERATOR().getText());
+       FixedOperator o = (FixedOperator) this.state.postfixOperators.get(op);
+       
+       if(o == null) { throw new RuntimeException("Undefined operator."); }
+       t = (Arithmetic) o.evaluate(c, null).getValue();
+       //t = (ce.DECREMENT() != null) ? ((Arithmetic)c.getValue()).decrement() : ((Arithmetic)c.getValue()).increment();
+       return new Context(t, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
+   }
+   
+   @Override
+   public Context visitPrefixExpr(PrefixExprContext ctx) {
+       
+       PrefixOperationContext ce = ctx.prefixOperation();
+       
+       boolean isFunc = ce.func() != null;
+       
+       Context c;
+       if(isFunc) {
+           c = this.visit(ce.func());
+       } else {
+           c = this.visit(ce.atom());
+       }
+       
+       Arithmetic t;
+       
+       String op = (ce.DECREMENT() != null) ? "--" : ((ce.INCREMENT() != null) ? "++" : ce.OPERATOR().getText());
+       FixedOperator o = (FixedOperator) this.state.prefixOperators.get(op);
+       
+       if(o == null) { throw new RuntimeException("Undefined operator."); }
+       t = (Arithmetic) o.evaluate(c, null).getValue();
+       //t = (ce.DECREMENT() != null) ? ((Arithmetic)c.getValue()).decrement() : ((Arithmetic)c.getValue()).increment();
        return new Context(t, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
    }
    
@@ -367,7 +402,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Type t = state.variables.get(varName);
        
        HashMap<String, Type> var = this.formatVariables(ctx);
-       State s = State.from(state);
+       Scope s = Scope.from(state);
        s.variables = var;
        Visitor v = new Visitor(s);
        
@@ -384,8 +419,17 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
                     throw ex;
                 }
            }
-           t = (ctx.DECREMENT() != null) ? ((Arithmetic)t).decrement() : ((Arithmetic)t).increment();
-           var.put(varName, t);
+           
+           String op = (ctx.DECREMENT() != null) ? "--" : "++";
+           Operator o = this.state.postfixOperators.get(op);
+           if(o == null) {
+               throw new RuntimeException("No operator defined for either INCREMENT/DECREMENT");
+           }
+           
+           Context lc = new Context(t, ctx.start.getLine(), ctx.start.getCharPositionInLine(), this.getFullStatement(ctx));
+           Context nc = o.evaluate(lc, null);
+           //t = (ctx.DECREMENT() != null) ? ((Arithmetic)t).decrement() : ((Arithmetic)t).increment();
+           var.put(varName, nc.getValue());
            computed = v.visit(ctx.forcedLogicalOperation());
        }
        this.updateExisingValues(var);
@@ -401,7 +445,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
    @Override
    public Context visitWhileLoop(WhileLoopContext ctx) {
        HashMap<String, Type> var = this.formatVariables(ctx);
-       State s = State.from(state);
+       Scope s = Scope.from(state);
        s.variables = var;
        Visitor v = new Visitor(s);
        Context computed = v.visit(ctx.forcedLogicalOperation());
@@ -563,7 +607,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
        Context<Scalar> ifExpression = this.visit(ctx.logicalOperation());
        
        HashMap<String, Type> var = this.formatVariables(ctx);
-       State s = State.from(state);
+       Scope s = Scope.from(state);
        s.variables = var;
        Visitor v = new Visitor(s);
        //it has to equate to boolean true or false (Scalar 1 or 0)
@@ -837,7 +881,7 @@ public class Visitor extends ExpressionBaseVisitor<Context> {
            for(int i = 0; i < args.size(); i++) {
                sv.put(p.getVariableNames().get(i), args.get(i));
            }
-           State se = State.from(state);
+           Scope se = Scope.from(state);
            se.variables = sv;
            return p.run(se);
        }
