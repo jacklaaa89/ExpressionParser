@@ -14,9 +14,10 @@ public interface Evaluator<R extends Type> {
      * can be cast into a more concrete class if the type of the class can accurately be known.
      * @param left The left half of the expression, this is supplied as an Arithmetic
      * as a lot of Arithmetic functions are defined here.
-     * @param right The right hand side of the expression, also supplied as an Arithmetic.
+     * @param right The right hand side of the expression, also supplied as an Arithmetic, this will be null in postfix/prefix operations.
      * @return The evaluated solution to the expression.
      * @throws ArithmeticException if performing the evaluation causes an ArithmeticException.
      */
     public R eval(Arithmetic left, Arithmetic right) throws ArithmeticException;
+    
 }

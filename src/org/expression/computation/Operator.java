@@ -304,6 +304,10 @@ public class Operator {
         return this;
     }
     
+    protected Evaluator getDefaultOperator() {
+        return this.defaultEvaluator;
+    }
+    
     /**
      * gets the symbol which this operator matches in the grammar.
      * @return the symbol for this operation.
@@ -331,7 +335,7 @@ public class Operator {
      * @param right the right context
      * @return the computed context for this expression.
      */
-    public final Context evaluate(Context left, Context right) {
+    public Context evaluate(Context left, Context right) {
         
         Type v = null;
         

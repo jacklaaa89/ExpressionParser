@@ -15,7 +15,7 @@ import org.expression.parser.ErrorHandler;
 * the current expression.
 * @author Jack Timblin
 */
-public class State {
+public class Scope {
     /**
      * The parser used to generate the parse tree.
      */
@@ -50,6 +50,16 @@ public class State {
      * The operators in the current scope.
      */
     public HashMap<String, Operator> operators;
+    
+    /**
+     * The postfix operators in the current scope.
+     */
+    public HashMap<String, Operator> postfixOperators;
+    
+    /**
+     * The postfix operators in the current scope.
+     */
+    public HashMap<String, Operator> prefixOperators;
 
     /**
      * The procedures in the current scope.
@@ -71,8 +81,8 @@ public class State {
      * @param state the state object to copy from.
      * @return the new state object copied from {@code state}
      */
-    public static State from(State state) {
-        State s = new State();
+    public static Scope from(Scope state) {
+        Scope s = new Scope();
         s.functions = state.functions;
         s.handler = state.handler;
         s.lexer = state.lexer;
@@ -83,6 +93,8 @@ public class State {
         s.tree = state.tree;
         s.variables = state.variables;
         s.expression = state.expression;
+        s.postfixOperators = state.postfixOperators;
+        s.prefixOperators = state.prefixOperators;
         return s;
     }
 

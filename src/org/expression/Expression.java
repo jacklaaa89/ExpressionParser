@@ -27,6 +27,7 @@ import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.expression.computation.FixedOperator;
 import org.expression.computation.linear.LinearSystemSolver;
 import org.expression.output.ConsoleOutput;
 import org.expression.output.OutputListener;
@@ -60,6 +61,18 @@ public class Expression {
      * i.e +, /, *, -, ^, % etc
      */
     private HashMap<String, Operator> operators;
+    
+    /**
+     * A collection of the operators available for postfix operations.
+     * i.e. ++/-- operations.
+     */
+    private HashMap<String, Operator> postfixOperators;
+    
+    /**
+     * A collection of the operators available for prefix operations.
+     * i.e. ++/-- operations.
+     */
+    private HashMap<String, Operator> prefixOperators;
     
     /**
      * A collection of the variables / constants which are available.
@@ -132,6 +145,8 @@ public class Expression {
         //Initialize the data collections.
         this.functions = new HashMap<>();
         this.operators = new HashMap<>();
+        this.postfixOperators = new HashMap<>();
+        this.prefixOperators = new HashMap<>();
         this.variables = new HashMap<>();
         this.listener = new ConsoleOutput();
         
@@ -413,6 +428,42 @@ public class Expression {
                     return new Scalar(y);
                 }
             }
+        );
+        
+        addOperator(new FixedOperator("++", FixedOperator.POSTFIX)
+            .addEvaluator(
+                Operator.EXPRESSION_ALL, 
+                (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
+                    return left.increment(); //++ now adds two by default.
+                }
+            )
+        );
+        
+        addOperator(new FixedOperator("--", FixedOperator.POSTFIX)
+            .addEvaluator(
+                Operator.EXPRESSION_ALL, 
+                (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
+                    return left.decrement();
+                }
+            )
+        );
+        
+        addOperator(new FixedOperator("++", FixedOperator.PREFIX)
+            .addEvaluator(
+                Operator.EXPRESSION_ALL, 
+                (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
+                    return left.add(Scalar.TWO); //++ now adds two by default.
+                }
+            )
+        );
+        
+        addOperator(new FixedOperator("--", FixedOperator.PREFIX)
+            .addEvaluator(
+                Operator.EXPRESSION_ALL, 
+                (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
+                    return left.subtract(Scalar.TWO); //-- substracts two.
+                }
+            )
         );
         
         //bitwise left operator.
@@ -776,6 +827,19 @@ public class Expression {
      * @return a reference to itself for method chaining.
      */
     public final Expression addOperator(Operator operator) {
+        
+        if(operator instanceof FixedOperator) {
+            switch(((FixedOperator) operator).getFixPoint()) {
+                case FixedOperator.POSTFIX:
+                    this.postfixOperators.put(operator.getOper(), operator);
+                    break;
+                case FixedOperator.PREFIX:
+                    this.prefixOperators.put(operator.getOper(), operator);
+                    break;
+            }
+            return this;
+        }
+        
         this.operators.put(operator.getOper(), operator);
         return this;
     }
@@ -854,7 +918,7 @@ public class Expression {
      */
     public final void showAST() {
         
-        State s = this.parse();
+        Scope s = this.parse();
         
         JPanel panel = new JPanel();
         JFrame frame = new JFrame();
@@ -880,7 +944,7 @@ public class Expression {
      * Attempts to parse the source expression.
      * @return The generated parse tree and parser instances.
      */
-    private State parse() {
+    private Scope parse() {
         if(this.expression == null) {
             throw new IllegalArgumentException("no valid expression was defined");
         }
@@ -893,7 +957,7 @@ public class Expression {
         ExpressionParser parser = new ExpressionParser(tokens);
         parser.removeErrorListeners();
         parser.addErrorListener(handler);
-        State s = new State();
+        Scope s = new Scope();
         s.parser = parser;
         s.tree = parser.start();
         s.lexer = lexer;
@@ -901,6 +965,8 @@ public class Expression {
         s.functions = functions;
         s.listener = listener;
         s.operators = operators;
+        s.postfixOperators = postfixOperators;
+        s.prefixOperators = prefixOperators;
         s.variables = variables;
         s.expression = expression.toString();
         return s;
@@ -913,7 +979,7 @@ public class Expression {
      */
     public Context eval() throws RuntimeException {
         
-        State s = this.parse();
+        Scope s = this.parse();
         
         Visitor ve = new Visitor(s);
         Context c;

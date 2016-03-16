@@ -3,7 +3,7 @@ package org.expression.computation;
 import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.expression.parser.Context;
-import org.expression.State;
+import org.expression.Scope;
 import org.expression.parser.ExpressionException;
 import org.expression.parser.Visitor;
 
@@ -60,7 +60,7 @@ public class Procedure {
      * @param state the provided visitor
      * @return the context from running this procedures context/body.
      */
-    public Context run(final State state) {
+    public Context run(final Scope state) {
         Visitor v = new Visitor(state);
         Context res;
         if(ctx == null) {
