@@ -398,6 +398,9 @@ e.addOperator(
         }
     )
 );
+
+e.setExpression("var a = 1; ++a;"); //prints 3.0
+
 ````
 
 > Also Fixed operators only support the expression types EXPRESSION_SCALAR, EXPRESSION_VECTOR, EXPRESSION_MATRIX & EXPRESSION_ALL (for all).
