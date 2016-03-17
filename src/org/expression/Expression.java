@@ -452,7 +452,7 @@ public class Expression {
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
                 (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
-                    return left.add(Scalar.TWO); //++ now adds two by default.
+                    return left.add(left); //++ prefix adds left to left.
                 }
             )
         );
@@ -461,7 +461,7 @@ public class Expression {
             .addEvaluator(
                 Operator.EXPRESSION_ALL, 
                 (Evaluator<Type>) (Arithmetic left, Arithmetic right) -> {
-                    return left.subtract(Scalar.TWO); //-- substracts two.
+                    return left.subtract(left);
                 }
             )
         );

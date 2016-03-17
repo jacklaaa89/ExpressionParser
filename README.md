@@ -403,6 +403,17 @@ e.setExpression("var a = 1; ++a;"); //prints 3.0
 
 ````
 
+Post and prefix operations cannot be carried out simultaneously i.e. `var a = 3; --a++;` is not valid. 
+
+The default functionality of fixed operations includes:
+
+_all of the below examples use the variable `a` assigned at the value `2`._
+
+Operator | Prefix | Postfix | Description
+-------- | ------ | ------- | -----------
+++ | ++a = 4 | a++ = 3 | prefix adds a to itself, and postfix increments the value by one.
+-- | --a = 0 | a-- = 1 | prefix subtracts a from itself and postfix decrements the value by one.
+
 > Also Fixed operators only support the expression types EXPRESSION_SCALAR, EXPRESSION_VECTOR, EXPRESSION_MATRIX & EXPRESSION_ALL (for all).
 
 ### Functions
